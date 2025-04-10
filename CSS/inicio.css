@@ -1,0 +1,70 @@
+/* Reset general */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  /* Hero Section */
+  .hero {
+    background-image: url('../img/fondo.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    padding-top: 80px;
+    color: white;
+    position: relative;
+  }
+  
+  .hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), #0D2618);
+    z-index: 1;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 60px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .hero-content h1 {
+    font-size: 3rem;
+    color: #F9FAF8;
+  }
+  
+  .highlight {
+    color: #A3E635;
+  }
+  
+  .hero-frog {
+    width: 100px;
+  }
+  
+  /* Cards */
+  .card-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 40px;
+    flex-wrap: wrap;
+  }
+  
+  .card {
+    width: 160px;
+    height: 160px;
+    background-color: rgba(13, 38, 24, 0.7);
+    border-radius: 8px;
+  }
+  
