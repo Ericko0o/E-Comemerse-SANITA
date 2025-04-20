@@ -1,0 +1,47 @@
+/* Reset general - importante para todas las páginas */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  body {
+    background-color: #f5fff5;
+    color: #333;
+  }
+  
+  /* Ajuste para el contenido de noticias */
+  .noticias {
+    max-width: 900px;
+    margin: auto;
+    padding: 80px 2rem 2rem; /* incluye el padding-top para navbar */
+    background-color: #ffffffcc;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+  }
+  
+  /* Elementos individuales de noticia */
+  .noticia {
+    border-left: 4px solid #4caf50;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #f9fdf9;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+  }
+  
+  .noticia:hover {
+    transform: scale(1.02);
+  }
+  
+  .noticia h2 {
+    margin-top: 0;
+    color: #2e7d32;
+  }
+  
+  .noticia p {
+    line-height: 1.6;
+  }
+  
