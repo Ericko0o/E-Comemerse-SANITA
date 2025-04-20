@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sanita - Noticias</title>
   <link rel="stylesheet" href="CSS/navbar.css" />
-  <link rel="stylesheet" href="CSS/noticias.css" />
+  <link rel="stylesheet" href="CSS/noticias.css" /> <!-- Cambié a noticias.css -->
   <script src="CSS/navbar.js" defer></script>
 </head>
 <body>
@@ -13,8 +13,30 @@
   <!-- Navbar insertada por JS -->
   <div id="navbar-placeholder"></div>
 
-  <!-- Noticias Section con padding-top de 80px -->
-  <section class="noticias" style="padding-top: 80px;">
+  <!-- Espaciado debajo de la navbar -->
+  <div style="height: 80px;"></div> <!-- Agregado para el espaciado -->
+
+  <!-- Noticias Section -->
+  <section class="noticias">
+    <div class="noticias-content">
+      <h1>Últimas <span class="highlight">Noticias</span></h1>
+      <p>Descubre las noticias más recientes sobre salud natural, bienestar y más.</p>
+    </div>
+
+    <!-- Noticias Individuales -->
+    <div class="noticia">
+      <h2>La importancia de las hierbas medicinales</h2>
+      <p>Las hierbas medicinales han sido utilizadas desde tiempos ancestrales para tratar diversas dolencias. En esta noticia, exploramos las más efectivas y cómo pueden ser parte de tu día a día.</p>
+    </div>
+    <div class="noticia">
+      <h2>Beneficios del té de manzanilla</h2>
+      <p>El té de manzanilla es conocido por sus propiedades relajantes y digestivas. Descubre cómo este té puede ayudarte a mejorar tu salud mental y física.</p>
+    </div>
+    <div class="noticia">
+      <h2>Recetas naturales para fortalecer el sistema inmune</h2>
+      <p>Conoce las mejores recetas naturales que puedes preparar en casa para fortalecer tu sistema inmune y mantener tu cuerpo saludable durante todo el año.</p>
+    </div>
+  </section>
 
 </body>
 </html>

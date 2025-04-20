@@ -1,18 +1,28 @@
-/* Reset general */
-* {
+/* ===================================================
+   Reset general
+   =================================================== */
+   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', sans-serif;
   }
   
-  /* Hero Section */
+  body {
+    background-color: #f5fff5;
+    color: #333;
+  }
+  
+  /* ===================================================
+     Estilos para la sección Hero
+     =================================================== */
+  
   .hero {
     background-image: url('../img/fondo.jpg');
     background-size: cover;
     background-position: center;
     min-height: 100vh;
-    padding-top: 80px;
+    padding-top: 80px; /* Se mantiene el espaciado por la navbar */
     color: white;
     position: relative;
   }
@@ -35,6 +45,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-direction: column; /* Asegura que en móviles la imagen y el texto estén centrados */
+    text-align: center; /* Centrado para que se vea bien en todas las pantallas */
   }
   
   .hero-content h1 {
@@ -48,9 +60,13 @@
   
   .hero-frog {
     width: 100px;
+    margin-top: 20px;
   }
   
-  /* Cards */
+  /* ===================================================
+     Estilos para las tarjetas (Cards)
+     =================================================== */
+  
   .card-container {
     position: relative;
     z-index: 2;
@@ -66,5 +82,30 @@
     height: 160px;
     background-color: rgba(13, 38, 24, 0.7);
     border-radius: 8px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* ===================================================
+     Media Queries para pantallas pequeñas
+     =================================================== */
+  
+  @media (max-width: 768px) {
+    .hero-content h1 {
+      font-size: 2rem;
+    }
+  
+    .card-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .card {
+      width: 120px;
+      height: 120px;
+    }
   }
   

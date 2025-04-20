@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sanita - Catálogo</title>
   <link rel="stylesheet" href="CSS/navbar.css" />
-  <link rel="stylesheet" href="CSS/inicio.css" />
+  <link rel="stylesheet" href="CSS/catalogo.css" /> <!-- Cambié a catalogo.css -->
   <script src="CSS/navbar.js" defer></script>
 </head>
 <body>
@@ -13,11 +13,31 @@
   <!-- Navbar insertada por JS -->
   <div id="navbar-placeholder"></div>
 
+  <!-- Espaciado debajo de la navbar -->
+  <div style="height: 80px;"></div> <!-- Agregado para el espaciado -->
+
   <!-- Catálogo Section -->
-  <section class="catalogo" style="padding-top: 80px;"> <!-- Solo el contenido desplazado -->
+  <section class="catalogo">
     <div class="catalogo-content">
       <h1>Explora Nuestro <span class="highlight">Catálogo</span></h1>
       <p>Encuentra productos naturales para tu bienestar.</p>
+    </div>
+    
+    <!-- Contenido adicional -->
+    <div class="productos">
+      <h2>Productos destacados</h2>
+      <div class="producto">
+        <img src="path/to/product1.jpg" alt="Producto 1" />
+        <p>Hierba medicinal para el estrés</p>
+      </div>
+      <div class="producto">
+        <img src="path/to/product2.jpg" alt="Producto 2" />
+        <p>Té relajante de manzanilla</p>
+      </div>
+      <div class="producto">
+        <img src="path/to/product3.jpg" alt="Producto 3" />
+        <p>Jabón artesanal de lavanda</p>
+      </div>
     </div>
   </section>
 
