@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="CSS/navbar.css" />
   <link rel="stylesheet" href="CSS/catalogo.css" /> <!-- Cambié a catalogo.css -->
   <script src="JS/navbar.js" defer></script>
+  <script src="JS/catalogo.js" defer></script>
 </head>
 <body>
 
@@ -18,26 +19,15 @@
 
   <!-- Catálogo Section -->
   <section class="catalogo">
-    <div class="catalogo-content">
-      <h1>Explora Nuestro <span class="highlight">Catálogo</span></h1>
-      <p>Encuentra productos naturales para tu bienestar.</p>
+    <h1>Productos</h1>
+
+    <div class="tabs">
+      <span class="tab active" onclick="mostrarCategoria('cicatrizantes', this)">Cicatrizantes</span>
+      <span class="tab" onclick="mostrarCategoria('inmunologico', this)">Sistema Inmunológico</span>
     </div>
-    
-    <!-- Contenido adicional -->
-    <div class="productos">
-      <h2>Productos destacados</h2>
-      <div class="producto">
-        <img src="path/to/product1.jpg" alt="Producto 1" />
-        <p>Hierba medicinal para el estrés</p>
-      </div>
-      <div class="producto">
-        <img src="path/to/product2.jpg" alt="Producto 2" />
-        <p>Té relajante de manzanilla</p>
-      </div>
-      <div class="producto">
-        <img src="path/to/product3.jpg" alt="Producto 3" />
-        <p>Jabón artesanal de lavanda</p>
-      </div>
+
+    <div id="productos-container" class="productos">
+      <!-- Productos se cargan aquí -->
     </div>
   </section>
 
