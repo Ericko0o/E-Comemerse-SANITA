@@ -64,14 +64,16 @@
   .productos {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 20px;
     padding: 20px;
+    max-width: 1000px; /* <- AÑADE esta línea */
+    margin: 0 auto;
   }
   
   .producto {
     background-color: rgba(255, 255, 255, 0.1);
-    width: 200px;
+    width: 220px;
     border-radius: 10px;
     overflow: hidden;
     color: white;
