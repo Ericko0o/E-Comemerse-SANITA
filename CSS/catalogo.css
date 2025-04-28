@@ -32,7 +32,18 @@
     padding-top: 80px;
     text-align: center;
     color: white;
+    position: relative;
   }
+
+  .carrito-icono {
+    position: absolute;
+    top: 90px;
+    right: 20px;
+  }
+  .carrito-icono img {
+    filter: invert(1);
+  }
+  
   
   .catalogo h1 {
     font-size: 2.5em;
@@ -67,7 +78,7 @@
     justify-content: flex-start;
     gap: 20px;
     padding: 20px;
-    max-width: 1000px; /* <- AÑADE esta línea */
+    max-width: 1000px;
     margin: 0 auto;
   }
   
