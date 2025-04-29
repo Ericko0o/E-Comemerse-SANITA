@@ -23,8 +23,8 @@ app.get('/catalogo.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../catalogo.html'));
 });
 
-app.get('/catalogo/carrito.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../catalogo/carrito.html'));
+app.get('/carrito.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../carrito.html'));
 });
 
 app.get('/comunidad.html', (req, res) => {
