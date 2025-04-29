@@ -36,14 +36,27 @@
   }
 
   .carrito-icono {
-    position: absolute;
-    top: 90px;
+    position: fixed;
+    top: 80px;
     right: 20px;
-  }
-  .carrito-icono img {
-    filter: invert(1);
+    z-index: 100;
   }
   
+  .carrito-circulo {
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 128, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .carrito-img {
+    width: 30px;
+    height: 30px;
+    filter: invert(1);
+  }
   
   .catalogo h1 {
     font-size: 2.5em;
