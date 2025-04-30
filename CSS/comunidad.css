@@ -1,72 +1,125 @@
 /* Reset general - importante para todas las páginas */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  body {
-    background-color: #f5fff5;
-    color: #333;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Fondo general del body */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: 
+    linear-gradient(rgba(0, 60, 0, 0.6), rgba(0, 60, 0, 0.6)),
+    url('../IMG/fondoComunidad.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  color: #333;
+}
+
 /* ===================================================
    Estilos para el contenido de la comunidad
    =================================================== */
 
 /* Comunidad */
-  .comunidad {
-    max-width: 900px;
-    margin: 100px auto 2rem; /* Espacio desde la navbar hacia abajo */
-    padding: 2rem;
-    background-color: #ffffffcc;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(4px);
-    animation: fadeIn 0.6s ease-in-out;
+.comunidad {
+  max-width: 900px;
+  margin: 100px auto 2rem;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.comunidad-content h1 {
+  font-size: 2.5rem;
+  color: #2e7d32;
+}
+
+.comunidad-content p {
+  line-height: 1.6;
+  margin-top: 1rem;
+}
+
+/* Foro */
+.foro {
+  margin-top: 2rem;
+  background-color: #f9fdf9;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.foro h2 {
+  color: #4caf50;
+}
+
+.foro ul {
+  list-style-type: none;
+}
+
+.foro ul li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+/* Nueva estructura de comunidad con columnas */
+.comunidad-layout {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+/* Columna principal de posts */
+.posts {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Comentarios recientes */
+.comentarios-recientes {
+  flex: 2;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+/* Tarjeta individual */
+.post {
+  background-color: #f9fdf9;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Comentario individual */
+.comentario {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.comentario:last-child {
+  border-bottom: none;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  
-  .comunidad-content h1 {
-    font-size: 2.5rem;
-    color: #2e7d32;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .comunidad-content p {
-    line-height: 1.6;
-    margin-top: 1rem;
-  }
-  
-  .foro {
-    margin-top: 2rem;
-    background-color: #f9fdf9;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .foro h2 {
-    color: #4caf50;
-  }
-  
-  .foro ul {
-    list-style-type: none;
-  }
-  
-  .foro ul li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  /* Animación de entrada */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
+}
