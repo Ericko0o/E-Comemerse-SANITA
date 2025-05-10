@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "express": "^5.1.0",
+    "express-session": "^1.18.1",
     "sqlite3": "^5.1.7"
   }
 }
