@@ -1,58 +1,126 @@
-/* Estilos específicos de la barra de navegación */
+/* Añade o reemplaza lo siguiente en navbar.css */
 
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-    background: rgba(86, 111, 97, 0.4);
-    backdrop-filter: blur(13px);
-    -webkit-backdrop-filter: blur(13px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    width: 100%;
-    z-index: 100;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: white;
-    font-weight: bold;
-  }
-  
-  .logo img {
-    width: 23px;
-    height: 29px;
-  }
-  
-  .nav-links {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  .nav-links a {
-    color: #D1D5DB;
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    transition: background 0.3s;
-  }
-  
-  .nav-links a:hover,
-  .nav-links a.active {
-    background: #4CAF50;
-    color: white;
-  }
-  
-  .search-box {
-    padding: 5px 10px;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 30px;
+  background: rgba(86, 111, 97, 0.5);
+  backdrop-filter: blur(13px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  width: 100%;
+  z-index: 100;
+}
+
+/* Nueva disposición central de la barra de búsqueda */
+.search-box-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.search-box {
+  width: 60%;
+  max-width: 300px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.search-box::placeholder {
+  color: #ccc;
+}
+
+.search-box:focus {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Usuario o botón login */
+.user-profile img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* Navbar links */
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: #D1D5DB;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background: #4CAF50;
+  color: white;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+.logo img {
+  width: 23px;
+  height: 29px;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  overflow: hidden;
+  z-index: 999;
+  min-width: 120px;
+}
+
+.user-dropdown div {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.user-dropdown div:hover {
+  background: #f0f0f0;
+}
+
+.hidden {
+  display: none;
+}
