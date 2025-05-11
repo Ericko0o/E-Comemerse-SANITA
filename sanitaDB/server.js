@@ -78,6 +78,10 @@ app.get('/producto.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../producto.html'));
 });
 
+app.get('/pago.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../pago.html'));
+});
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../inicio.html'));
 });
@@ -177,6 +181,18 @@ app.get('/logout', (req, res) => {
 // ---------------------- CARRITO ---------------------
 
 // Obtener productos del carrito del usuario logueado
+// CREAR TABLA CARRITO SI NO EXISTE
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS carrito (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      usuario_id INTEGER NOT NULL,
+      producto_id INTEGER NOT NULL,
+      FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+      FOREIGN KEY (producto_id) REFERENCES productos(id)
+    )
+  `);
+});
 
 app.get('/carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
@@ -252,6 +268,19 @@ app.get('/api/productos', (req, res) => {
       res.status(500).send("Error al obtener productos");
     } else {
       res.json(rows);
+    }
+  });
+});
+app.get('/api/productos/:id', (req, res) => {
+  const id = req.params.id;
+  db.get('SELECT * FROM productos WHERE id = ?', [id], (err, row) => {
+    if (err) {
+      console.error('Error obteniendo producto:', err.message);
+      res.status(500).send("Error al obtener producto");
+    } else if (!row) {
+      res.status(404).send("Producto no encontrado");
+    } else {
+      res.json(row);
     }
   });
 });
