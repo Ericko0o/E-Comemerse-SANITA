@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="CSS/navbar.css" />
   <link rel="stylesheet" href="CSS/inicio.css" />
   <script src="JS/navbar.js" defer></script>
+  <script src="JS/inicio.js" defer></script> <!-- Enlace al archivo JS -->
 </head>
 <body>
 
@@ -20,15 +21,46 @@
       <img src="img/logo-rana.png" alt="Mascota rana" class="hero-frog">
     </div>
 
-    <!-- Cards Section -->
-    <div class="card-container">
-      <div class="card"></div>
-      <div class="card"></div>
-      <div class="card"></div>
-      <div class="card"></div>
-      <div class="card"></div>
+    <!-- Cards Section (Carrusel) -->
+    <div class="carousel-container">
+      <div class="carousel-track">
+        <!-- Recuadro 1 -->
+        <a href="pagina1.html" class="carousel-card" data-link="pagina1.html">
+          <img src="img/imagen1.jpg" alt="Imagen 1" class="carousel-card-image">
+          <div class="carousel-card-text">Título 1<br><span>Descripción breve</span></div>
+        </a>
+        <!-- Recuadro 2 -->
+        <a href="pagina2.html" class="carousel-card" data-link="pagina2.html">
+          <img src="img/imagen2.jpg" alt="Imagen 2" class="carousel-card-image">
+          <div class="carousel-card-text">Título 2<br><span>Otra explicación</span></div>
+        </a>
+        <!-- Recuadro 3 -->
+        <a href="pagina3.html" class="carousel-card" data-link="pagina3.html">
+          <img src="img/imagen3.jpg" alt="Imagen 3" class="carousel-card-image">
+          <div class="carousel-card-text">Título 3<br><span>Más información</span></div>
+        </a>
+        <!-- Recuadro 4 -->
+        <a href="pagina1.html" class="carousel-card" data-link="pagina1.html">
+          <img src="img/imagen1.jpg" alt="Imagen 1" class="carousel-card-image">
+          <div class="carousel-card-text">Título 4<br><span>Descripción breve</span></div>
+        </a>
+        <!-- Recuadro 5 -->
+        <a href="pagina2.html" class="carousel-card" data-link="pagina2.html">
+          <img src="img/imagen2.jpg" alt="Imagen 2" class="carousel-card-image">
+          <div class="carousel-card-text">Título 5<br><span>Otra explicación</span></div>
+        </a>
+      </div>
     </div>
+
   </section>
+
+  <!-- Contenido adicional -->
+  <section class="main-content">
+    <h2 class="main-title">Plantas Medicinales: La Sabiduría Natural</h2>
+    <p class="main-text">Las plantas medicinales tienen un poder ancestral en la curación de diversas dolencias. A lo largo de los siglos, han sido utilizadas por diferentes culturas para tratar desde heridas simples hasta enfermedades complejas. Hoy en día, la ciencia respalda muchos de estos usos tradicionales, haciendo que las plantas medicinales sean una opción viable para quienes buscan remedios naturales.</p>
+  </section>
+
+
 
 </body>
 </html>

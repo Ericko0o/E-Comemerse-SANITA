@@ -170,8 +170,72 @@ app.get('/logout', (req, res) => {
 });
 
 
-// --------------------- CARRITO ---------------------
+// ---------------------- CARRITO ---------------------
 
+// Obtener productos del carrito del usuario logueado
+
+app.get('/carrito', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  const sql = `
+    SELECT carrito.id AS carrito_id, productos.*
+    FROM carrito
+    JOIN productos ON carrito.producto_id = productos.id
+    WHERE carrito.usuario_id = ?
+  `;
+
+  db.all(sql, [req.session.usuarioId], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// Agregar producto al carrito
+app.post('/carrito', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  const { producto_id } = req.body;
+  if (!producto_id) return res.status(400).json({ error: "Falta producto_id" });
+
+  // Evitar duplicados
+  db.get(
+    "SELECT id FROM carrito WHERE usuario_id = ? AND producto_id = ?",
+    [req.session.usuarioId, producto_id],
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      if (row) {
+        return res.json({ mensaje: "Producto ya está en el carrito" });
+      } else {
+        db.run(
+          "INSERT INTO carrito (usuario_id, producto_id) VALUES (?, ?)",
+          [req.session.usuarioId, producto_id],
+          function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ mensaje: "Producto agregado", id: this.lastID });
+          }
+        );
+      }
+    }
+  );
+});
+
+// Eliminar un producto del carrito
+app.delete('/carrito/:id', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  const carritoId = req.params.id;
+
+  db.run(
+    "DELETE FROM carrito WHERE id = ? AND usuario_id = ?",
+    [carritoId, req.session.usuarioId],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: "No encontrado" });
+      res.json({ mensaje: "Producto eliminado del carrito" });
+    }
+  );
+});
 
 
 // --------------------- PRODUCTOS ---------------------
