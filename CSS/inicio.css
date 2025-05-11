@@ -1,3 +1,9 @@
+/* Prevenir scroll horizontal por cualquier desborde */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* ===================================================
    Estilos Generales
    =================================================== */
@@ -79,13 +85,12 @@ body {
    =================================================== */
 .carousel-container {
   overflow: visible;
-  margin-top: 60px;
-  margin-bottom: 50px;
+  width: 100%;
 }
 
 .carousel-track {
   display: flex;
-  animation: scrollCarousel 30s linear infinite;
+  width: max-content;
 }
 
 .carousel-track:hover {
@@ -96,7 +101,7 @@ body {
   width: 600px;
   height: 350px;
   margin: 0;
-  border-radius: 0; /* sin esquinas redondeadas */
+  border-radius: 0;
   background-color: #333;
   position: relative;
   flex-shrink: 0;
@@ -110,7 +115,7 @@ body {
 
 .carousel-card:hover {
   animation-play-state: paused;
-  transform: scale(1.1); /* Escala en ambos ejes */
+  transform: scale(1.1);
   z-index: 10;
 }
 
@@ -135,20 +140,19 @@ body {
   margin-left: 20px;
   margin-bottom: 10px;
   background: none;
-  border-radius: 0; /* ← quitar bordes redondeados si había */
+  border-radius: 0;
 }
 
-/* Animación */
+/* Animación de desplazamiento infinito */
 @keyframes scrollCarousel {
   0% {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-100%); /* Desliza el carrusel al 100% de su longitud */
+    transform: translateX(-50%);
   }
 }
 
-/* Duplicación dinámica con JavaScript (para asegurar que se desplace de forma infinita) */
 .carousel-track[data-duplicated="true"] {
   animation: scrollCarousel 60s linear infinite;
 }
@@ -159,10 +163,10 @@ body {
 
 .main-content {
   padding: 100px 20px;
-  background-color: transparent; /* No fondo blanco */
-  text-align: left; /* Texto alineado a la izquierda */
-  color: #333; /* Color del texto */
-  z-index: 1; /* Asegurar que el contenido quede encima */
+  background-color: transparent;
+  text-align: left;
+  color: #333;
+  z-index: 1;
 }
 
 .main-title {
@@ -177,14 +181,12 @@ body {
   color: #333;
   max-width: 900px;
   margin: 0 auto;
-  text-align: left; /* El texto no está centrado */
+  text-align: left;
 }
-
 
 /* ===================================================
    Media Queries
    =================================================== */
-
 @media (max-width: 768px) {
   .hero-content h1 {
     font-size: 2rem;
