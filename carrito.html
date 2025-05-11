@@ -15,25 +15,26 @@
   <div class="carrito-container">
     <h1>Carrito</h1>
     <div class="carrito">
-        <table>
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody id="items-carrito">
-                <!-- Aquí se renderizan los productos con JS -->
-            </tbody>
-        </table>
-        <div class="resumen">
-            <h3>Suma de Productos</h3>
-            <p>Subtotal: <span id="subtotal">S/0.00</span></p>
-            <p>Total: <span id="total">S/0.00</span></p>
-            <button class="btn-comprar">COMPRAR</button>
-        </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="items-carrito">
+          <!-- Los productos se insertan aquí -->
+        </tbody>
+      </table>
+      <div class="resumen">
+        <h3>Suma de Productos</h3>
+        <p>Subtotal: <span id="subtotal">S/0.00</span></p>
+        <p>Total: <span id="total">S/0.00</span></p>
+        <button class="btn-comprar" onclick="location.href='/pago.html'">COMPRAR</button>
+      </div>
     </div>
   </div>
 </body>

@@ -1,39 +1,44 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const res = await fetch("/carrito");
-  const carrito = await res.json();
-  const contenedor = document.getElementById("carrito-items");
-  const totalSpan = document.getElementById("total-precio");
-  let total = 0;
+  try {
+    const res = await fetch("/carrito");
+    const carrito = await res.json();
 
-  if (Array.isArray(carrito) && carrito.length > 0) {
-    carrito.forEach(item => {
-      total += parseFloat(item.precio);
-      const div = document.createElement("div");
-      div.className = "item-carrito";
-      div.innerHTML = `
-        <img src="/img/${item.imagen.split("/").pop()}" alt="${item.nombre}">
-        <div class="item-info">
-          <h4>${item.nombre}</h4>
-          <p>S/. ${item.precio}</p>
-        </div>
-        <button onclick="eliminarDelCarrito(${item.carrito_id})">Eliminar</button>
-      `;
-      contenedor.appendChild(div);
-    });
-  } else {
-    contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+    const contenedor = document.getElementById("items-carrito");
+    const subtotalSpan = document.getElementById("subtotal");
+    const totalSpan = document.getElementById("total");
+    let subtotal = 0;
+
+    if (Array.isArray(carrito) && carrito.length > 0) {
+      carrito.forEach(item => {
+        const precio = parseFloat(item.precio);
+        subtotal += precio;
+
+        const fila = document.createElement("tr");
+        fila.innerHTML = `
+          <td>${item.nombre}</td>
+          <td>S/. ${precio.toFixed(2)}</td>
+          <td>1</td>
+          <td>S/. ${precio.toFixed(2)}</td>
+          <td><button onclick="eliminarDelCarrito(${item.carrito_id})">Eliminar</button></td>
+        `;
+        contenedor.appendChild(fila);
+      });
+    } else {
+      contenedor.innerHTML = "<tr><td colspan='5'>Tu carrito está vacío.</td></tr>";
+    }
+
+    subtotalSpan.textContent = `S/${subtotal.toFixed(2)}`;
+    totalSpan.textContent = `S/${subtotal.toFixed(2)}`;
+  } catch (err) {
+    console.error("Error cargando el carrito:", err);
   }
-
-  totalSpan.textContent = total.toFixed(2);
 });
 
 async function eliminarDelCarrito(carritoId) {
-  await fetch(`/carrito/${carritoId}`, {
-    method: "DELETE"
-  });
-  location.reload();
+  try {
+    await fetch(`/carrito/${carritoId}`, { method: "DELETE" });
+    location.reload();
+  } catch (err) {
+    console.error("Error al eliminar producto:", err);
+  }
 }
-
-document.getElementById("pagar-btn").addEventListener("click", () => {
-  window.location.href = "/pago.html";
-});
