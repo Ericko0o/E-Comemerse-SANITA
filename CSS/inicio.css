@@ -160,29 +160,31 @@ body {
 /* ===================================================
    Contenido adicional
    =================================================== */
-
-.main-content {
-  padding: 100px 20px;
-  background-color: transparent;
-  text-align: left;
-  color: #333;
-  z-index: 1;
+.hero-extra-content {
+  max-width: 900px;
+  margin: 80px auto 60px;
+  padding: 0 20px;
+  text-align: center;
+  color: #f0fdf4;
+  position: relative;
+  z-index: 2;
 }
 
 .main-title {
-  font-size: 4rem;
-  color: #F9FAF8;
+  font-size: 3.2rem;
   margin-bottom: 20px;
-  text-align: center;
+  font-weight: bold;
+  color: #A3E635;
 }
 
 .main-text {
-  font-size: 2rem;
-  color: #333;
-  max-width: 900px;
-  margin: 0 auto;
-  text-align: left;
+  font-size: 1.5rem;
+  line-height: 1.8;
+  color: #e7fbe7;
 }
+
+
+
 
 /* ===================================================
    Media Queries
