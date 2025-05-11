@@ -2,18 +2,39 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sanita - Catálogo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sanita - Carrito</title>
   <link rel="stylesheet" href="CSS/navbar.css" />
-  <link rel="stylesheet" href="CSS/carrito.css" /> 
+  <link rel="stylesheet" href="CSS/carrito.css" />
   <script src="JS/navbar.js" defer></script>
   <script src="JS/carrito.js" defer></script>
 </head>
 <body>
-
-  <!-- Navbar insertada por JS -->
   <div id="navbar-placeholder"></div>
-
-  <!-- Espaciado debajo de la navbar -->
-  <div style="height: 80px;"></div> <!-- Agregado para el espaciado -->
-  
+  <div style="height: 80px;"></div>
+  <div class="carrito-container">
+    <h1>Carrito</h1>
+    <div class="carrito">
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="items-carrito">
+                <!-- Aquí se renderizan los productos con JS -->
+            </tbody>
+        </table>
+        <div class="resumen">
+            <h3>Suma de Productos</h3>
+            <p>Subtotal: <span id="subtotal">S/0.00</span></p>
+            <p>Total: <span id="total">S/0.00</span></p>
+            <button class="btn-comprar">COMPRAR</button>
+        </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sanita - Pago</title>
+  <link rel="stylesheet" href="CSS/navbar.css" />
+  <link rel="stylesheet" href="CSS/pago.css" />
+  <script src="JS/navbar.js" defer></script>
+  <script src="JS/pago.js" defer></script>
+</head>
+<body>
+  <div id="navbar-placeholder"></div>
+  <div style="height: 80px;"></div>
+  <main class="pago-container">
+    <h1>Simulación de Pago</h1>
+    <p>Ingresa los datos simulados para realizar tu compra:</p>
+    <form id="pago-form">
+      <input type="text" placeholder="Nombre en tarjeta" required />
+      <input type="text" placeholder="Número de tarjeta" required />
+      <input type="text" placeholder="Fecha de expiración (MM/AA)" required />
+      <input type="text" placeholder="CVV" required />
+      <button type="submit">Pagar ahora</button>
+    </form>
+    <div id="mensaje-pago"></div>
+  </main>
+</body>
+</html>

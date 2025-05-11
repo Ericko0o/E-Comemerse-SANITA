@@ -1,6 +1,8 @@
 async function obtenerProductoPorId(id) {
   try {
-    const res = await fetch(`/api/productos/${id}`);
+    const res = await fetch(`/api/productos/${id}`, {
+      credentials: 'include' // Añadido
+    });
     if (!res.ok) throw new Error("Producto no encontrado");
     return await res.json();
   } catch (err) {
@@ -11,7 +13,9 @@ async function obtenerProductoPorId(id) {
 
 async function verificarUsuario() {
   try {
-    const res = await fetch("/api/usuario");
+    const res = await fetch("/usuario", {
+      credentials: 'include' // Añadido
+    });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -21,23 +25,29 @@ async function verificarUsuario() {
 
 async function agregarAlCarrito(idProducto) {
   const usuario = await verificarUsuario();
-  if (!usuario) {
+  if (!usuario || !usuario.logueado) {
     alert("Debe iniciar sesión para agregar productos al carrito.");
     window.location.href = "/login.html";
     return;
   }
 
   try {
-    const res = await fetch("/api/carrito", {
+    const res = await fetch("/carrito", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productoId: idProducto }),
+      credentials: 'include', // 🔥 Importante para mantener la sesión
+      body: JSON.stringify({ producto_id: idProducto }),
     });
 
     if (res.ok) {
-      alert("Producto agregado al carrito");
+      const data = await res.json();
+      alert(data.mensaje || "Producto agregado al carrito");
+    } else if (res.status === 401) {
+      alert("Debe iniciar sesión.");
+      window.location.href = "/login.html";
     } else {
-      alert("Error al agregar producto al carrito");
+      const errorData = await res.json();
+      alert(errorData.error || "Error al agregar producto");
     }
   } catch (err) {
     console.error(err);
