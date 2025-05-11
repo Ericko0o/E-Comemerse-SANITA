@@ -1,26 +1,43 @@
-// navbar.js
-document.addEventListener("DOMContentLoaded", () => {
-  const isLoggedIn = false; // Esto se debe cambiar dinámicamente luego con fetch('/usuario')
+document.addEventListener("DOMContentLoaded", async () => {
+  const placeholder = document.getElementById("navbar-placeholder");
 
-const userHTML = `
-<li class="user-menu">
-  <img src="img/usuario.png" alt="Perfil" class="user-icon" onclick="toggleMenu()">
-  <div id="user-dropdown" class="user-dropdown hidden">
-    <div onclick="abrirPerfil()">👤 Perfil</div>
-    <div onclick="cerrarSesion()">Cerrar sesión</div>
-  </div>
-</li>`;
+  // Detectar si hay sesión activa
+  let logueado = false;
+  let nombre = '';
+  let imagen = '';
 
+  try {
+    const res = await fetch('/usuario');
+    const data = await res.json();
+    if (data.logueado) {
+      logueado = true;
+      nombre = data.usuario.nombre;
+      imagen = data.usuario.imagen || 'img/usuario.jpg';
+    }
+  } catch (err) {
+    console.error('Error al verificar sesión:', err);
+  }
 
-  document.getElementById("navbar-placeholder").innerHTML = `
+  const userHTML = logueado
+    ? `
+    <li class="user-menu">
+      <img src="${imagen}" alt="Perfil" class="user-icon" onclick="toggleMenu()">
+      <div id="user-dropdown" class="user-dropdown hidden">
+        <div onclick="irPerfil()">👤 Perfil</div>
+        <div onclick="cerrarSesion()">Cerrar sesión</div>
+      </div>
+    </li>`
+    : `<li><a href="login.html" onclick="guardarRutaActual()">Login</a></li>`;
+
+  placeholder.innerHTML = `
     <header class="navbar">
       <div class="logo">
         <img src="img/logo-rana.png" alt="Sanita Logo">
         <span>Sanita</span>
       </div>
-      
+
       <div class="search-box-container">
-        <input type="text" placeholder="🔍 Buscar plantas medicinales..." class="search-box"/>
+        <input type="text" placeholder="🔍 Buscar plantas..." class="search-box"/>
       </div>
 
       <nav>
@@ -36,15 +53,23 @@ const userHTML = `
   `;
 });
 
+// Funciones globales (usadas en HTML dinámico)
 window.toggleMenu = function () {
   document.getElementById("user-dropdown").classList.toggle("hidden");
 };
 
-window.abrirPerfil = function () {
-  alert("Aquí abrirás el panel para cambiar nombre e imagen (lo agregamos en el siguiente paso).");
+window.irPerfil = function () {
+  window.location.href = "perfil.html";
 };
 
 window.cerrarSesion = function () {
   fetch('/logout')
-    .then(() => location.reload());
+    .then(() => {
+      localStorage.removeItem('ruta-previa');
+      window.location.href = window.location.pathname;
+    });
+};
+
+window.guardarRutaActual = function () {
+  localStorage.setItem("ruta-previa", window.location.pathname);
 };

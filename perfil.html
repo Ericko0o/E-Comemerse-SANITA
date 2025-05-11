@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sanita - Perfil</title>
+  <link rel="stylesheet" href="CSS/navbar.css" />
+  <link rel="stylesheet" href="CSS/perfil.css" />
+  <script src="JS/navbar.js" defer></script>
+  <script src="JS/perfil.js" defer></script>
+</head>
+<body>
+  <!-- Navbar insertada por JS -->
+  <div id="navbar-placeholder"></div>
+  <div class="navbar-spacing"></div>
+
+  <div class="perfil-container">
+    <h2>Mi Perfil</h2>
+    <div class="perfil-info">
+      <img id="imagen-perfil" src="img/usuario.png" alt="Imagen de perfil">
+
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" placeholder="Nombre">
+
+      <label for="imagen">URL de imagen:</label>
+      <input type="text" id="imagen" placeholder="URL de imagen">
+
+      <label for="correo">Correo:</label>
+      <input type="email" id="correo" disabled>
+
+      <button onclick="actualizarPerfil()">Guardar cambios</button>
+      <p class="status" id="status-msg"></p>
+    </div>
+  </div>
+</body>
+</html>

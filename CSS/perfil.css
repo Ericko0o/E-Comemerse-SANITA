@@ -1,0 +1,90 @@
+/* Reset general para evitar desbordes */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Prevenir scroll horizontal por cualquier desborde */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+
+body {
+  background:linear-gradient(rgba(29, 92, 29, 0.7), rgba(67, 91, 79, 0.7)) ,url('../img/fondoPerfil.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-family: 'Segoe UI', sans-serif;
+  color: rgb(46, 55, 39);
+  margin: 0;
+  min-height: 100vh;
+}
+
+.navbar-spacing {
+  height: 80px;
+}
+
+.perfil-container {
+  max-width: 420px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+.perfil-container h2 {
+  color: #283428;
+  margin-bottom: 20px;
+}
+
+.perfil-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.perfil-info img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  align-self: center;
+  margin-bottom: 10px;
+}
+
+.perfil-info input {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background-color: rgba(255,255,255,0.2);
+  color: rgb(0, 0, 0);
+}
+
+.perfil-info input:disabled {
+  opacity: 0.7;
+}
+
+.perfil-info button {
+  padding: 10px;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+
+.perfil-info button:hover {
+  background-color: #45a049;
+}
+
+.status {
+  font-size: 14px;
+  margin-top: 8px;
+  color: lightgreen;
+}

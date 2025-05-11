@@ -46,6 +46,18 @@ app.get('/inicio.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../inicio.html'));
 });
 
+app.get('/login.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../login.html'));
+});
+
+app.get('/registro.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../registro.html'));
+});
+
+app.get('/perfil.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../perfil.html'));
+});
+
 app.get('/catalogo.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../catalogo.html'));
 });
@@ -79,15 +91,33 @@ const db = new sqlite3.Database('./sanitadatabase.db');
 
 //Registro de usuario
 app.post('/registrar', (req, res) => {
-  const { nombre, correo, contrasena } = req.body;
-  db.run("INSERT INTO usuarios (nombre, correo, contrasena, imagen) VALUES (?, ?, ?, ?)",
-    [nombre, correo, contrasena, 'img/usuario.png'], // imagen por defecto
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
+  const { nombre, correo, contrasena, imagen } = req.body;
+
+  if (!nombre || !correo || !contrasena) {
+    return res.status(400).json({ error: "Faltan campos obligatorios." });
+  }
+
+  const imagenFinal = imagen && imagen.trim() !== "" ? imagen : "img/usuario.png";
+
+  db.run(
+    "INSERT INTO usuarios (nombre, correo, contrasena, imagen) VALUES (?, ?, ?, ?)",
+    [nombre, correo, contrasena, imagenFinal],
+    function (err) {
+      if (err) {
+        if (err.message.includes("UNIQUE constraint failed")) {
+          return res.status(400).json({ error: "El correo ya está registrado." });
+        }
+        return res.status(500).json({ error: err.message });
+      }
+
+      // Opcional: si estás usando express-session
       req.session.usuarioId = this.lastID;
-      res.json({ mensaje: 'Registro exitoso' });
-    });
+
+      res.json({ mensaje: "Registro exitoso" });
+    }
+  );
 });
+
 
 //Login de usuario
 app.post('/login', (req, res) => {
@@ -114,16 +144,23 @@ app.get('/usuario', (req, res) => {
   });
 });
 
-//Verificar sesion
-app.get('/usuario', (req, res) => {
+app.post('/usuario/actualizar', (req, res) => {
   if (!req.session.usuarioId) {
-    return res.json({ logueado: false });
+    return res.status(401).json({ error: 'No autenticado' });
   }
 
-  db.get("SELECT id, nombre, correo, imagen FROM usuarios WHERE id = ?", [req.session.usuarioId], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ logueado: true, usuario: row });
-  });
+  const { nombre, imagen } = req.body;
+
+  db.run(
+    "UPDATE usuarios SET nombre = ?, imagen = ? WHERE id = ?",
+    [nombre, imagen, req.session.usuarioId],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ mensaje: 'Datos actualizados correctamente' });
+    }
+  );
 });
 
 //Logout

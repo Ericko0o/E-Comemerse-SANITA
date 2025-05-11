@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sanita - Registro</title>
+  <link rel="stylesheet" href="CSS/navbar.css" />
+  <link rel="stylesheet" href="CSS/registro.css" />
+  <script src="JS/navbar.js" defer></script>
+  <script src="JS/registro.js" defer></script>
+</head>
+<body>
+  <!-- Navbar insertada por JS -->
+  <div id="navbar-placeholder"></div>
+
+  <div class="contenido-registro">
+    <div class="registro-form">
+      <h2>Crear Cuenta</h2>
+      <input type="text" id="nombre" placeholder="Nombre completo" required />
+      <input type="email" id="correo" placeholder="Correo electrónico" required />
+      <input type="password" id="contrasena" placeholder="Contraseña" required />
+      <input type="text" id="imagen" placeholder="URL de imagen (opcional)" />
+      <button onclick="registrarUsuario()">Registrarse</button>
+      <p class="status" id="status-msg"></p>
+    </div>
+  </div>
+</body>
+</html>

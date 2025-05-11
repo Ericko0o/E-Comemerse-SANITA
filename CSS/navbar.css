@@ -1,5 +1,4 @@
-/* Añade o reemplaza lo siguiente en navbar.css */
-
+/* --- Contenedor general de la navbar --- */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -14,16 +13,31 @@
   z-index: 100;
 }
 
-/* Nueva disposición central de la barra de búsqueda */
+/* --- Logo Sanita --- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+.logo img {
+  width: 23px;
+  height: 29px;
+}
+
+/* --- Contenedor centrado de la barra de búsqueda --- */
 .search-box-container {
   flex: 1;
   display: flex;
   justify-content: center;
+  margin-left: 376px;
 }
 
 .search-box {
   width: 60%;
-  max-width: 300px;
+  max-width: 450px;
   padding: 8px 14px;
   border-radius: 20px;
   border: none;
@@ -31,7 +45,7 @@
   background-color: rgba(255, 255, 255, 0.2);
   color: white;
   font-size: 14px;
-  transition: background 0.3s;
+  transition: background 0.3s, width 0.3s;
 }
 
 .search-box::placeholder {
@@ -40,18 +54,10 @@
 
 .search-box:focus {
   background-color: rgba(255, 255, 255, 0.3);
+  width: 65%;
 }
 
-/* Usuario o botón login */
-.user-profile img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-/* Navbar links */
+/* --- Enlaces de navegación --- */
 .nav-links {
   list-style: none;
   display: flex;
@@ -73,31 +79,20 @@
   color: white;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: white;
-  font-weight: bold;
-}
-
-.logo img {
-  width: 23px;
-  height: 29px;
-}
-
+/* --- Estilo para ícono de usuario (círculo) --- */
 .user-menu {
   position: relative;
 }
 
 .user-icon {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
 }
 
+/* --- Menú desplegable del usuario --- */
 .user-dropdown {
   position: absolute;
   top: 40px;
@@ -109,6 +104,7 @@
   overflow: hidden;
   z-index: 999;
   min-width: 120px;
+  font-size: 14px;
 }
 
 .user-dropdown div {
