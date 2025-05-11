@@ -1,111 +1,209 @@
 /* ===================================================
-   Reset general
+   Estilos Generales
    =================================================== */
-   * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+  background-color: #f5fff5;
+  color: #333;
+}
+
+/* ===================================================
+   Estilos para la sección Hero
+   =================================================== */
+.hero {
+  background-image: url('../img/fondo.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  padding-top: 80px;
+  color: white;
+  position: relative;
+  z-index: 0;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), #0D2618);
+  z-index: -1;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  bottom: -400px;
+  left: 0;
+  height: 400px;
+  width: 100%;
+  background: linear-gradient(to bottom, #0D2618, #0f3321);
+  z-index: -1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 60px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  color: #F9FAF8;
+}
+
+.highlight {
+  color: #A3E635;
+}
+
+.hero-frog {
+  width: 100px;
+  margin-top: 20px;
+}
+
+/* ===================================================
+   Carrusel
+   =================================================== */
+.carousel-container {
+  overflow: visible;
+  margin-top: 60px;
+  margin-bottom: 50px;
+}
+
+.carousel-track {
+  display: flex;
+  animation: scrollCarousel 30s linear infinite;
+}
+
+.carousel-track:hover {
+  animation-play-state: paused;
+}
+
+.carousel-card {
+  width: 600px;
+  height: 350px;
+  margin: 0;
+  border-radius: 0; /* sin esquinas redondeadas */
+  background-color: #333;
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-decoration: none;
+  color: white;
+  transition: transform 0.3s ease, z-index 0.3s ease;
+}
+
+.carousel-card:hover {
+  animation-play-state: paused;
+  transform: scale(1.1); /* Escala en ambos ejes */
+  z-index: 10;
+}
+
+.carousel-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.carousel-card-text {
+  position: relative;
+  z-index: 2;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: bold;
+  font-size: 18px;
+  color: #fff;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  background: none;
+  border-radius: 0; /* ← quitar bordes redondeados si había */
+}
+
+/* Animación */
+@keyframes scrollCarousel {
+  0% {
+    transform: translateX(0);
   }
-  
-  body {
-    background-color: #f5fff5;
-    color: #333;
+  100% {
+    transform: translateX(-100%); /* Desliza el carrusel al 100% de su longitud */
   }
-  
-  /* ===================================================
-     Estilos para la sección Hero
-     =================================================== */
-  
-  .hero {
-    background-image: url('../img/fondo.jpg');
-    background-size: cover;
-    background-position: center;
-    min-height: 100vh;
-    padding-top: 80px; /* Se mantiene el espaciado por la navbar */
-    color: white;
-    position: relative;
-  }
-  
-  .hero::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), #0D2618);
-    z-index: 1;
-  }
-  
-  .hero-content {
-    position: relative;
-    z-index: 2;
-    padding: 60px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: column; /* Asegura que en móviles la imagen y el texto estén centrados */
-    text-align: center; /* Centrado para que se vea bien en todas las pantallas */
-  }
-  
+}
+
+/* Duplicación dinámica con JavaScript (para asegurar que se desplace de forma infinita) */
+.carousel-track[data-duplicated="true"] {
+  animation: scrollCarousel 60s linear infinite;
+}
+
+/* ===================================================
+   Contenido adicional
+   =================================================== */
+
+.main-content {
+  padding: 100px 20px;
+  background-color: transparent; /* No fondo blanco */
+  text-align: left; /* Texto alineado a la izquierda */
+  color: #333; /* Color del texto */
+  z-index: 1; /* Asegurar que el contenido quede encima */
+}
+
+.main-title {
+  font-size: 4rem;
+  color: #F9FAF8;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.main-text {
+  font-size: 2rem;
+  color: #333;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: left; /* El texto no está centrado */
+}
+
+
+/* ===================================================
+   Media Queries
+   =================================================== */
+
+@media (max-width: 768px) {
   .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .carousel-container {
+    margin-top: 40px;
+  }
+
+  .carousel-card {
+    width: 300px;
+    height: 280px;
+  }
+
+  .main-title {
     font-size: 3rem;
-    color: #F9FAF8;
   }
-  
-  .highlight {
-    color: #A3E635;
+
+  .main-text {
+    font-size: 1.6rem;
   }
-  
-  .hero-frog {
-    width: 100px;
-    margin-top: 20px;
-  }
-  
-  /* ===================================================
-     Estilos para las tarjetas (Cards)
-     =================================================== */
-  
-  .card-container {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    padding: 40px;
-    flex-wrap: wrap;
-  }
-  
-  .card {
-    width: 160px;
-    height: 160px;
-    background-color: rgba(13, 38, 24, 0.7);
-    border-radius: 8px;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .card:hover {
-    transform: scale(1.05);
-  }
-  
-  /* ===================================================
-     Media Queries para pantallas pequeñas
-     =================================================== */
-  
-  @media (max-width: 768px) {
-    .hero-content h1 {
-      font-size: 2rem;
-    }
-  
-    .card-container {
-      flex-direction: column;
-      align-items: center;
-    }
-  
-    .card {
-      width: 120px;
-      height: 120px;
-    }
-  }
-  
+}

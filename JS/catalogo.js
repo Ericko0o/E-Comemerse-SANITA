@@ -17,15 +17,15 @@ function mostrarCategoria(categoria, tabElement) {
   const productosFiltrados = todosLosProductos.filter(prod => prod.categoria === categoria);
 
   productosFiltrados.forEach(prod => {
-    contenedor.innerHTML += `
-      <div class="producto">
-        <img src="/img/${prod.imagen.split('/').pop()}" alt="${prod.nombre}">
-        <div class="producto-info">
-          ${prod.nombre}
-          <span class="precio">S/.${prod.precio}</span>
-        </div>
-      </div>`;
-  });
+  contenedor.innerHTML += `
+  <a href="/producto.html?id=${prod.id}" class="producto">
+    <img src="/img/${prod.imagen.split('/').pop()}" alt="${prod.nombre}">
+    <div class="producto-info">
+      ${prod.nombre}
+      <span class="precio">S/.${prod.precio}</span>
+    </div>
+  </a>`;
+});
 
   document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
   tabElement.classList.add("active");
