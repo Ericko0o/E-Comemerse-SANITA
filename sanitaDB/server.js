@@ -27,6 +27,8 @@ app.use(session({
   saveUninitialized: true,
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..')));
+
 
 
 //------------------------------------------------------------------------
@@ -99,6 +101,82 @@ const db = new sqlite3.Database('./sanitadatabase.db');
 //-----------------------------------------------------
 
 
+db.run(`CREATE TABLE IF NOT EXISTS noticias (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  titulo TEXT,
+  contenido TEXT,
+  fecha TEXT,
+  imagen TEXT
+);`);
+
+console.log("Noticias anteriores eliminadas.");
+
+const noticias = [
+  {
+    titulo: "Beneficios de la Uña de Gato",
+    contenido: "La uña de gato tiene propiedades antiinflamatorias y estimula el sistema inmunológico.",
+    fecha: "2024-01-20",
+    imagen: "img/una-de-gato.jpg"
+  },
+  {
+    titulo: "Plantas cicatrizantes en la medicina andina",
+    contenido: "El llantén y el matico son reconocidos por su efectividad para curar heridas.",
+    fecha: "2024-02-10",
+    imagen: "img/matico.jpeg"
+  },
+  {
+    titulo: "Propiedades del eucalipto en la medicina natural",
+    contenido: "El eucalipto es utilizado para aliviar problemas respiratorios gracias a su efecto descongestionante.",
+    fecha: "2025-01-15",
+    imagen: "img/eucalipto.jpeg"
+  },
+  {
+    titulo: "El poder calmante de la valeriana",
+    contenido: "La valeriana es conocida por sus efectos sedantes, ideal para tratar el insomnio y la ansiedad.",
+    fecha: "2025-01-28",
+    imagen: "img/valeriana.jpeg"
+  },
+  {
+    titulo: "Muña: alivia dolores estomacales",
+    contenido: "La muña ayuda con la digestión y alivia cólicos estomacales, siendo tradicional en la sierra peruana.",
+    fecha: "2025-02-05",
+    imagen: "img/muna.jpg"
+  },
+  {
+    titulo: "Kion (jengibre): potente antiinflamatorio",
+    contenido: "El jengibre ayuda a reducir la inflamación y mejorar la circulación sanguínea.",
+    fecha: "2025-02-18",
+    imagen: "img/kion.jpg"
+  },
+  {
+    titulo: "Toronjil para calmar los nervios",
+    contenido: "El toronjil se usa para relajar los nervios y tratar problemas de ansiedad.",
+    fecha: "2025-03-01",
+    imagen: "img/toronjil.jpeg"
+  },
+  {
+    titulo: "Beneficios de la hierba luisa",
+    contenido: "La hierba luisa es excelente para problemas digestivos y tiene un aroma muy agradable.",
+    fecha: "2025-03-15",
+    imagen: "img/hierba_luisa.jpeg"
+  },
+  {
+    titulo: "La menta y su frescura medicinal",
+    contenido: "La menta ayuda a la digestión y también combate dolores de cabeza.",
+    fecha: "2025-04-01",
+    imagen: "img/menta.jpeg"
+  }
+];
+
+const stmt = db.prepare("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)");
+
+noticias.forEach(noticia => {
+  stmt.run(noticia.titulo, noticia.contenido, noticia.fecha, noticia.imagen);
+});
+
+stmt.finalize(() => {
+  console.log("Noticias insertadas correctamente.");
+});
 
 // --------------------- USUARIOS ---------------------
 // Endpoint para inicio de sesión
@@ -337,34 +415,48 @@ app.get('/api/productos/:id', (req, res) => {
 });
 // ----------------------NOTICIAS ---------------------------
 
+
 // Obtener todas las noticias
 app.get('/api/noticias', (req, res) => {
-  db.all('SELECT * FROM noticias', (err, rows) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Error interno del servidor' });
-    } else {
-      console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
-      res.json(rows);
-    }
-  });
-});
-
-// Obtener una sola noticia por ID
-app.get('/api/noticias/:id', (req, res) => {
- const id = req.params.id;
- db.get('SELECT * FROM noticias WHERE id = ?', [id], (err, row) => {
+ db.all('SELECT * FROM noticias', (err, rows) => {
    if (err) {
-     return res.status(500).json({ error: err.message });
-   }
-   if (row) {
-     res.json(row);
+     console.error(err);
+     res.status(500).json({ error: 'Error interno del servidor' });
    } else {
-     res.status(404).json({ error: 'Noticia no encontrada' });
+     console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
+     res.json(rows);
    }
  });
 });
 
+// Obtener una sola noticia por ID
+app.get('/api/noticia/:id', (req, res) => {
+   const id = req.params.id;
+   db.get('SELECT * FROM noticias WHERE id = ?', [id], (err, row) => {
+       if (err) {
+           console.error('Error al obtener la noticia:', err);
+           res.status(500).json({ error: 'Error del servidor' });
+       } else if (!row) {
+           res.status(404).json({ error: 'Noticia no encontrada' });
+       } else {
+           res.json(row);
+       }
+   });
+});
+
+
+// Obtener todas las noticias
+app.get('/api/noticias', (req, res) => {
+ db.all('SELECT * FROM noticias', (err, rows) => {
+   if (err) {
+     console.error(err);
+     res.status(500).json({ error: 'Error interno del servidor' });
+   } else {
+     console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
+     res.json(rows);
+   }
+ });
+});
 
 // --------------------- PUBLICACIONES ----------------------
 
