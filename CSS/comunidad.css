@@ -1,4 +1,4 @@
-/* Reset general - importante para todas las páginas */
+/* Reset general */
 * {
   margin: 0;
   padding: 0;
@@ -6,76 +6,49 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
-/* Fondo general del body */
+/* Fondo del body */
 body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
   background: 
     linear-gradient(rgba(0, 60, 0, 0.6), rgba(0, 60, 0, 0.6)),
     url('../IMG/fondoComunidad.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  background-repeat: no-repeat;
-  color: #333;
+  color: #f0f0f0;
 }
 
-/* ===================================================
-   Estilos para el contenido de la comunidad
-   =================================================== */
-
-/* Comunidad */
+/* Contenedor principal */
 .comunidad {
-  max-width: 900px;
+  max-width: 1100px;
   margin: 100px auto 2rem;
   padding: 2rem;
-  background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4px);
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
   animation: fadeIn 0.6s ease-in-out;
 }
 
+/* Título */
 .comunidad-content h1 {
-  font-size: 2.5rem;
-  color: #2e7d32;
+  font-size: 2.8rem;
+  color: #b5fcb5;
+  margin-bottom: 1rem;
 }
 
 .comunidad-content p {
-  line-height: 1.6;
-  margin-top: 1rem;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
 }
 
-/* Foro */
-.foro {
-  margin-top: 2rem;
-  background-color: #f9fdf9;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.foro h2 {
-  color: #4caf50;
-}
-
-.foro ul {
-  list-style-type: none;
-}
-
-.foro ul li {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #ddd;
-}
-
-/* Nueva estructura de comunidad con columnas */
+/* Layout de columnas */
 .comunidad-layout {
   display: flex;
   gap: 2rem;
   margin-top: 2rem;
 }
 
-/* Columna principal de posts */
+/* Columna de posts */
 .posts {
   flex: 3;
   display: flex;
@@ -86,33 +59,86 @@ body {
 /* Comentarios recientes */
 .comentarios-recientes {
   flex: 2;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4px);
+  background-color: rgba(30, 50, 30, 0.6);
+  padding: 1.2rem;
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Tarjeta individual */
+/* Títulos secundarios */
+.posts h2, .comentarios-recientes h2 {
+  color: #a0ffb0;
+  font-size: 1.4rem;
+}
+
+/* Post */
 .post {
-  background-color: #f9fdf9;
-  padding: 1rem;
+  background-color: rgba(30, 50, 30, 0.6);
+  color: #f0f0f0;
+  padding: 1.2rem;
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+/* Botón de comentarios */
+.mostrar-comentarios {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Área de comentarios debajo de cada post */
+.area-comentarios {
+  margin-top: 1rem;
+  display: none;
+}
+
+.area-comentarios .comentario {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Comentario individual */
+.area-comentarios input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: none;
+  margin-top: 0.5rem;
+}
+
+.area-comentarios button {
+  margin-top: 0.5rem;
+  padding: 0.4rem 1rem;
+  background-color: #81c784;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Comentarios recientes */
 .comentario {
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #ddd;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
 }
 
-.comentario:last-child {
-  border-bottom: none;
-}
-
-/* Animación de entrada */
+/* Animación */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -122,4 +148,39 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Barra lateral de acciones */
+.acciones-laterales {
+  position: fixed;
+  right: 30px;
+  top: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.acciones-laterales button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.post-header .avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #b5fcb5;
 }

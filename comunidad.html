@@ -7,16 +7,29 @@
   <link rel="stylesheet" href="CSS/navbar.css" />
   <link rel="stylesheet" href="CSS/comunidad.css" />
   <script src="JS/navbar.js" defer></script>
+  <script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".mostrar-comentarios").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const area = btn.nextElementSibling;
+          area.style.display = area.style.display === "none" ? "block" : "none";
+        });
+      });
+    });
+
+    function buscar() {
+      const termino = prompt("¿Qué deseas buscar?");
+      if (termino) {
+        alert("Buscando: " + termino); // aquí puedes integrar lógica real
+      }
+    }
+  </script>
 </head>
 <body>
 
-  <!-- Navbar insertada por JS -->
   <div id="navbar-placeholder"></div>
-
-  <!-- Espaciado debajo de la navbar -->
   <div style="height: 80px;"></div>
 
-  <!-- Comunidad Section -->
   <section class="comunidad">
 
     <div class="comunidad-content">
@@ -25,65 +38,75 @@
     </div>
 
     <div class="comunidad-layout">
-      
-      <!-- Columna de Posts -->
+
+      <!-- Posts -->
       <div class="posts">
+
         <div class="post">
-          <h2>camilamendez</h2>
-          <p>Compré sangre de grado para tratar una herida y fue increíble ver lo rápido que cicatrizó. Me encanta que Sanita ofrezca productos tan naturales y efectivos. ¡Sigan así!</p>
+          <div class="post-header">
+            <img src="IMG/user1.jpg" alt="Usuario camilamendez" class="avatar" />
+            <h2>camilamendez</h2>
+          </div>
+          <p>Compré sangre de grado para tratar una herida y fue increíble ver lo rápido que cicatrizó.</p>
           <p><strong>Sangre de grado</strong></p>
+          <button class="mostrar-comentarios">+</button>
+
+          <div class="area-comentarios">
+            <div class="comentario">¡Me pasó lo mismo! La usé en una quemadura leve.</div>
+            <input type="text" placeholder="Añadir comentario..." />
+            <button>Enviar</button>
+          </div>
         </div>
 
+
         <div class="post">
+          <div class="post-header">
+          <img src="IMG/user1.jpg" alt="Usuario rodrigo_23" class="avatar" />
           <h2>rodrigo_23</h2>
-          <p>Leí en su sección de noticias sobre el matíco y decidí probarlo para aliviar un dolor estomacal. ¡Gracias, Sanita!</p>
+          </div>
+          <p>Leí sobre el matíco y decidí probarlo para aliviar un dolor estomacal.</p>
           <p><strong>Matíco y digestión</strong></p>
+          <button class="mostrar-comentarios">+</button>
+          <div class="area-comentarios">
+            <div class="comentario">Yo lo uso como infusión, es excelente.</div>
+            <input type="text" placeholder="Añadir comentario..." />
+            <button>Enviar</button>
+          </div>
         </div>
 
         <div class="post">
+          <div class="post-header">
+          <img src="IMG/user1.jpg" alt="Usuario alejandragomez" class="avatar" />
           <h2>alejandragomez</h2>
-          <p>La flor de arena ha mejorado mi digestión de manera notable. Estoy feliz de encontrar una tienda como Sanita.</p>
+          </div>
+          <p>La flor de arena ha mejorado mi digestión de manera notable.</p>
           <p><strong>Flor de arena</strong></p>
+          <button class="mostrar-comentarios">+</button>
+          <div class="area-comentarios">
+            <input type="text" placeholder="Añadir comentario..." />
+            <button>Enviar</button>
+          </div>
         </div>
+
       </div>
 
-      <!-- Columna de Comentarios Recientes -->
+      <!-- Comentarios recientes -->
       <div class="comentarios-recientes">
         <h2>Comentarios recientes</h2>
-
-        <div class="comentario">
-          <strong>camilamendez:</strong> Compré sangre de grado para tratar una herida y fue increíble ver lo rápido que cicatrizó.
-        </div>
-
-        <div class="comentario">
-          <strong>rodrigo_23:</strong> Excelente información sobre el matíco, me ayudó muchísimo con el dolor estomacal.
-        </div>
-
-        <div class="comentario">
-          <strong>alejandragomez:</strong> La flor de arena realmente me ayudó con mi digestión.
-        </div>
+        <div class="comentario"><strong>camilamendez:</strong> Compré sangre de grado y me encantó.</div>
+        <div class="comentario"><strong>rodrigo_23:</strong> Excelente información sobre el matíco.</div>
+        <div class="comentario"><strong>alejandragomez:</strong> La flor de arena me ayudó mucho.</div>
       </div>
 
     </div>
-
   </section>
+
+  <!-- Barra lateral -->
+  <div class="acciones-laterales">
+    <button onclick="location.href='index.html'">🏠</button>
+    <button onclick="buscar()">🔍</button>
+    <button onclick="location.href='nueva-publicacion.html'">➕</button>
+  </div>
 
 </body>
 </html>
-
- <!-- Navbar insertada por JS -->
-   <!-- Navbar insertada por JS -->
-     <!-- Navbar insertada por JS -->
-
-      <!-- Navbar insertada por JS -->
-        <!-- Navbar insertada por JS -->
-          <!-- Navbar insertada por JS -->
-            <!-- Navbar insertada por JS -->
-
-             <!-- Navbar insertada por JS -->
-               <!-- Navbar insertada por JS -->
-                 <!-- Navbar insertada por JS -->
-                   <!-- Navbar insertada por JS -->
-                     <!-- Navbar insertada por JS -->
-                       <!-- Navbar insertada por JS -->
-                        
