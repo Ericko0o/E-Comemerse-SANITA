@@ -28,7 +28,8 @@ async function agregarAlCarrito(idProducto) {
   if (!usuario || !usuario.logueado) {
     alert("Debe iniciar sesión para agregar productos al carrito.");
     const currentUrl = window.location.href;
-    window.location.href = `/login.html?redirect=${encodeURIComponent(currentUrl)}`;
+    localStorage.setItem("ruta-previa", currentUrl);
+    window.location.href = "/login.html";
     return;
   }
 
