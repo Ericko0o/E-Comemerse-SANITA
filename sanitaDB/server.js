@@ -26,6 +26,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 //------------------------------------------------------------------------
@@ -143,6 +144,21 @@ db.get("SELECT COUNT(*) as count FROM noticias", (err, row) => {
       "2024-02-10",
       "img/matico.jpeg"
     ]);
+    db.run("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)", [
+      "Plantas cicatrizantes en la medicina andina",
+      "El llantén y el matico son reconocidos por su efectividad para curar heridas.",
+      "2024-02-10",
+      "img/matico.jpeg"
+    ]);
+    
+    db.run("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)", [
+      "Plantas cicatrizantes en la medicina andina",
+      "El llantén y el matico son reconocidos por su efectividad para curar heridas.",
+      "2024-02-10",
+      "img/sabila.jpeg"
+    ]);
+    
+
   }
 });
 
@@ -226,7 +242,7 @@ db.serialize(() => {
         });
       });
 
-      console.log("✅ Datos de plantas insertados correctamente.");
+      console.log(" Datos de plantas insertados correctamente.");
     } else {
       console.log("ℹ La tabla 'informacion' ya tiene datos, no se insertó nada nuevo.");
     }
@@ -475,6 +491,34 @@ app.get('/api/productos/:id', (req, res) => {
   });
 });
 // ----------------------NOTICIAS ---------------------------
+
+// Obtener todas las noticias
+app.get('/api/noticias', (req, res) => {
+  db.all('SELECT * FROM noticias', (err, rows) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    } else {
+      console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
+      res.json(rows);
+    }
+  });
+});
+
+// Obtener una sola noticia por ID
+app.get('/api/noticias/:id', (req, res) => {
+ const id = req.params.id;
+ db.get('SELECT * FROM noticias WHERE id = ?', [id], (err, row) => {
+   if (err) {
+     return res.status(500).json({ error: err.message });
+   }
+   if (row) {
+     res.json(row);
+   } else {
+     res.status(404).json({ error: 'Noticia no encontrada' });
+   }
+ });
+});
 
 
 // --------------------- PUBLICACIONES ----------------------
