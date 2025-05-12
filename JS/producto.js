@@ -27,7 +27,8 @@ async function agregarAlCarrito(idProducto) {
   const usuario = await verificarUsuario();
   if (!usuario || !usuario.logueado) {
     alert("Debe iniciar sesión para agregar productos al carrito.");
-    window.location.href = "/login.html";
+    const currentUrl = window.location.href;
+    window.location.href = `/login.html?redirect=${encodeURIComponent(currentUrl)}`;
     return;
   }
 

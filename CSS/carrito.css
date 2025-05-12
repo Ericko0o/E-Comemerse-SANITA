@@ -14,42 +14,66 @@ body {
 }
 
 .carrito-container {
-  padding: 30px;
+  padding: 40px;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .carrito {
   display: flex;
   justify-content: space-between;
-  background-color: rgba(0,0,0,0.7);
-  padding: 20px;
-  border-radius: 10px;
+  gap: 40px;
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  flex-wrap: wrap;
 }
 
 table {
   width: 65%;
-  color: white;
+  color: #fff;
   border-collapse: collapse;
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 th, td {
-  padding: 15px;
+  padding: 18px;
   text-align: center;
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 1em;
+}
+
+th {
+  background-color: rgba(255,255,255,0.05);
 }
 
 .resumen {
   width: 30%;
-  background-color: #333;
-  padding: 20px;
-  border-radius: 10px;
+  min-width: 260px;
+  background-color: rgba(0,0,0,0.4);
+  padding: 25px;
+  border-radius: 16px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .btn-comprar {
-  background-color: #4CAF50;
-  padding: 10px 20px;
+  background-color: #2ecc71;
+  padding: 14px;
   border: none;
   color: white;
+  font-size: 1em;
   font-weight: bold;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-comprar:hover {
+  background-color: #27ae60;
 }
