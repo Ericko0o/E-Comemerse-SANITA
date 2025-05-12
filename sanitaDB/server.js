@@ -181,98 +181,57 @@ db.get("SELECT COUNT(*) as count FROM resumen_inicio", (err, row) => {
 
 //------------ INFORMACION ----------------------------
 
-db.run(`CREATE TABLE IF NOT EXISTS informacion (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nombre TEXT,
-  descripcion TEXT,
-  beneficios TEXT,
-  uso TEXT,
-  imagen TEXT
-)`);
+db.serialize(() => {
+  // Crear tabla si no existe
+  db.run(`CREATE TABLE IF NOT EXISTS informacion (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nombre TEXT,
+    descripcion TEXT,
+    beneficios TEXT,
+    uso TEXT,
+    imagen TEXT
+  )`, (err) => {
+    if (err) {
+      console.error("❌ Error al crear la tabla:", err.message);
+      return;
+    }
+  });
 
-db.get("SELECT COUNT(*) as count FROM informacion", (err, row) => {
-  if (row.count === 0) {
-    db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-      "Sangre de Grado",
-      "Resina cicatrizante extraída del árbol Croton lechleri.",
-      "Regeneración celular, antiséptico, cicatrizante rápido.",
-      "Aplicación tópica directa en heridas.",
-      "img/sangre-de-grado.jpg"
-    ]);
+  // Verificar si ya hay registros
+  db.get("SELECT COUNT(*) as count FROM informacion", (err, row) => {
+    if (err) {
+      console.error("❌ Error al contar registros en 'informacion':", err.message);
+      return;
+    }
 
-    db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-      "Matico",
-      "Planta medicinal usada en la medicina tradicional andina.",
-      "Antiinflamatorio, digestivo, cicatrizante.",
-      "Infusión para problemas digestivos y lavado de heridas.",
-      "img/matico.jpeg"
-    ]);
+    if (row.count === 0) {
+      const plantas = [
+        ["Sangre de Grado", "Resina cicatrizante extraída del árbol Croton lechleri.", "Regeneración celular, antiséptico, cicatrizante rápido.", "Aplicación tópica directa en heridas.", "img/sangre-de-grado.jpg"],
+        ["Matico", "Planta medicinal usada en la medicina tradicional andina.", "Antiinflamatorio, digestivo, cicatrizante.", "Infusión para problemas digestivos y lavado de heridas.", "img/matico.jpeg"],
+        ["Llanten", "Hierba usada para afecciones respiratorias y heridas.", "Descongestionante, cicatrizante, antibacteriano.", "En infusión o emplasto sobre heridas.", "img/llanten.jpg"],
+        ["Flor de Arena", "Hierba andina reconocida por sus propiedades desinflamantes.", "Alivia problemas digestivos, úlceras, e inflamación estomacal.", "En infusión después de las comidas o como remedio estomacal.", "img/flor-de-arena.jpg"],
+        ["Chilca", "Planta medicinal nativa usada en baños medicinales y en infusión.", "Cicatrizante, desinfectante, alivia reumatismo y dolores musculares.", "Aplicación en cataplasmas o infusión para uso interno.", "img/chilca.jpg"],
+        ["Uña de Gato", "Liana amazónica conocida por fortalecer el sistema inmunológico.", "Antiinflamatoria, antiviral, estimula defensas.", "En cápsulas o infusión para consumo regular.", "img/una-de-gato.jpg"],
+        ["Ayahuasca", "Planta ancestral usada tradicionalmente en rituales chamánicos.", "Potente depurador físico y espiritual.", "Sólo bajo supervisión, no recomendada para uso libre.", "img/ayahuasca.jpeg"],
+        ["Sacha Inchi", "Semilla amazónica rica en omega 3, 6 y 9.", "Reduce colesterol, mejora piel y circulación.", "Consumido como aceite o tostado en snacks.", "img/sacha-inchi.jpg"],
+        ["Muña", "Planta andina con aroma mentolado usada para digestión.", "Alivia gases, náuseas y mejora respiración.", "Tomada en infusión o en vapor.", "img/muna.jpg"],
+        ["Chuchuhuasi", "Corteza de árbol amazónico de uso medicinal tradicional.", "Alivia reumatismo, dolores musculares, estimula el sistema inmune.", "Macerado en licor o cocción.", "img/chuchuhuasi.jpg"]
+      ];
 
-    db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-      "Llanten",
-      "Hierba usada para afecciones respiratorias y heridas.",
-      "Descongestionante, cicatrizante, antibacteriano.",
-      "En infusión o emplasto sobre heridas.",
-      "img/llanten.jpg"
-    ]);
-  }
+      plantas.forEach(p => {
+        db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", p, (err) => {
+          if (err) {
+            console.error("❌ Error al insertar planta:", err.message);
+          }
+        });
+      });
+
+      console.log("✅ Datos de plantas insertados correctamente.");
+    } else {
+      console.log("ℹ La tabla 'informacion' ya tiene datos, no se insertó nada nuevo.");
+    }
+  });
 });
-
-db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-  "Flor de Arena",
-  "Hierba andina reconocida por sus propiedades desinflamantes.",
-  "Alivia problemas digestivos, úlceras, e inflamación estomacal.",
-  "En infusión después de las comidas o como remedio estomacal.",
-  "img/flor-de-arena.jpg"
-]);
-
-db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-  "Chilca",
-  "Planta medicinal nativa usada en baños medicinales y en infusión.",
-  "Cicatrizante, desinfectante, alivia reumatismo y dolores musculares.",
-  "Aplicación en cataplasmas o infusión para uso interno.",
-  "img/chilca.jpg"
-]);
-
-db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-  "Uña de Gato",
-  "Liana amazónica conocida por fortalecer el sistema inmunológico.",
-  "Antiinflamatoria, antiviral, estimula defensas.",
-  "En cápsulas o infusión para consumo regular.",
-  "img/una-de-gato.jpg"
-]);
-
-db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-  "Ayahuasca",
-  "Planta ancestral usada tradicionalmente en rituales chamánicos.",
-  "Potente depurador físico y espiritual.",
-  "Sólo bajo supervisión, no recomendada para uso libre.",
-  "img/ayahuasca.jpeg"
-]);
-
-db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-  "Sacha Inchi",
-  "Semilla amazónica rica en omega 3, 6 y 9.",
-  "Reduce colesterol, mejora piel y circulación.",
-  "Consumido como aceite o tostado en snacks.",
-  "img/sacha-inchi.jpg"
-]);
-
-db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-  "Muña",
-  "Planta andina con aroma mentolado usada para digestión.",
-  "Alivia gases, náuseas y mejora respiración.",
-  "Tomada en infusión o en vapor.",
-  "img/muna.jpg"
-]);
-
-db.run("INSERT INTO informacion (nombre, descripcion, beneficios, uso, imagen) VALUES (?, ?, ?, ?, ?)", [
-  "Chuchuhuasi",
-  "Corteza de árbol amazónico de uso medicinal tradicional.",
-  "Alivia reumatismo, dolores musculares, estimula el sistema inmune.",
-  "Macerado en licor o cocción.",
-  "img/chuchuhuasi.jpg"
-]);
 
 
 
@@ -515,48 +474,13 @@ app.get('/api/productos/:id', (req, res) => {
     }
   });
 });
-
-//------------------------INFORMACION -----------------------
-
-// Obtener las 3 plantas
-
-app.get('/api/plantas', (req, res) => {
-  db.all("SELECT id, nombre, imagen FROM informacion LIMIT 3", (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-// Obtener planta por ID
-
-app.get('/api/plantas/:id', (req, res) => {
-  db.get("SELECT * FROM informacion WHERE id = ?", [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!row) return res.status(404).json({ error: "Planta no encontrada" });
-    res.json(row);
-  });
-});
-
-// Busqueda
-
-app.get('/api/buscar', (req, res) => {
-  const q = req.query.q || '';
-  db.all("SELECT id, nombre, imagen FROM informacion WHERE nombre LIKE ?", [`%${q}%`], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
+// ----------------------NOTICIAS ---------------------------
 
 
+// --------------------- PUBLICACIONES ----------------------
 
 
-// -----------------------NOTICIAS --------------------------
-
-
-// -----------------------PUBLICACIONES ---------------------
-
-
-//------------------------HILOS -----------------------------
+//--------------------- HILOS -------------------------------
 
 
 
