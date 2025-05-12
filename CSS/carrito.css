@@ -1,66 +1,55 @@
-/* Reset general - importante para todas las páginas */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  body {
-    background-color: #f5fff5;
-    color: #333;
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
 
-   body {
-    margin: 0;
-    font-family: sans-serif;
-    background: 
-      linear-gradient(rgba(0, 60, 0, 0.7), rgba(0, 60, 0, 0.7)),
-      url('../IMG/fondo catalogo.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-  }
+body {
+  background: linear-gradient(rgba(0, 60, 0, 0.7), rgba(0, 60, 0, 0.7)), url('../IMG/fondo catalogo.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #fff;
+}
 
-  .carrito-container {
-    background-image: url('ruta/a/tu/imagen.jpg');
-    background-size: cover;
-    padding: 30px;
-    color: white;
-  }
+.carrito-container {
+  padding: 30px;
+}
 
-  .carrito {
-      display: flex;
-      justify-content: space-between;
-      background-color: rgba(0,0,0,0.7);
-      padding: 20px;
-      border-radius: 10px;
-  }
+.carrito {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(0,0,0,0.7);
+  padding: 20px;
+  border-radius: 10px;
+}
 
-  table {
-      width: 65%;
-      color: white;
-  }
+table {
+  width: 65%;
+  color: white;
+  border-collapse: collapse;
+}
 
-  th, td {
-      padding: 15px;
-      text-align: center;
-      border-bottom: 1px solid #555;
-  }
+th, td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #555;
+}
 
-  .resumen {
-      width: 30%;
-      background-color: #333;
-      padding: 20px;
-      border-radius: 10px;
-  }
+.resumen {
+  width: 30%;
+  background-color: #333;
+  padding: 20px;
+  border-radius: 10px;
+}
 
-  .btn-comprar {
-      background-color: #4CAF50;
-      padding: 10px 20px;
-      border: none;
-      color: white;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-  }
+.btn-comprar {
+  background-color: #4CAF50;
+  padding: 10px 20px;
+  border: none;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+}
