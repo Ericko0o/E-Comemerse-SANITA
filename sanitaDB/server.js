@@ -26,6 +26,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 //------------------------------------------------------------------------
@@ -94,89 +95,8 @@ app.get('/', (req, res) => {
 const db = new sqlite3.Database('./sanitadatabase.db');
 
 
-db.run(`CREATE TABLE IF NOT EXISTS noticias (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  titulo TEXT,
-  contenido TEXT,
-  fecha TEXT,
-  imagen TEXT
-)`);
 
-db.run(`CREATE TABLE IF NOT EXISTS publicaciones (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  usuario_id INTEGER,
-  titulo TEXT,
-  contenido TEXT,
-  fecha TEXT,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-)`);
-
-db.run(`CREATE TABLE IF NOT EXISTS hilos (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  publicacion_id INTEGER,
-  usuario_id INTEGER,
-  contenido TEXT,
-  fecha TEXT,
-  FOREIGN KEY (publicacion_id) REFERENCES publicaciones(id),
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-)`);
-
-db.run(`CREATE TABLE IF NOT EXISTS resumen_inicio (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  tipo TEXT, -- 'noticia' o 'publicacion'
-  referencia_id INTEGER
-)`);
-
-
-db.get("SELECT COUNT(*) as count FROM noticias", (err, row) => {
-  if (row.count === 0) {
-    db.run("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)", [
-      "Beneficios de la Uña de Gato",
-      "La uña de gato tiene propiedades antiinflamatorias y estimula el sistema inmunológico.",
-      "2024-01-20",
-      "img/una-de-gato.jpg"
-    ]);
-
-    db.run("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)", [
-      "Plantas cicatrizantes en la medicina andina",
-      "El llantén y el matico son reconocidos por su efectividad para curar heridas.",
-      "2024-02-10",
-      "img/matico.jpeg"
-    ]);
-  }
-});
-
-db.get("SELECT COUNT(*) as count FROM publicaciones", (err, row) => {
-  if (row.count === 0) {
-    db.get("SELECT id FROM usuarios LIMIT 1", (err, usuario) => {
-      if (usuario) {
-        db.run("INSERT INTO publicaciones (usuario_id, titulo, contenido, fecha) VALUES (?, ?, ?, ?)", [
-          usuario.id,
-          "Mi experiencia con el llantén",
-          "Utilicé llantén para una quemadura leve y me ayudó a sanar en pocos días.",
-          "2024-03-05"
-        ], function(err) {
-          const publicacionId = this.lastID;
-          db.run("INSERT INTO hilos (publicacion_id, usuario_id, contenido, fecha) VALUES (?, ?, ?, ?)", [
-            publicacionId,
-            usuario.id,
-            "Gracias por compartir, yo también he tenido buenos resultados con el llantén.",
-            "2024-03-06"
-          ]);
-        });
-      }
-    });
-  }
-});
-
-db.get("SELECT COUNT(*) as count FROM resumen_inicio", (err, row) => {
-  if (row.count === 0) {
-    db.run("INSERT INTO resumen_inicio (tipo, referencia_id) VALUES ('noticia', 1)");
-    db.run("INSERT INTO resumen_inicio (tipo, referencia_id) VALUES ('noticia', 2)");
-    db.run("INSERT INTO resumen_inicio (tipo, referencia_id) VALUES ('publicacion', 1)");
-  }
-});
-
+//-----------------------------------------------------
 
 
 
@@ -204,7 +124,6 @@ app.post('/registrar', (req, res) => {
         return res.status(500).json({ error: err.message });
       }
 
-      // Opcional: si estás usando express-session
       req.session.usuarioId = this.lastID;
 
       res.json({ mensaje: "Registro exitoso" });
@@ -417,6 +336,34 @@ app.get('/api/productos/:id', (req, res) => {
   });
 });
 // ----------------------NOTICIAS ---------------------------
+
+// Obtener todas las noticias
+app.get('/api/noticias', (req, res) => {
+  db.all('SELECT * FROM noticias', (err, rows) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    } else {
+      console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
+      res.json(rows);
+    }
+  });
+});
+
+// Obtener una sola noticia por ID
+app.get('/api/noticias/:id', (req, res) => {
+ const id = req.params.id;
+ db.get('SELECT * FROM noticias WHERE id = ?', [id], (err, row) => {
+   if (err) {
+     return res.status(500).json({ error: err.message });
+   }
+   if (row) {
+     res.json(row);
+   } else {
+     res.status(404).json({ error: 'Noticia no encontrada' });
+   }
+ });
+});
 
 
 // --------------------- PUBLICACIONES ----------------------

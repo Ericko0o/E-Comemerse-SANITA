@@ -1,119 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sanita - Noticias</title>
-  <link rel="stylesheet" href="CSS/navbar.css" />
-  <link rel="stylesheet" href="CSS/noticias.css" />
-  <script src="JS/navbar.js" defer></script>
-  <script src="JS/noticias.js" defer></script>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Sanita - Inicio</title>
+ <link rel="stylesheet" href="CSS/navbar.css" />
+ <link rel="stylesheet" href="CSS/inicio.css" />
+ <link rel="stylesheet" href="CSS/noticias.css" />
+ <script src="JS/navbar.js" defer></script>
+ <script src="JS/inicio.js" defer></script> <!-- Enlace al archivo JS -->
+ <script src="JS/noticias.js" defer></script>
 </head>
-
 <body>
-  <!-- Navbar insertada por JS -->
-  <div id="navbar-placeholder"></div>
-  
-  <!-- Contenido principal -->
-  <main class="noticias-main">
 
-    <!-- Noticia destacada -->
-    <section class="noticia-destacada">
-      <div class="contenido">
-        <div class="imagen"></div>
-        <div class="texto">
-          <h2>La Valeriana: Calmante natural para el insomnio</h2>
-          <p class="subtitulo">Publicado el 15 de abril, 2025</p>
-          <p>Estudios recientes destacan la efectividad de la valeriana como remedio natural para reducir el estrés y combatir el insomnio sin provocar efectos secundarios graves.</p>
-        </div>
+
+ <!-- Navbar insertada por JS -->
+ <div id="navbar-placeholder"></div>
+
+
+ <!-- Fondo general -->
+ <div class="noticias-fondo">
+
+
+   <!-- NOTICIA PRINCIPAL -->
+   <div class="bloque-translucido">
+     <div class="noticia-principal tarjeta-blanca">
+       <div class="noticia-img" style="background-image: url('img/noticia-destacada.jpg');"></div>
+       <div class="noticia-texto">
+         <h2>Título de la Noticia Principal</h2>
+         <h3>Subtítulo atractivo</h3>
+         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur efficient emerging, minim veniam anim aute carefully curated Ginza conversation exquisite perfect nostrud nisi intricate Content.</p>
+       </div>
+     </div>
+   </div>
+
+
+   <!-- OTRAS NOTICIAS -->
+   <div class="bloque-translucido">
+     <div class="contenedor-otras-noticias">
+       <div class="titulo-secundario">
+         <h2>Otras Noticias</h2>
+         <h3>Subcategoría</h3>
+       </div>
+
+
+
+      <div class="grid-noticias">
+  <!-- Aquí se insertarán dinámicamente las tarjetas -->
+   <!-- Aquí se insertarán dinámicamente las tarjetas -->
+    <!-- Aquí se insertarán dinámicamente las tarjetas -->
       </div>
-    </section>
+   </div>
 
-<!-- Noticias secundarias -->
-<section class="noticias-grid-container">
-  <h2>Otras Noticias</h2>
-  <p class="subtitulo">Últimas novedades sobre plantas medicinales</p>
 
-  <div class="noticias-grid" id="noticias-grid">
-    <!-- Noticias visibles al inicio -->
-    <div class="noticia-item" style="background-image: url('img/eucalipto.jpeg');">
-      <h3>El eucalipto y su rol en el alivio respiratorio</h3>
-      <p>Investigaciones respaldan su uso como descongestionante natural.</p>
-    </div>
-
-    <div class="noticia-item" style="background-image: url('img/manzanilla.webp');">
-      <h3>La manzanilla ayuda a la digestión</h3>
-      <p>Una taza después de comer mejora el confort digestivo.</p>
-    </div>
-
-    <div class="noticia-item" style="background-image: url('img/alcachofa.jpeg');">
-      <h3>Alcachofa: desintoxicante natural del hígado</h3>
-      <p>Estimula la producción de bilis y limpia el organismo.</p>
-    </div>
-
-    <div class="noticia-item" style="background-image: url('img/menta.jpeg');">
-      <h3>Menta: alivio para dolores de cabeza</h3>
-      <p>El aceite de menta ayuda a reducir migrañas.</p>
-    </div>
-
-    <div class="noticia-item" style="background-image: url('img/llanten.jpeg');">
-      <h3>Llantén contra infecciones bucales</h3>
-      <p>Ideal para enjuagues naturales antibacterianos.</p>
-    </div>
-
-    <div class="noticia-item" style="background-image: url('img/valeriana.jpeg');">
-      <h3>Valeriana: aliada del sistema nervioso</h3>
-      <p>Un relajante efectivo en terapias naturales.</p>
-    </div>
-
-    <!-- Noticias ocultas inicialmente -->
-    <div class="noticia-item hidden" style="background-image: url('img/sabila.jpeg');">
-      <h3>Sábila: aliada para la piel</h3>
-      <p>La sábila ayuda en la regeneración de tejidos y quemaduras.</p>
-    </div>
-
-    <div class="noticia-item hidden" style="background-image: url('img/romero.jpeg');">
-      <h3>Romero: mejora la memoria</h3>
-      <p>Investigaciones confirman su efecto positivo en la concentración.</p>
-    </div>
-
-    <div class="noticia-item hidden" style="background-image: url('img/anis.jpg');">
-      <h3>Anís: alivio de cólicos</h3>
-      <p>Planta digestiva tradicionalmente usada en infusiones.</p>
-    </div>
-
-    <div class="noticia-item hidden" style="background-image: url('img/DienteDeLeon.jpg');">
-      <h3>Diente de León: limpieza del hígado</h3>
-      <p>Conocido por su efecto diurético y depurativo natural.</p>
-    </div>
-
-  </div>
-
-  <!-- Botón ver más -->
-  <a href="#" class="btn-ver-mas" id="ver-mas-btn">Ver más noticias</a>
-</section>
-
-  </main>
-
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 Sanita - Venta de Plantas Medicinales. Todos los derechos reservados.</p>
-  </footer>
-
-  <script>
-    const botonVerMas = document.getElementById('ver-mas-btn');
-    const noticiasOcultas = document.querySelectorAll('.noticia-item.hidden');
-  
-    botonVerMas.addEventListener('click', function(e) {
-      e.preventDefault();
-      noticiasOcultas.forEach(function(noticia) {
-        noticia.classList.remove('hidden');
-      });
-      botonVerMas.style.display = 'none'; // Ocultar el botón después
-    });
-    // Ocultar el botón después
-    // Ocultar el botón después
-  </script>
-
+ </div>
 </body>
 </html>
