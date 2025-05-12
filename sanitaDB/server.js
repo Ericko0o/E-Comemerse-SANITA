@@ -181,13 +181,14 @@ app.get('/logout', (req, res) => {
 // ---------------------- CARRITO ---------------------
 
 // Obtener productos del carrito del usuario logueado
-// CREAR TABLA CARRITO SI NO EXISTE
+// CREAR TABLA CARRITO SI NO EXISTE (con cantidad)
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS carrito (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       usuario_id INTEGER NOT NULL,
       producto_id INTEGER NOT NULL,
+      cantidad INTEGER NOT NULL DEFAULT 1,
       FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
       FOREIGN KEY (producto_id) REFERENCES productos(id)
     )
@@ -198,11 +199,11 @@ app.get('/carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   const sql = `
-    SELECT carrito.id AS carrito_id, productos.*
-    FROM carrito
-    JOIN productos ON carrito.producto_id = productos.id
-    WHERE carrito.usuario_id = ?
-  `;
+  SELECT carrito.id AS carrito_id, carrito.cantidad, productos.*
+  FROM carrito
+  JOIN productos ON carrito.producto_id = productos.id
+  WHERE carrito.usuario_id = ?
+`;
 
   db.all(sql, [req.session.usuarioId], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -210,26 +211,33 @@ app.get('/carrito', (req, res) => {
   });
 });
 
-// Agregar producto al carrito
+// Agregar producto al carrito (con cantidad)
 app.post('/carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   const { producto_id } = req.body;
   if (!producto_id) return res.status(400).json({ error: "Falta producto_id" });
 
-  // Evitar duplicados
   db.get(
-    "SELECT id FROM carrito WHERE usuario_id = ? AND producto_id = ?",
+    "SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND producto_id = ?",
     [req.session.usuarioId, producto_id],
     (err, row) => {
       if (err) return res.status(500).json({ error: err.message });
 
       if (row) {
-        return res.json({ mensaje: "Producto ya está en el carrito" });
+        const nuevaCantidad = row.cantidad + 1;
+        db.run(
+          "UPDATE carrito SET cantidad = ? WHERE id = ?",
+          [nuevaCantidad, row.id],
+          function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ mensaje: "Cantidad actualizada", cantidad: nuevaCantidad });
+          }
+        );
       } else {
         db.run(
-          "INSERT INTO carrito (usuario_id, producto_id) VALUES (?, ?)",
-          [req.session.usuarioId, producto_id],
+          "INSERT INTO carrito (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)",
+          [req.session.usuarioId, producto_id, 1],
           function (err) {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ mensaje: "Producto agregado", id: this.lastID });
@@ -257,6 +265,22 @@ app.delete('/carrito/:id', (req, res) => {
   );
 });
 
+// Actualizar cantidad de un producto en el carrito
+app.put('/carrito/:id', (req, res) => {
+  const { cantidad } = req.body;
+  const carritoId = req.params.id;
+
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  db.run(
+    "UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?",
+    [cantidad, carritoId, req.session.usuarioId],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ mensaje: "Cantidad actualizada" });
+    }
+  );
+});
 
 // --------------------- PRODUCTOS ---------------------
 
