@@ -128,6 +128,57 @@ db.run(`CREATE TABLE IF NOT EXISTS resumen_inicio (
 )`);
 
 
+db.get("SELECT COUNT(*) as count FROM noticias", (err, row) => {
+  if (row.count === 0) {
+    db.run("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)", [
+      "Beneficios de la Uña de Gato",
+      "La uña de gato tiene propiedades antiinflamatorias y estimula el sistema inmunológico.",
+      "2024-01-20",
+      "img/una-de-gato.jpg"
+    ]);
+
+    db.run("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)", [
+      "Plantas cicatrizantes en la medicina andina",
+      "El llantén y el matico son reconocidos por su efectividad para curar heridas.",
+      "2024-02-10",
+      "img/matico.jpeg"
+    ]);
+  }
+});
+
+db.get("SELECT COUNT(*) as count FROM publicaciones", (err, row) => {
+  if (row.count === 0) {
+    db.get("SELECT id FROM usuarios LIMIT 1", (err, usuario) => {
+      if (usuario) {
+        db.run("INSERT INTO publicaciones (usuario_id, titulo, contenido, fecha) VALUES (?, ?, ?, ?)", [
+          usuario.id,
+          "Mi experiencia con el llantén",
+          "Utilicé llantén para una quemadura leve y me ayudó a sanar en pocos días.",
+          "2024-03-05"
+        ], function(err) {
+          const publicacionId = this.lastID;
+          db.run("INSERT INTO hilos (publicacion_id, usuario_id, contenido, fecha) VALUES (?, ?, ?, ?)", [
+            publicacionId,
+            usuario.id,
+            "Gracias por compartir, yo también he tenido buenos resultados con el llantén.",
+            "2024-03-06"
+          ]);
+        });
+      }
+    });
+  }
+});
+
+db.get("SELECT COUNT(*) as count FROM resumen_inicio", (err, row) => {
+  if (row.count === 0) {
+    db.run("INSERT INTO resumen_inicio (tipo, referencia_id) VALUES ('noticia', 1)");
+    db.run("INSERT INTO resumen_inicio (tipo, referencia_id) VALUES ('noticia', 2)");
+    db.run("INSERT INTO resumen_inicio (tipo, referencia_id) VALUES ('publicacion', 1)");
+  }
+});
+
+
+
 
 // --------------------- USUARIOS ---------------------
 // Endpoint para inicio de sesión
@@ -343,6 +394,45 @@ app.get('/api/productos/:id', (req, res) => {
     }
   });
 });
+// ----------------------NOTICIAS ---------------------------
+
+
+// --------------------- PUBLICACIONES ----------------------
+
+
+//--------------------- HILOS -------------------------------
+
+
+
+// --------------------- RESUMEN INICIO ---------------------
+
+app.get('/api/resumen-inicio', (req, res) => {
+  const sql = `
+    SELECT r.id, r.tipo, r.referencia_id,
+           n.titulo AS noticia_titulo, n.imagen AS noticia_imagen,
+           p.titulo AS pub_titulo, u.imagen AS usuario_imagen
+    FROM resumen_inicio r
+    LEFT JOIN noticias n ON r.tipo = 'noticia' AND n.id = r.referencia_id
+    LEFT JOIN publicaciones p ON r.tipo = 'publicacion' AND p.id = r.referencia_id
+    LEFT JOIN usuarios u ON p.usuario_id = u.id
+    ORDER BY r.id DESC
+    LIMIT 10
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    } else {
+      const formateado = rows.map(r => ({
+        tipo: r.tipo,
+        titulo: r.tipo === 'noticia' ? r.noticia_titulo : r.pub_titulo,
+        imagen: r.tipo === 'noticia' ? r.noticia_imagen : r.usuario_imagen
+      }));
+      res.json(formateado);
+    }
+  });
+});
+
 
 
 //------------------------------------------------------------------------
