@@ -285,7 +285,7 @@ app.get('/carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   const sql = `
-  SELECT carrito.id AS carrito_id, carrito.cantidad, productos.*
+  SELECT carrito.id AS carrito_id, carrito.cantidad, productos.id AS producto_id, productos.nombre, productos.precio, productos.imagen
   FROM carrito
   JOIN productos ON carrito.producto_id = productos.id
   WHERE carrito.usuario_id = ?
@@ -330,6 +330,28 @@ app.post('/carrito', (req, res) => {
           }
         );
       }
+    }
+  );
+});
+
+// Actualizar cantidad de producto en el carrito
+app.put('/carrito/:id', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  const carritoId = req.params.id;
+  const { cantidad } = req.body;
+
+  if (cantidad <= 0) {
+    return res.status(400).json({ error: "Cantidad inválida" });
+  }
+
+  db.run(
+    "UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?",
+    [cantidad, carritoId, req.session.usuarioId],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0) return res.status(404).json({ error: "No encontrado" });
+      res.json({ mensaje: "Cantidad actualizada" });
     }
   );
 });
