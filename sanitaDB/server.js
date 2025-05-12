@@ -94,6 +94,41 @@ app.get('/', (req, res) => {
 const db = new sqlite3.Database('./sanitadatabase.db');
 
 
+db.run(`CREATE TABLE IF NOT EXISTS noticias (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  titulo TEXT,
+  contenido TEXT,
+  fecha TEXT,
+  imagen TEXT
+)`);
+
+db.run(`CREATE TABLE IF NOT EXISTS publicaciones (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  usuario_id INTEGER,
+  titulo TEXT,
+  contenido TEXT,
+  fecha TEXT,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+)`);
+
+db.run(`CREATE TABLE IF NOT EXISTS hilos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  publicacion_id INTEGER,
+  usuario_id INTEGER,
+  contenido TEXT,
+  fecha TEXT,
+  FOREIGN KEY (publicacion_id) REFERENCES publicaciones(id),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+)`);
+
+db.run(`CREATE TABLE IF NOT EXISTS resumen_inicio (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  tipo TEXT, -- 'noticia' o 'publicacion'
+  referencia_id INTEGER
+)`);
+
+
+
 // --------------------- USUARIOS ---------------------
 // Endpoint para inicio de sesión
 
