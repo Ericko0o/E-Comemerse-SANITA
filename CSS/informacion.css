@@ -1,0 +1,71 @@
+/* Reset general para evitar desbordes */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Prevenir scroll horizontal por cualquier desborde */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Fondo general y configuración del contenedor */
+.info-background {
+  background: linear-gradient(rgba(57, 104, 63, 0.05), #14271a), url('../img/fondo-informacion.jpg') no-repeat center center fixed;
+  background-size: cover;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 120px;
+  padding-bottom: 60px;
+  width: 100%;
+}
+
+/* Estilos del contenedor de la información */
+.info-contenedor {
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 40px;
+  width: 85%;
+  max-width: 800px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  margin: 0 auto; /* Centramos el contenedor */
+}
+
+/* Títulos dentro del contenedor */
+.info-contenedor h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #ffe28a;
+}
+
+.info-contenedor h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #ffcc70;
+}
+
+.info-contenedor p {
+  line-height: 1.6;
+  font-size: 1.05rem;
+  color: #f1f1f1;
+}
+
+/* Estilo para la imagen de la planta */
+#planta-imagen {
+  display: block;
+  width: 100%;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}

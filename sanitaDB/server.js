@@ -81,6 +81,10 @@ app.get('/perfil.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../perfil.html'));
 });
 
+app.get('/informacion.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../informacion.html'));
+});
+
 app.get('/catalogo.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../catalogo.html'));
 });
