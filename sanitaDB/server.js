@@ -37,6 +37,26 @@ app.use(express.static(path.join(__dirname, '..')));
 app.use(express.json());
 
 
+
+//=========================================================================
+// Endpoint para buscar plantas por nombre - Colocado antes de los servidores estaticos, para evitar conflictos.
+
+app.get('/api/buscar', (req, res) => {
+  const q = req.query.q || '';
+  const parametro = `%${q}%`; // <- Correcto para LIKE
+
+  db.all(
+    "SELECT id, nombre, imagen FROM informacion WHERE nombre LIKE ?",
+    [parametro],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(rows);
+    }
+  );
+});
+//=========================================================================
+
+
 // Servir archivos estáticos (CSS, JS, img)
 app.use('/CSS', express.static(path.join(__dirname, '../CSS')));
 app.use('/JS', express.static(path.join(__dirname, '../JS')));
@@ -467,6 +487,7 @@ app.get('/api/noticias', (req, res) => {
 
 
 //------------------- PLANTAS INFORMACION -------------------
+
 // Endpoint para obtener todas las plantas destacadas
 app.get('/api/plantas', (req, res) => {
   db.all('SELECT id, nombre, imagen FROM informacion', [], (err, rows) => {
@@ -494,6 +515,9 @@ app.get('/api/plantas/:id', (req, res) => {
     res.json(row);
   });
 });
+
+//---------------------- BUSQUEDA ---------------------------
+
 
 // --------------------- RESUMEN INICIO ---------------------
 

@@ -51,6 +51,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       </nav>
     </header>
   `;
+  document.dispatchEvent(new Event("navbar-ready"));
+
 });
 
 // Funciones globales (usadas en HTML dinámico)
@@ -73,3 +75,48 @@ window.cerrarSesion = function () {
 window.guardarRutaActual = function () {
   localStorage.setItem("ruta-previa", window.location.pathname);
 };
+
+
+
+// --- Búsqueda de plantas ---
+document.addEventListener('navbar-ready', () => {
+  const input = document.querySelector('.search-box');
+
+  if (!input) return;
+
+  const resultBox = document.createElement('div');
+  resultBox.className = 'search-results';
+  document.body.appendChild(resultBox);
+
+  input.addEventListener('input', async () => {
+    const q = input.value.trim();
+    if (q.length === 0) {
+      resultBox.innerHTML = '';
+      resultBox.style.display = 'none';
+      return;
+    }
+    console.log("Buscando:", q);
+
+    const res = await fetch(`/api/buscar?q=${encodeURIComponent(q)}`);
+    const data = await res.json();
+
+    resultBox.innerHTML = data.map(planta => `
+      <div class="search-item" onclick="window.location.href='informacion.html?id=${planta.id}'">
+        <img src="${planta.imagen}" alt="${planta.nombre}" />
+        <span>${planta.nombre}</span>
+      </div>
+    `).join('');
+
+    resultBox.style.display = 'block';
+    const rect = input.getBoundingClientRect();
+    resultBox.style.left = `${rect.left}px`;
+    resultBox.style.top = `${rect.bottom + window.scrollY}px`;
+    resultBox.style.width = `${input.offsetWidth}px`;
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!resultBox.contains(e.target) && e.target !== input) {
+      resultBox.style.display = 'none';
+    }
+  });
+});

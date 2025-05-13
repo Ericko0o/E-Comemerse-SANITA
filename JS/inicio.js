@@ -46,13 +46,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     const res = await fetch("/api/plantas");
     const data = await res.json();
-    console.log("Plantas recibidas:", data);
-    const contenedor = document.getElementById("plantas-recuadros");
+    const contenedor = document.getElementById("plantas-row");
 
     if (contenedor && Array.isArray(data)) {
+      const plantas = data.slice(0, 4); // Solo mostrar 4
       contenedor.innerHTML = "";
 
-      data.forEach(planta => {
+      plantas.forEach(planta => {
         const div = document.createElement("div");
         div.className = "planta-card";
         div.onclick = () => {
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
         div.innerHTML = `
           <img src="${planta.imagen}" alt="${planta.nombre}">
-          <div class="planta-card-text">${planta.nombre}</div>
+          <div class="planta-card-name">${planta.nombre}</div>
         `;
         contenedor.appendChild(div);
       });
