@@ -465,6 +465,36 @@ app.get('/api/noticias', (req, res) => {
 
 
 
+
+//------------------- PLANTAS INFORMACION -------------------
+// Endpoint para obtener todas las plantas destacadas
+app.get('/api/plantas', (req, res) => {
+  db.all('SELECT id, nombre, imagen FROM informacion', [], (err, rows) => {
+    if (err) {
+      console.error('Error al obtener las plantas:', err.message);
+      return res.status(500).json({ error: 'Error al obtener las plantas' });
+    }
+    res.json(rows); // Devuelve todas las plantas (o podrías limitar a 5)
+  });
+});
+
+// Endpoint para obtener una planta específica por ID
+app.get('/api/plantas/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.get('SELECT * FROM informacion WHERE id = ?', [id], (err, row) => {
+    if (err) {
+      console.error('Error al obtener la planta:', err.message);
+      return res.status(500).json({ error: 'Error al obtener la planta' });
+    }
+    if (!row) {
+      return res.status(404).json({ error: 'Planta no encontrada' });
+    }
+
+    res.json(row);
+  });
+});
+
 // --------------------- RESUMEN INICIO ---------------------
 
 app.get('/api/resumen-inicio', (req, res) => {

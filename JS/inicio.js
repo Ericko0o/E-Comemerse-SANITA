@@ -6,39 +6,66 @@ document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch("/api/resumen-inicio");
     const data = await res.json();
 
-    if (!Array.isArray(data)) return;
+    if (Array.isArray(data)) {
+      // Limpiar track y generar recuadros dinámicamente
+      track.innerHTML = "";
 
-    // Limpiar track y generar recuadros dinámicamente
-    track.innerHTML = "";
+      data.forEach(item => {
+        const card = document.createElement("a");
+        card.classList.add("carousel-card");
+        card.href = item.tipo === "noticia" ? "noticias.html" : "comunidad.html";
 
-    data.forEach(item => {
-      const card = document.createElement("a");
-      card.classList.add("carousel-card");
-      card.href = item.tipo === "noticia" ? "noticias.html" : "comunidad.html";
+        card.innerHTML = `
+          <img src="${item.imagen}" alt="${item.titulo}" class="carousel-card-image">
+          <div class="carousel-card-text">${item.titulo}</div>
+        `;
 
-      card.innerHTML = `
-        <img src="${item.imagen}" alt="${item.titulo}" class="carousel-card-image">
-        <div class="carousel-card-text">${item.titulo}</div>
-      `;
-
-      track.appendChild(card);
-    });
-
-    // Duplicar para animación infinita
-    track.innerHTML += track.innerHTML;
-    track.dataset.duplicated = "true";
-
-    const cards = document.querySelectorAll(".carousel-card");
-
-    cards.forEach(card => {
-      card.addEventListener("mouseenter", () => {
-        track.style.animationPlayState = "paused";
+        track.appendChild(card);
       });
-      card.addEventListener("mouseleave", () => {
-        track.style.animationPlayState = "running";
+
+      // Duplicar para animación infinita
+      track.innerHTML += track.innerHTML;
+      track.dataset.duplicated = "true";
+
+      const cards = document.querySelectorAll(".carousel-card");
+
+      cards.forEach(card => {
+        card.addEventListener("mouseenter", () => {
+          track.style.animationPlayState = "paused";
+        });
+        card.addEventListener("mouseleave", () => {
+          track.style.animationPlayState = "running";
+        });
       });
-    });
+    }
   } catch (err) {
     console.error("Error al cargar resumen de inicio:", err);
+  }
+
+  // Cargar plantas destacadas en sección "Información sobre Plantas"
+  try {
+    const res = await fetch("/api/plantas");
+    const data = await res.json();
+    console.log("Plantas recibidas:", data);
+    const contenedor = document.getElementById("plantas-recuadros");
+
+    if (contenedor && Array.isArray(data)) {
+      contenedor.innerHTML = "";
+
+      data.forEach(planta => {
+        const div = document.createElement("div");
+        div.className = "planta-card";
+        div.onclick = () => {
+          window.location.href = `informacion.html?id=${planta.id}`;
+        };
+        div.innerHTML = `
+          <img src="${planta.imagen}" alt="${planta.nombre}">
+          <div class="planta-card-text">${planta.nombre}</div>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+  } catch (err) {
+    console.error("Error al cargar plantas destacadas:", err);
   }
 });
