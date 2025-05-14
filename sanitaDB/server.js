@@ -328,22 +328,20 @@ app.delete('/carrito/:id', (req, res) => {
   );
 });
 
-// Actualizar cantidad de un producto en el carrito
-app.put('/carrito/:id', (req, res) => {
-  const { cantidad } = req.body;
-  const carritoId = req.params.id;
-
+// Vaciar todo el carrito del usuario logueado
+app.delete('/vaciar-carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   db.run(
-    "UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?",
-    [cantidad, carritoId, req.session.usuarioId],
-    function (err) {
+    "DELETE FROM carrito WHERE usuario_id = ?",
+    [req.session.usuarioId],
+    function(err) {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ mensaje: "Cantidad actualizada" });
+      res.json({ mensaje: "Carrito vaciado" });
     }
   );
 });
+
 
 // --------------------- PRODUCTOS ---------------------
 
@@ -510,6 +508,22 @@ app.get('/api/plantas/:id', (req, res) => {
 
     res.json(row);
   });
+});
+
+// Buscar información completa por nombre de planta
+app.get('/api/informacion', (req, res) => {
+  const nombre = req.query.nombre;
+  if (!nombre) return res.status(400).json({ error: "Falta nombre" });
+
+  db.get(
+    "SELECT * FROM informacion WHERE nombre = ?",
+    [nombre],
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (!row) return res.status(404).json({ error: "Información no encontrada" });
+      res.json(row);
+    }
+  );
 });
 
 //---------------------- BUSQUEDA ---------------------------
