@@ -52,3 +52,8 @@ button:hover {
   display: inline-block;
   margin-top: 10px;
 }
+
+/* Para resaltar campos inválidos */
+.input-error {
+  border: 2px solid red;
+}
