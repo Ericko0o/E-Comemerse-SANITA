@@ -108,7 +108,7 @@ background-size: cover;
 background-position: center;
 display: flex;
 align-items: flex-end;
-color: white;
+color: rgba(255, 255, 255, 0.737);
 box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
@@ -129,7 +129,7 @@ font-size: 0.9rem;
 }
 
 .contenedor-otras-noticias {
-background-color: rgb(255, 255, 255);
+background-color: rgba(255, 255, 255, 0.564);
 border-radius: 0.5rem;
 padding: 2rem;
 box-shadow: 0 0 15px rgba(0,0,0,0.1);
