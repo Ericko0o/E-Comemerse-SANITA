@@ -508,6 +508,22 @@ app.get('/api/plantas/:id', (req, res) => {
   });
 });
 
+// Buscar información completa por nombre de planta
+app.get('/api/informacion', (req, res) => {
+  const nombre = req.query.nombre;
+  if (!nombre) return res.status(400).json({ error: "Falta nombre" });
+
+  db.get(
+    "SELECT * FROM informacion WHERE nombre = ?",
+    [nombre],
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (!row) return res.status(404).json({ error: "Información no encontrada" });
+      res.json(row);
+    }
+  );
+});
+
 //---------------------- BUSQUEDA ---------------------------
 
 
