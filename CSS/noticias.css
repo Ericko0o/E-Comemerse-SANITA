@@ -4,25 +4,27 @@ font-family: Arial, sans-serif;
 }
 
 .noticias-fondo {
- background-image: url('../img/fondo_noticias.jpg');
- background-size: cover;
- background-position: center;
- min-height: 100vh;
- padding: 120px 0;
- position: relative;
- overflow: hidden;
+  background-image: url('../img/fondo_noticias.jpg');
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: auto; /* Muestra la imagen en su tamaño original */
+  min-height: 100vh;
+  padding: 120px 0;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
 }
 
 .noticias-fondo::after {
- content: "";
- position: absolute;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- background: linear-gradient(to bottom, rgba(0, 54, 0, 0.087), rgb(0, 20, 0));
- z-index: 0;
- pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #132e17 80%);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .bloque-translucido {
