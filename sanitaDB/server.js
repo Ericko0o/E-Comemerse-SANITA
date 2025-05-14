@@ -369,50 +369,49 @@ app.get('/api/productos/:id', (req, res) => {
 });
 // ----------------------NOTICIAS ---------------------------
 
-
 // Obtener todas las noticias
 app.get('/api/noticias', (req, res) => {
- db.all('SELECT * FROM noticias', (err, rows) => {
-   if (err) {
-     console.error(err);
-     res.status(500).json({ error: 'Error interno del servidor' });
-   } else {
-     console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
-     res.json(rows);
-   }
- });
+db.all('SELECT * FROM noticias', (err, rows) => {
+  if (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  } else {
+    console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
+    res.json(rows);
+  }
 });
+});
+
 
 // Obtener una sola noticia por ID
 app.get('/api/noticia/:id', (req, res) => {
-   const id = req.params.id;
-   db.get('SELECT * FROM noticias WHERE id = ?', [id], (err, row) => {
-       if (err) {
-           console.error('Error al obtener la noticia:', err);
-           res.status(500).json({ error: 'Error del servidor' });
-       } else if (!row) {
-           res.status(404).json({ error: 'Noticia no encontrada' });
-       } else {
-           res.json(row);
-       }
-   });
+  const id = req.params.id;
+  db.get('SELECT * FROM noticias WHERE id = ?', [id], (err, row) => {
+      if (err) {
+          console.error('Error al obtener la noticia:', err);
+          res.status(500).json({ error: 'Error del servidor' });
+      } else if (!row) {
+          res.status(404).json({ error: 'Noticia no encontrada' });
+      } else {
+          res.json(row);
+      }
+  });
 });
 
 
-// Obtener todas las noticias
-app.get('/api/noticias', (req, res) => {
- db.all('SELECT * FROM noticias', (err, rows) => {
+// Obtener una noticia aleatoria
+app.get('/api/noticias/aleatoria', (req, res) => {
+ db.get('SELECT * FROM noticias ORDER BY RANDOM() LIMIT 1', (err, row) => {
    if (err) {
-     console.error(err);
-     res.status(500).json({ error: 'Error interno del servidor' });
+     console.error('Error al obtener noticia aleatoria:', err);
+     res.status(500).json({ error: 'Error del servidor' });
+   } else if (!row) {
+     res.status(404).json({ error: 'No hay noticias disponibles' });
    } else {
-     console.log('Noticias encontradas:', rows); // <--- VERIFICA ESTO EN LA CONSOLA
-     res.json(rows);
+     res.json(row);
    }
  });
 });
-
-
 
 // ------------------------------ COMUNIDAD ---------------------------------
 
