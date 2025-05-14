@@ -124,82 +124,12 @@ const db = new sqlite3.Database('./sanitadatabase.db');
 
 //-----------------------------------------------------
 
-
-db.run(`CREATE TABLE IF NOT EXISTS noticias (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  titulo TEXT,
-  contenido TEXT,
-  fecha TEXT,
-  imagen TEXT
-);`);
-
-console.log("Noticias anteriores eliminadas.");
-
-const noticias = [
-  {
-    titulo: "Beneficios de la Uña de Gato",
-    contenido: "La uña de gato tiene propiedades antiinflamatorias y estimula el sistema inmunológico.",
-    fecha: "2024-01-20",
-    imagen: "img/una-de-gato.jpg"
-  },
-  {
-    titulo: "Plantas cicatrizantes en la medicina andina",
-    contenido: "El llantén y el matico son reconocidos por su efectividad para curar heridas.",
-    fecha: "2024-02-10",
-    imagen: "img/matico.jpeg"
-  },
-  {
-    titulo: "Propiedades del eucalipto en la medicina natural",
-    contenido: "El eucalipto es utilizado para aliviar problemas respiratorios gracias a su efecto descongestionante.",
-    fecha: "2025-01-15",
-    imagen: "img/eucalipto.jpeg"
-  },
-  {
-    titulo: "El poder calmante de la valeriana",
-    contenido: "La valeriana es conocida por sus efectos sedantes, ideal para tratar el insomnio y la ansiedad.",
-    fecha: "2025-01-28",
-    imagen: "img/valeriana.jpeg"
-  },
-  {
-    titulo: "Muña: alivia dolores estomacales",
-    contenido: "La muña ayuda con la digestión y alivia cólicos estomacales, siendo tradicional en la sierra peruana.",
-    fecha: "2025-02-05",
-    imagen: "img/muna.jpg"
-  },
-  {
-    titulo: "Kion (jengibre): potente antiinflamatorio",
-    contenido: "El jengibre ayuda a reducir la inflamación y mejorar la circulación sanguínea.",
-    fecha: "2025-02-18",
-    imagen: "img/kion.jpg"
-  },
-  {
-    titulo: "Toronjil para calmar los nervios",
-    contenido: "El toronjil se usa para relajar los nervios y tratar problemas de ansiedad.",
-    fecha: "2025-03-01",
-    imagen: "img/toronjil.jpeg"
-  },
-  {
-    titulo: "Beneficios de la hierba luisa",
-    contenido: "La hierba luisa es excelente para problemas digestivos y tiene un aroma muy agradable.",
-    fecha: "2025-03-15",
-    imagen: "img/hierba_luisa.jpeg"
-  },
-  {
-    titulo: "La menta y su frescura medicinal",
-    contenido: "La menta ayuda a la digestión y también combate dolores de cabeza.",
-    fecha: "2025-04-01",
-    imagen: "img/menta.jpeg"
-  }
-];
-
-const stmt = db.prepare("INSERT INTO noticias (titulo, contenido, fecha, imagen) VALUES (?, ?, ?, ?)");
-
-noticias.forEach(noticia => {
-  stmt.run(noticia.titulo, noticia.contenido, noticia.fecha, noticia.imagen);
-});
-
-stmt.finalize(() => {
-  console.log("Noticias insertadas correctamente.");
+app.get('/api/noticia/:id', (req, res) => {
+  db.get('SELECT * FROM noticias WHERE id = ?', [req.params.id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: 'Noticia no encontrada' });
+    res.json(row);
+  });
 });
 
 // --------------------- USUARIOS ---------------------
@@ -394,16 +324,19 @@ app.delete('/carrito/:id', (req, res) => {
   );
 });
 
-// Vaciar todo el carrito del usuario logueado
-app.delete('/vaciar-carrito', (req, res) => {
+// Actualizar cantidad de un producto en el carrito
+app.put('/carrito/:id', (req, res) => {
+  const { cantidad } = req.body;
+  const carritoId = req.params.id;
+
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   db.run(
-    "DELETE FROM carrito WHERE usuario_id = ?",
-    [req.session.usuarioId],
-    function(err) {
+    "UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?",
+    [cantidad, carritoId, req.session.usuarioId],
+    function (err) {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ mensaje: "Carrito vaciado" });
+      res.json({ mensaje: "Cantidad actualizada" });
     }
   );
 });
@@ -515,22 +448,6 @@ app.get('/api/plantas/:id', (req, res) => {
 
     res.json(row);
   });
-});
-
-// Buscar información completa por nombre de planta
-app.get('/api/informacion', (req, res) => {
-  const nombre = req.query.nombre;
-  if (!nombre) return res.status(400).json({ error: "Falta nombre" });
-
-  db.get(
-    "SELECT * FROM informacion WHERE nombre = ?",
-    [nombre],
-    (err, row) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (!row) return res.status(404).json({ error: "Información no encontrada" });
-      res.json(row);
-    }
-  );
 });
 
 //---------------------- BUSQUEDA ---------------------------
