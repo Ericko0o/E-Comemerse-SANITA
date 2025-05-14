@@ -40,19 +40,40 @@ document.addEventListener("DOMContentLoaded", async () => {
         const btn = document.createElement("button");
         btn.textContent = "Enviar";
 
-        btn.addEventListener("click", async () => {
-          const texto = input.value.trim();
-          if (!texto) return;
-          const res = await fetch(`/api/hilos/${pub.id}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contenido: texto })
-          });
+        const logueado = await estaLogueado();
+        if (!logueado) {
+          input.disabled = true;
+          btn.disabled = true;
 
-          if (res.ok) {
-            location.reload(); // O volver a cargar los comentarios
-          }
-        });
+          const aviso = document.createElement("div");
+          aviso.innerHTML = `Debes <a href="login.html">iniciar sesión</a> para comentar.`;
+          aviso.style.color = "red";
+          aviso.style.marginTop = "5px";
+          area.append(aviso);
+
+          input.addEventListener("focus", () => {
+            sessionStorage.setItem("redireccionPostLogin", location.href);
+            location.href = "login.html";
+          });
+          btn.addEventListener("click", () => {
+            sessionStorage.setItem("redireccionPostLogin", location.href);
+            location.href = "login.html";
+          });
+        } else {
+          btn.addEventListener("click", async () => {
+            const texto = input.value.trim();
+            if (!texto) return;
+            const res = await fetch(`/api/hilos/${pub.id}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ contenido: texto })
+            });
+
+            if (res.ok) {
+              location.reload(); // O volver a cargar comentarios
+            }
+          });
+        }
 
         area.append(input, btn);
         area.dataset.loaded = "true";
@@ -61,7 +82,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       area.style.display = area.style.display === "none" ? "block" : "none";
     });
   }
+
+  // ✅ Redirección protegida al hacer clic en el botón ➕
+  const btnNueva = document.getElementById("btnNuevaPublicacion");
+  if (btnNueva) {
+    btnNueva.addEventListener("click", async () => {
+      const logueado = await estaLogueado();
+      if (!logueado) {
+        sessionStorage.setItem("redireccionPostLogin", location.href);
+        location.href = "login.html";
+      } else {
+        location.href = "nueva-publicacion.html";
+      }
+    });
+  }
 });
+
+async function estaLogueado() {
+  const res = await fetch('/usuario');
+  const data = await res.json();
+  return data.logueado;
+}
 
 function formatearAntiguedad(fechaStr) {
   const f = new Date(fechaStr);

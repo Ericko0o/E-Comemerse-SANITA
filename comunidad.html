@@ -20,28 +20,25 @@
       <p>Bienvenido a nuestro espacio de experiencias y comentarios.</p>
     </div>
 
-    <div class="comunidad-layout">
-      <!-- Publicaciones -->
-      <div class="posts">
-        <!-- Aquí se insertarán dinámicamente las publicaciones desde comunidad.js -->
+    <div class="comunidad-wrapper">
+      <!-- Barra lateral de acciones -->
+      <div class="acciones-laterales">
+        <button onclick="location.href='inicio.html'">🏠</button>
+        <button onclick="buscar()">🔍</button>
+        <button id="btnNuevaPublicacion">➕</button>
       </div>
 
-      <!-- Comentarios recientes (estático o puedes hacerlo dinámico si lo deseas) -->
-      <div class="comentarios-recientes">
-        <h2>Comentarios recientes</h2>
-        <p style="font-size: 0.9rem; color: #ccc;">(Los últimos comentarios se muestran en cada publicación)</p>
+      <!-- Área principal de publicaciones -->
+      <div class="comunidad-layout">
+        <!-- Publicaciones -->
+        <div class="posts">
+          <!-- Aquí se insertarán dinámicamente las publicaciones desde comunidad.js -->
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Barra lateral de acciones -->
-  <div class="acciones-laterales">
-    <button onclick="location.href='inicio.html'">🏠</button>
-    <button onclick="buscar()">🔍</button>
-    <button onclick="location.href='nueva-publicacion.html'">➕</button>
-  </div>
-
-  <!-- Buscar función (a futuro puedes reemplazar por una barra real) -->
+  <!-- Buscar función -->
   <script>
     function buscar() {
       const termino = prompt("¿Qué deseas buscar?");

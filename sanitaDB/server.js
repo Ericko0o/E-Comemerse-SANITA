@@ -105,6 +105,10 @@ app.get('/producto.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../producto.html'));
 });
 
+app.get('/nueva-publicacion.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../nueva-publicacion.html'));
+});
+
 app.get('/pago.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../pago.html'));
 });
@@ -324,22 +328,20 @@ app.delete('/carrito/:id', (req, res) => {
   );
 });
 
-// Actualizar cantidad de un producto en el carrito
-app.put('/carrito/:id', (req, res) => {
-  const { cantidad } = req.body;
-  const carritoId = req.params.id;
-
+// Vaciar todo el carrito del usuario logueado
+app.delete('/vaciar-carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   db.run(
-    "UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?",
-    [cantidad, carritoId, req.session.usuarioId],
-    function (err) {
+    "DELETE FROM carrito WHERE usuario_id = ?",
+    [req.session.usuarioId],
+    function(err) {
       if (err) return res.status(500).json({ error: err.message });
-      res.json({ mensaje: "Cantidad actualizada" });
+      res.json({ mensaje: "Carrito vaciado" });
     }
   );
 });
+
 
 // --------------------- PRODUCTOS ---------------------
 
