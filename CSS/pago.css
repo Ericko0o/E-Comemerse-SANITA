@@ -53,6 +53,10 @@ button:hover {
   margin-top: 10px;
 }
 
+.volver-catalogo:hover {
+  color: #ffd700; /* cambia a un dorado suave al pasar el mouse */
+}
+
 /* Para resaltar campos inválidos */
 .input-error {
   border: 2px solid red;

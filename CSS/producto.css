@@ -104,3 +104,14 @@
   height: 30px;
   filter: invert(1);
 }
+
+/* Enlace “Ver más sobre esta planta” en blanco */
+.info-planta {
+  color: white;
+  text-decoration: underline; /* opcional, para resaltarlo */
+}
+
+/* Opcional: cambiar el hover */
+.info-planta:hover {
+  color: #ffd700; /* cambia a un dorado suave al pasar el mouse */
+}
