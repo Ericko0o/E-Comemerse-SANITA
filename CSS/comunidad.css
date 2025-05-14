@@ -1,237 +1,117 @@
 /* Reset general */
-
-*{
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-font-family: 'Segoe UI', sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 /* Fondo del body */
 body {
-background:
-linear-gradient(rgba(30, 28, 28, 0.6), rgb(8, 37, 8)),
-url('../IMG/fondoComunidad.jpg');
-background-size: cover;
-background-position: center;
-background-attachment: fixed;
-color: #f0f0f0;
+  background: linear-gradient(rgba(30, 28, 28, 0.6), rgb(8, 37, 8)),
+    url('../IMG/fondoComunidad.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #f0f0f0;
 }
 
 /* Contenedor principal */
 .comunidad {
-max-width: 1100px;
-margin: 100px auto 2rem;
-padding: 2rem;
-background-color: rgba(255, 255, 255, 0.05);
-border-radius: 20px;
-box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-backdrop-filter: blur(8px);
-animation: fadeIn 0.6s ease-in-out;
+  max-width: 1100px;
+  margin: 100px auto 2rem;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.6s ease-in-out;
+  display: flex;
+  flex-direction: column; /* Se coloca todo en columna */
+  gap: 2rem;
 }
 
 /* Título */
 .comunidad-content h1 {
-font-size: 2.8rem;
-color: #b5fcb5;
-margin-bottom: 1rem;
+  font-size: 2.8rem;
+  color: #b5fcb5;
+  margin-bottom: 1rem;
 }
 
 .comunidad-content p {
-font-size: 1.1rem;
-margin-bottom: 1rem;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
 }
 
 /* Layout de columnas */
-.comunidad-layout {
-display: flex;
-gap: 2rem;
-margin-top: 2rem;
+.comunidad-wrapper {
+  display: flex;
+  gap: 2rem;
 }
 
 /* Columna de posts */
 .posts {
-flex: 3;
-display: flex;
-flex-direction: column;
-gap: 2rem;
-}
-
-/* Comentarios recientes */
-.comentarios-recientes {
-flex: 2;
-background-color: rgba(30, 50, 30, 0.6);
-padding: 1.2rem;
-border-radius: 16px;
-backdrop-filter: blur(6px);
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Títulos secundarios */
-.posts h2,
-.comentarios-recientes h2 {
-color: #a0ffb0;
-font-size: 1.4rem;
+  flex: 1; /* Asegura que ocupe todo el ancho disponible */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%; /* Asegura que ocupe todo el espacio disponible */
 }
 
 /* Post */
 .post {
-background-color: rgba(30, 50, 30, 0.6);
-color: #f0f0f0;
-padding: 1.2rem;
-border-radius: 16px;
-backdrop-filter: blur(6px);
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-border: 1px solid rgba(255, 255, 255, 0.1);
-position: relative;
+  background-color: rgba(30, 50, 30, 0.6);
+  color: #f0f0f0;
+  padding: 1.2rem;
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
 }
 
 /* Encabezado del post */
 .post-header {
-display: flex;
-align-items: center;
-gap: 1rem;
-margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .post-header .avatar {
-width: 45px;
-height: 45px;
-border-radius: 50%;
-object-fit: cover;
-border: 2px solid #b5fcb5;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #b5fcb5;
 }
 
-.post-header small {
-color: #ccc;
-font-size: 0.85rem;
-}
-
-/* Botón de comentarios */
-.mostrar-comentarios {
-background-color: #4caf50;
-color: white;
-border: none;
-border-radius: 50%;
-font-size: 1.2rem;
-width: 30px;
-height: 30px;
-cursor: pointer;
-position: absolute;
-top: 10px;
-right: 10px;
-}
-
-/* Área de comentarios debajo de cada post */
-.area-comentarios {
-margin-top: 1rem;
-display: none;
-}
-
-.area-comentarios .comentario {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-padding: 0.5rem;
-background-color: rgba(255, 255, 255, 0.05);
-border-radius: 8px;
-margin-bottom: 0.5rem;
-}
-
-.area-comentarios .comentario img {
-width: 30px;
-height: 30px;
-border-radius: 50%;
-object-fit: cover;
-}
-
-.area-comentarios .comentario span {
-font-weight: bold;
-color: #cceccc;
-font-size: 0.95rem;
-}
-
-/* Input de nuevo comentario */
-.area-comentarios input {
-width: 100%;
-padding: 0.5rem 0.8rem;
-border-radius: 8px;
-border: none;
-outline: none;
-background-color: rgba(255, 255, 255, 0.1);
-color: white;
-margin-top: 0.5rem;
-}
-
-/* Botón enviar */
-.area-comentarios button {
-margin-top: 0.4rem;
-padding: 0.4rem 1rem;
-background-color: #66bb6a;
-border: none;
-border-radius: 6px;
-color: white;
-cursor: pointer;
-transition: background 0.2s ease;
-}
-
-.area-comentarios button:hover {
-background-color: #4caf50;
-}
-
-/* Comentarios recientes */
-.comentario {
-padding: 0.5rem;
-margin-bottom: 0.5rem;
-background-color: rgba(255, 255, 255, 0.05);
-border-radius: 10px;
-}
-
-/* Animación */
-@keyframes fadeIn {
-from {
-opacity: 0;
-transform: translateY(20px);
-}
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
-
-/* Barra lateral de acciones */
-.acciones-laterales {
-position: fixed;
-right: 30px;
-top: 150px;
-display: flex;
-flex-direction: column;
-gap: 1rem;
-}
-
-.acciones-laterales button {
-background-color: #4e684f;
-color: white;
-border: none;
-padding: 0.8rem;
-border-radius: 50%;
-font-size: 1.2rem;
-cursor: pointer;
-}
-
-.area-comentarios p {
-  color: #f88;
-  font-style: italic;
-  margin-top: 0.5rem;
-}
-
-/* Fecha (publicado hace...) */
 .post-header small {
   color: #ccc;
   font-size: 0.85rem;
 }
 
-/* Comentarios con avatar y nombre */
+/* Botón de comentarios */
+.mostrar-comentarios {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Área de comentarios debajo de cada post */
+.area-comentarios {
+  margin-top: 1rem;
+  display: none;
+}
+
 .area-comentarios .comentario {
   display: flex;
   align-items: center;
@@ -249,7 +129,13 @@ cursor: pointer;
   object-fit: cover;
 }
 
-/* Ajuste del input y botón */
+.area-comentarios .comentario span {
+  font-weight: bold;
+  color: #cceccc;
+  font-size: 0.95rem;
+}
+
+/* Input de nuevo comentario */
 .area-comentarios input {
   width: 100%;
   padding: 0.5rem 0.8rem;
@@ -258,8 +144,10 @@ cursor: pointer;
   outline: none;
   background-color: rgba(255, 255, 255, 0.1);
   color: white;
+  margin-top: 0.5rem;
 }
 
+/* Botón enviar */
 .area-comentarios button {
   margin-top: 0.4rem;
   padding: 0.4rem 1rem;
@@ -273,4 +161,37 @@ cursor: pointer;
 
 .area-comentarios button:hover {
   background-color: #4caf50;
+}
+
+/* Barra lateral de acciones */
+.acciones-laterales {
+  position: sticky;
+  top: 100px; /* Comienza justo debajo del header */
+  right: 20px; /* Se alinea al costado derecho */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 10; /* Para que esté por encima del contenido */
+}
+
+.acciones-laterales button {
+  background-color: #4e684f;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

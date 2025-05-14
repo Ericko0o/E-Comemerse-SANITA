@@ -105,6 +105,10 @@ app.get('/producto.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../producto.html'));
 });
 
+app.get('/nueva-publicacion.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../nueva-publicacion.html'));
+});
+
 app.get('/pago.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../pago.html'));
 });

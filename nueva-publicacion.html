@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sanita - Nueva Publicación</title>
+    <link rel="stylesheet" href="CSS/navbar.css" />
+    <link rel="stylesheet" href="CSS/nueva-publicacion.css" />
+    <script src="JS/navbar.js" defer></script>
+</head>
+
+<body>
+    <!-- Navbar insertada por JS -->
+    <div id="navbar-placeholder"></div>
+    <div style="height: 80px;"></div> <!-- Espacio para la navbar -->
+
+    <header class="header">
+        <h1>Crear una Nueva Publicación</h1>
+    </header>
+
+    <div class="comunidad">
+        <div class="nueva-publicacion">
+            <form id="form-publicacion">
+                <div class="input-group">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Escribe el título de tu publicación">
+                </div>
+
+                <div class="input-group">
+                    <label for="contenido">Contenido</label>
+                    <textarea id="contenido" name="contenido" rows="5" required placeholder="Escribe el contenido de tu publicación"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <button type="submit" id="submit-btn">Publicar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="JS/nueva-publicacion.js"></script>
+</body>
+
+</html>
