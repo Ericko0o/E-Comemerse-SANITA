@@ -127,17 +127,18 @@ body {
 }
 
 .carousel-card-text {
+  font-family: 'Bebas Neue', sans-serif;
   position: relative;
   z-index: 2;
-  padding: 12px 16px;
+  padding: 14px 20px;
   text-align: left;
-  font-weight: bold;
-  font-size: 18px;
+  font-size: 2rem;
+  letter-spacing: 1px;
   color: #fff;
   margin-left: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   background: none;
-  border-radius: 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* Animación de desplazamiento infinito */
@@ -157,6 +158,8 @@ body {
 /* ===================================================
    Contenido adicional
    =================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
 .hero-extra-content {
   max-width: 900px;
   margin: 80px auto 60px;
@@ -168,16 +171,20 @@ body {
 }
 
 .main-title {
-  font-size: 3.2rem;
-  margin-bottom: 20px;
-  font-weight: bold;
-  color: #A3E635;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 4rem;
+  margin-bottom: 25px;
+  font-weight: normal;
+  color: #D9F99D;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.6);
+  letter-spacing: 2px;
 }
 
 .main-text {
-  font-size: 1.5rem;
-  line-height: 1.8;
-  color: #e7fbe7;
+  font-size: 1.8rem;
+  line-height: 1.9;
+  color: #ecfdf5;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 
@@ -215,16 +222,19 @@ body {
    =================================================== */
 .plantas-info {
   width: 100%;
-  margin: 60px 0 80px;
+  margin: 170px 0 190px;
   padding: 0;
   color: #f0fdf4;
 }
 
 .plantas-info h2 {
-  font-size: 2.5rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
   margin-bottom: 30px;
   text-align: center;
   color: #A3E635;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .plantas-row {
@@ -254,11 +264,13 @@ body {
 }
 
 .planta-card-name {
+  font-family: 'Bebas Neue', sans-serif;
   position: absolute;
   bottom: 12px;
   left: 12px;
   color: white;
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-shadow: 0 0 6px rgba(0,0,0,0.5);
+  font-size: 1.3rem;
+  font-weight: normal;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }

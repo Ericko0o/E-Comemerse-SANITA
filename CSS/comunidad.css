@@ -9,7 +9,7 @@
 /* Fondo del body */
 body {
   background: 
-    linear-gradient(rgba(0, 60, 0, 0.6), rgba(0, 60, 0, 0.6)),
+    linear-gradient(rgba(30, 28, 28, 0.6), rgb(8, 37, 8)),
     url('../IMG/fondoComunidad.jpg');
   background-size: cover;
   background-position: center;
@@ -161,7 +161,7 @@ body {
 }
 
 .acciones-laterales button {
-  background-color: #4caf50;
+  background-color: #4e684f;
   color: white;
   border: none;
   padding: 0.8rem;
