@@ -412,15 +412,74 @@ app.get('/api/noticias', (req, res) => {
  });
 });
 
-// --------------------- PUBLICACIONES ----------------------
 
 
-//--------------------- HILOS -------------------------------
+// ------------------------------ COMUNIDAD ---------------------------------
+
+const calcularFecha = () => new Date().toISOString().split('T')[0];
+
+// Obtener publicaciones con info de usuario
+app.get('/api/publicaciones', (req, res) => {
+  const sql = `SELECT p.id, p.titulo, p.contenido, p.fecha, u.nombre, u.imagen 
+               FROM publicaciones p 
+               JOIN usuarios u ON p.usuario_id = u.id 
+               ORDER BY p.fecha DESC`;
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// Obtener hilos de una publicación
+app.get('/api/hilos/:publicacionId', (req, res) => {
+  const pubId = req.params.publicacionId;
+  const sql = `SELECT h.contenido, h.fecha, u.nombre, u.imagen 
+               FROM hilos h 
+               JOIN usuarios u ON h.usuario_id = u.id 
+               WHERE h.publicacion_id = ? 
+               ORDER BY h.fecha ASC`;
+  db.all(sql, [pubId], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+// Agregar nueva publicación
+app.post('/api/publicaciones', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: 'No autenticado' });
+  const { titulo, contenido } = req.body;
+  const fecha = calcularFecha();
+
+  db.run(
+    `INSERT INTO publicaciones (usuario_id, titulo, contenido, fecha) VALUES (?, ?, ?, ?)`,
+    [req.session.usuarioId, titulo, contenido, fecha],
+    function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ mensaje: 'Publicación creada', id: this.lastID });
+    }
+  );
+});
+
+// Agregar nuevo comentario (hilo)
+app.post('/api/hilos/:publicacionId', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: 'No autenticado' });
+  const { contenido } = req.body;
+  const publicacionId = req.params.publicacionId;
+  const fecha = calcularFecha();
+
+  db.run(
+    `INSERT INTO hilos (publicacion_id, usuario_id, contenido, fecha) VALUES (?, ?, ?, ?)`,
+    [publicacionId, req.session.usuarioId, contenido, fecha],
+    function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ mensaje: 'Comentario agregado' });
+    }
+  );
+});
 
 
 
-
-//------------------- PLANTAS INFORMACION -------------------
+//------------------------------ PLANTAS INFORMACION ----------------------------------
 
 // Endpoint para obtener todas las plantas destacadas
 app.get('/api/plantas', (req, res) => {
