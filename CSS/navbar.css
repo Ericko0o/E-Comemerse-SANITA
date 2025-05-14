@@ -124,7 +124,9 @@
 
 .search-results {
   position: absolute;
-  background: white;
+  background: rgba(200, 200, 200, 0.797); /* Semitransparente */
+  backdrop-filter: blur(15px);         /* Difuminado del fondo */
+  -webkit-backdrop-filter: blur(10px); /* Soporte para Safari */
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
