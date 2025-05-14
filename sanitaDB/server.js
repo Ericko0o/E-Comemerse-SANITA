@@ -411,6 +411,20 @@ app.put('/carrito/:id', (req, res) => {
   );
 });
 
+// Vaciar todo el carrito del usuario logueado
+app.delete('/vaciar-carrito', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  db.run(
+    "DELETE FROM carrito WHERE usuario_id = ?",
+    [req.session.usuarioId],
+    function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ mensaje: "Carrito vaciado" });
+    }
+  );
+});
+
 // --------------------- PRODUCTOS ---------------------
 
 // Endpoint para obtener todos los productos
