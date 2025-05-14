@@ -8,8 +8,7 @@
 
 /* Fondo general */
 body {
-  background: linear-gradient(rgba(0, 60, 0, 0.8), rgba(0, 60, 0, 0.8)),
-              url('../IMG/fondo catalogo.png');
+  background: linear-gradient(rgba(11, 51, 11, 0.6), rgb(8, 37, 8)), url('../IMG/fondo catalogo.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
