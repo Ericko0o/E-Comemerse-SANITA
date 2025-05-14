@@ -44,3 +44,11 @@ button {
 button:hover {
   background-color: #388e3c;
 }
+
+.volver-catalogo {
+  color: white;
+  text-decoration: underline;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 10px;
+}

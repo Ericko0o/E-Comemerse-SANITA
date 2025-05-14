@@ -17,8 +17,23 @@
     <p>Ingresa los datos simulados para realizar tu compra:</p>
     <form id="pago-form">
       <input type="text" placeholder="Nombre en tarjeta" required />
-      <input type="text" placeholder="Número de tarjeta" required />
-      <input type="text" placeholder="Fecha de expiración (MM/AA)" required />
+      <input
+        type="text"
+        id="numero-tarjeta"
+        placeholder="Número de tarjeta"
+        maxlength="23"
+        required
+        title="Introduce entre 13 y 18 dígitos. Se insertan espacios automáticamente."
+      />
+      <input
+        type="text"
+        id="fecha-exp"
+        placeholder="MM/AA"
+        maxlength="5"
+        required
+        pattern="(0[1-9]|1[0-2])\/[0-9]{2}"
+        title="Formato válido: MM/AA"
+      />
       <input type="text" placeholder="CVV" required />
       <button type="submit">Pagar ahora</button>
     </form>
