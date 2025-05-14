@@ -394,23 +394,6 @@ app.delete('/carrito/:id', (req, res) => {
   );
 });
 
-// Actualizar cantidad de un producto en el carrito
-app.put('/carrito/:id', (req, res) => {
-  const { cantidad } = req.body;
-  const carritoId = req.params.id;
-
-  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
-
-  db.run(
-    "UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?",
-    [cantidad, carritoId, req.session.usuarioId],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ mensaje: "Cantidad actualizada" });
-    }
-  );
-});
-
 // Vaciar todo el carrito del usuario logueado
 app.delete('/vaciar-carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
