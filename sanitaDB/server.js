@@ -17,6 +17,10 @@ const port = 3000;
 
 //------------------------------------------------------------------------
 
+// 
+app.use(express.static(path.join(__dirname, '..')));
+
+
 // Middleware de sesión (Asegurarse de instalar express-session: npm install express-session)
 
 const session = require('express-session');
@@ -558,9 +562,32 @@ app.get('/api/resumen-inicio', (req, res) => {
   });
 });
 
+// ----------------------------------------
+// RDF/XML GENERACIÓN DINÁMICA
+// ----------------------------------------
+
+app.get('/rdf', (req, res) => {
+  res.setHeader('Content-Type', 'application/rdf+xml');
+
+  const rdfXml = `<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:schema="http://schema.org/">
+
+  <rdf:Description rdf:about="http://sanita.com">
+    <schema:name>Sanita</schema:name>
+    <schema:description>Plataforma de medicina natural, comunidad y catálogo</schema:description>
+    <schema:url>http://sanita.com</schema:url>
+  </rdf:Description>
+
+</rdf:RDF>`;
+
+  res.send(rdfXml);
+});
 
 
-//------------------------------------------------------------------------
+
+
 
 // Iniciar el servidor
 app.listen(port, () => {

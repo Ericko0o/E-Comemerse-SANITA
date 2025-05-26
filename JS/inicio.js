@@ -69,3 +69,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error al cargar plantas destacadas:", err);
   }
 });
+
+fetch("/datos/sanita.rdf")
+  .then(resRdf => {
+    if (resRdf.ok) {
+      console.log("✅ Archivo RDF accesible y servido correctamente.");
+    } else {
+      console.warn("⚠️ Archivo RDF no encontrado o error al cargar:", resRdf.status);
+    }
+  })
+  .catch(error => {
+    console.error("❌ Error al intentar cargar el archivo RDF:", error);
+  });

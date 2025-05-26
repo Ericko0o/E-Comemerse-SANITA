@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:medic="http://sanita.pe/vocabulario#">
+
+  <rdf:Description rdf:about="http://sanita.pe/planta/Sangre_de_Grado">
+    <rdf:type rdf:resource="http://sanita.pe/vocabulario#PlantaMedicinal"/>
+    <medic:nombre>Sangre de Grado</medic:nombre>
+    <medic:uso rdf:resource="http://sanita.pe/uso/Heridas"/>
+    <medic:beneficio>Cicatrizante</medic:beneficio>
+    <medic:beneficio>Antibacteriano</medic:beneficio>
+  </rdf:Description>
+
+</rdf:RDF>
