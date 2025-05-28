@@ -585,6 +585,42 @@ app.get('/rdf', (req, res) => {
   res.send(rdfXml);
 });
 
+const builder = require('xmlbuilder');
+
+// Endpoint RDF por planta
+app.get('/rdf/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.get('SELECT * FROM informacion WHERE id = ?', [id], (err, planta) => {
+    if (err) {
+      console.error('Error al obtener la planta para RDF:', err.message);
+      return res.status(500).send("Error interno");
+    }
+    if (!planta) {
+      return res.status(404).send("Planta no encontrada");
+    }
+
+    const rdf = builder.create('rdf:RDF', { encoding: 'UTF-8' })
+      .att('xmlns:rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+      .att('xmlns:rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
+      .att('xmlns:dc', 'http://purl.org/dc/elements/1.1/')
+      .att('xmlns:sn', 'https://sanita.org/ontology#');
+
+    const plantaNode = rdf.ele('rdf:Description')
+      .att('rdf:about', `https://sanita.org/planta/${id}`);
+
+    plantaNode.ele('rdfs:label', planta.nombre);
+    plantaNode.ele('dc:description', planta.descripcion);
+    plantaNode.ele('sn:beneficio', planta.beneficios);
+    plantaNode.ele('sn:uso', planta.uso);
+    plantaNode.ele('sn:imagen', planta.imagen);
+
+    res.set('Content-Type', 'application/rdf+xml');
+    res.send(rdf.end({ pretty: true }));
+  });
+});
+
+
 
 
 

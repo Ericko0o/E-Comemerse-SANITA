@@ -19,6 +19,13 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('planta-uso').textContent = data.uso;
       document.getElementById('planta-imagen').src = data.imagen;
       document.getElementById('planta-imagen').alt = data.nombre;
+
+      // URI semántica
+      const baseUri = 'https://sanita.org/planta/';
+      const fullUri = baseUri + encodeURIComponent(id);
+
+      document.getElementById('planta-uri').textContent = fullUri;
+      document.getElementById('rdf-link').href = `/rdf/${id}`;
     })
     .catch(err => {
       document.querySelector('.info-contenedor').innerHTML = '<p>Error al cargar la información de la planta.</p>';
