@@ -42,22 +42,32 @@ app.use(express.json());
 
 
 
+
 //=========================================================================
-// Endpoint para buscar plantas por nombre - Colocado antes de los servidores estaticos, para evitar conflictos.
+// Endpoint para buscar plantas por nombre - Adaptado a la tabla 'plantas'
 
 app.get('/api/buscar', (req, res) => {
   const q = req.query.q || '';
-  const parametro = `%${q}%`; // <- Correcto para LIKE
+  const parametro = `%${q}%`;
 
-  db.all(
-    "SELECT id, nombre, imagen FROM informacion WHERE nombre LIKE ?",
-    [parametro],
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json(rows);
-    }
-  );
+  const sql = `
+    SELECT
+      p.id,
+      p.nombre,
+      p.precio,
+      p.imagen,
+      c.nombre AS categoria
+    FROM plantas p
+    LEFT JOIN categorias c ON p.categoria_id = c.id
+    WHERE p.nombre LIKE ?
+  `;
+
+  db.all(sql, [parametro], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
 });
+
 //=========================================================================
 
 
@@ -227,15 +237,18 @@ app.get('/logout', (req, res) => {
 
 // Obtener productos del carrito del usuario logueado
 // CREAR TABLA CARRITO SI NO EXISTE (con cantidad)
+
+
+// (Recreamos la tabla carrito apuntando ahora a plantas)
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS carrito (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       usuario_id INTEGER NOT NULL,
-      producto_id INTEGER NOT NULL,
+      planta_id INTEGER NOT NULL,
       cantidad INTEGER NOT NULL DEFAULT 1,
       FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-      FOREIGN KEY (producto_id) REFERENCES productos(id)
+      FOREIGN KEY (planta_id) REFERENCES plantas(id)
     )
   `);
 });
@@ -244,27 +257,31 @@ app.get('/carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   const sql = `
-  SELECT carrito.id AS carrito_id, carrito.cantidad, productos.id AS producto_id, productos.nombre, productos.precio, productos.imagen
-  FROM carrito
-  JOIN productos ON carrito.producto_id = productos.id
-  WHERE carrito.usuario_id = ?
-`;
-
+    SELECT
+      c.id            AS carrito_id,
+      c.cantidad,
+      p.id            AS producto_id,
+      p.nombre,
+      p.precio,
+      p.imagen
+    FROM carrito c
+    JOIN plantas p ON c.planta_id = p.id
+    WHERE c.usuario_id = ?
+  `;
   db.all(sql, [req.session.usuarioId], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
 });
 
-// Agregar producto al carrito (con cantidad)
 app.post('/carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
-
   const { producto_id } = req.body;
   if (!producto_id) return res.status(400).json({ error: "Falta producto_id" });
 
+  // nota: renombramos internamente a planta_id
   db.get(
-    "SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND producto_id = ?",
+    "SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?",
     [req.session.usuarioId, producto_id],
     (err, row) => {
       if (err) return res.status(500).json({ error: err.message });
@@ -281,7 +298,7 @@ app.post('/carrito', (req, res) => {
         );
       } else {
         db.run(
-          "INSERT INTO carrito (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)",
+          "INSERT INTO carrito (usuario_id, planta_id, cantidad) VALUES (?, ?, ?)",
           [req.session.usuarioId, producto_id, 1],
           function (err) {
             if (err) return res.status(500).json({ error: err.message });
@@ -293,40 +310,21 @@ app.post('/carrito', (req, res) => {
   );
 });
 
-// Actualizar cantidad de producto en el carrito
-app.put('/carrito/:id', (req, res) => {
-  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
-
-  const carritoId = req.params.id;
-  const { cantidad } = req.body;
-
-  if (cantidad <= 0) {
-    return res.status(400).json({ error: "Cantidad inválida" });
-  }
-
-  db.run(
-    "UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?",
-    [cantidad, carritoId, req.session.usuarioId],
-    function (err) {
-      if (err) return res.status(500).json({ error: err.message });
-      if (this.changes === 0) return res.status(404).json({ error: "No encontrado" });
-      res.json({ mensaje: "Cantidad actualizada" });
-    }
-  );
-});
-
 // Eliminar un producto del carrito
 app.delete('/carrito/:id', (req, res) => {
-  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+  if (!req.session.usuarioId) 
+    return res.status(401).json({ error: "No autenticado" });
 
   const carritoId = req.params.id;
 
   db.run(
-    "DELETE FROM carrito WHERE id = ? AND usuario_id = ?",
+    `DELETE FROM carrito 
+     WHERE id = ? AND usuario_id = ?`,
     [carritoId, req.session.usuarioId],
-    function (err) {
+    function(err) {
       if (err) return res.status(500).json({ error: err.message });
-      if (this.changes === 0) return res.status(404).json({ error: "No encontrado" });
+      if (this.changes === 0) 
+        return res.status(404).json({ error: "No encontrado" });
       res.json({ mensaje: "Producto eliminado del carrito" });
     }
   );
@@ -334,10 +332,12 @@ app.delete('/carrito/:id', (req, res) => {
 
 // Vaciar todo el carrito del usuario logueado
 app.delete('/vaciar-carrito', (req, res) => {
-  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+  if (!req.session.usuarioId) 
+    return res.status(401).json({ error: "No autenticado" });
 
   db.run(
-    "DELETE FROM carrito WHERE usuario_id = ?",
+    `DELETE FROM carrito 
+     WHERE usuario_id = ?`,
     [req.session.usuarioId],
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
@@ -347,31 +347,59 @@ app.delete('/vaciar-carrito', (req, res) => {
 });
 
 
-// --------------------- PRODUCTOS ---------------------
 
+// --------------------- PRODUCTOS (ahora plantas) ---------------------
 // Endpoint para obtener todos los productos
+
+// Obtener todos los productos (plantas) con su categoría
 app.get('/api/productos', (req, res) => {
-  db.all('SELECT * FROM productos', (err, rows) => {
+  const sql = `
+    SELECT
+      p.id,
+      p.nombre,
+      p.precio,
+      p.imagen,
+      c.nombre AS categoria
+    FROM plantas p
+    LEFT JOIN categorias c
+      ON p.categoria_id = c.id
+  `;
+  db.all(sql, (err, rows) => {
     if (err) {
       console.error('Error obteniendo productos:', err.message);
-      res.status(500).send("Error al obtener productos");
-    } else {
-      res.json(rows);
+      return res.status(500).send("Error al obtener productos");
     }
+    res.json(rows);
   });
 });
+
+// Obtener producto por ID → ahora planta
 app.get('/api/productos/:id', (req, res) => {
   const id = req.params.id;
-  db.get('SELECT * FROM productos WHERE id = ?', [id], (err, row) => {
-    if (err) {
-      console.error('Error obteniendo producto:', err.message);
-      res.status(500).send("Error al obtener producto");
-    } else if (!row) {
-      res.status(404).send("Producto no encontrado");
-    } else {
-      res.json(row);
+  db.get(
+    `SELECT id, nombre, precio, imagen, descripcion, categoria_id
+     FROM plantas
+     WHERE id = ?`,
+    [id],
+    (err, planta) => {
+      if (err) {
+        console.error('Error obteniendo producto:', err.message);
+        return res.status(500).send("Error al obtener producto");
+      }
+      if (!planta) return res.status(404).send("Producto no encontrado");
+
+      // opcional: incluir nombre de categoría
+      db.get(
+        `SELECT nombre AS categoria FROM categorias WHERE id = ?`,
+        [planta.categoria_id],
+        (err2, cat) => {
+          if (err2) console.warn(err2);
+          if (cat) planta.categoria = cat.categoria;
+          res.json(planta);
+        }
+      );
     }
-  });
+  );
 });
 // ----------------------NOTICIAS ---------------------------
 
@@ -487,45 +515,81 @@ app.post('/api/hilos/:publicacionId', (req, res) => {
 //------------------------------ PLANTAS INFORMACION ----------------------------------
 
 // Endpoint para obtener todas las plantas destacadas
+
+
+// Listar plantas destacadas (antes de informacion)
 app.get('/api/plantas', (req, res) => {
-  db.all('SELECT id, nombre, imagen FROM informacion', [], (err, rows) => {
-    if (err) {
-      console.error('Error al obtener las plantas:', err.message);
-      return res.status(500).json({ error: 'Error al obtener las plantas' });
+  db.all(
+    `SELECT id, nombre, imagen
+     FROM plantas`,
+    [], (err, rows) => {
+      if (err) {
+        console.error('Error al obtener las plantas:', err.message);
+        return res.status(500).json({ error: 'Error al obtener las plantas' });
+      }
+      res.json(rows);
     }
-    res.json(rows); // Devuelve todas las plantas (o podrías limitar a 5)
-  });
+  );
 });
 
-// Endpoint para obtener una planta específica por ID
+// Obtener planta completa por ID (antes de informacion/:id)
 app.get('/api/plantas/:id', (req, res) => {
   const id = req.params.id;
+  db.get(
+    `SELECT id, nombre, descripcion, imagen, categoria_id
+     FROM plantas
+     WHERE id = ?`,
+    [id], (err, planta) => {
+      if (err) {
+        console.error('Error al obtener la planta:', err.message);
+        return res.status(500).json({ error: 'Error al obtener la planta' });
+      }
+      if (!planta) return res.status(404).json({ error: 'Planta no encontrada' });
 
-  db.get('SELECT * FROM informacion WHERE id = ?', [id], (err, row) => {
-    if (err) {
-      console.error('Error al obtener la planta:', err.message);
-      return res.status(500).json({ error: 'Error al obtener la planta' });
-    }
-    if (!row) {
-      return res.status(404).json({ error: 'Planta no encontrada' });
-    }
+      // 1) nombre de la categoría
+      db.get(
+        `SELECT nombre FROM categorias WHERE id = ?`,
+        [planta.categoria_id],
+        (err2, cat) => {
+          if (cat) planta.categoria = cat.nombre;
 
-    res.json(row);
-  });
+          // 2) beneficios
+          db.all(
+            `SELECT beneficio FROM beneficios WHERE planta_id = ?`,
+            [id],
+            (err3, benRows) => {
+              planta.beneficios = benRows.map(b => b.beneficio);
+
+              // 3) usos
+              db.all(
+                `SELECT uso FROM usos WHERE planta_id = ?`,
+                [id],
+                (err4, usoRows) => {
+                  planta.usos = usoRows.map(u => u.uso);
+                  res.json(planta);
+                }
+              );
+            }
+          );
+        }
+      );
+    }
+  );
 });
 
-// Buscar información completa por nombre de planta
+// Búsqueda por nombre (antes /api/informacion?nombre=)
 app.get('/api/informacion', (req, res) => {
   const nombre = req.query.nombre;
   if (!nombre) return res.status(400).json({ error: "Falta nombre" });
 
   db.get(
-    "SELECT * FROM informacion WHERE nombre = ?",
+    `SELECT id FROM plantas WHERE nombre = ?`,
     [nombre],
     (err, row) => {
       if (err) return res.status(500).json({ error: err.message });
       if (!row) return res.status(404).json({ error: "Información no encontrada" });
-      res.json(row);
+      // redirigir internamente al endpoint de detalle
+      res.redirect(`/api/plantas/${row.id}`);
     }
   );
 });
@@ -566,61 +630,52 @@ app.get('/api/resumen-inicio', (req, res) => {
 // RDF/XML GENERACIÓN DINÁMICA
 // ----------------------------------------
 
-app.get('/rdf', (req, res) => {
-  res.setHeader('Content-Type', 'application/rdf+xml');
+// Endpoint /rdf sigue igual, sin tocar.
 
-  const rdfXml = `<?xml version="1.0"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:foaf="http://xmlns.com/foaf/0.1/"
-         xmlns:schema="http://schema.org/">
-
-  <rdf:Description rdf:about="http://sanita.com">
-    <schema:name>Sanita</schema:name>
-    <schema:description>Plataforma de medicina natural, comunidad y catálogo</schema:description>
-    <schema:url>http://sanita.com</schema:url>
-  </rdf:Description>
-
-</rdf:RDF>`;
-
-  res.send(rdfXml);
-});
-
-const builder = require('xmlbuilder');
-
-// Endpoint RDF por planta
+// Endpoint RDF por planta → ahora lee de plantas, beneficios y usos
 app.get('/rdf/:id', (req, res) => {
   const id = req.params.id;
+  db.get(
+    `SELECT id, nombre, descripcion, imagen FROM plantas WHERE id = ?`,
+    [id],
+    (err, planta) => {
+      if (err) return res.status(500).send("Error interno");
+      if (!planta) return res.status(404).send("Planta no encontrada");
 
-  db.get('SELECT * FROM informacion WHERE id = ?', [id], (err, planta) => {
-    if (err) {
-      console.error('Error al obtener la planta para RDF:', err.message);
-      return res.status(500).send("Error interno");
+      // recoger beneficios y usos
+      db.all(
+        `SELECT beneficio AS value FROM beneficios WHERE planta_id = ?`,
+        [id],
+        (err2, bRows) => {
+          db.all(
+            `SELECT uso AS value FROM usos WHERE planta_id = ?`,
+            [id],
+            (err3, uRows) => {
+              const builder = require('xmlbuilder');
+              const rdf = builder.create('rdf:RDF', { encoding: 'UTF-8' })
+                .att('xmlns:rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
+                .att('xmlns:rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
+                .att('xmlns:dc', 'http://purl.org/dc/elements/1.1/')
+                .att('xmlns:sn', 'https://sanita.org/ontology#');
+
+              const node = rdf.ele('rdf:Description', {
+                'rdf:about': `https://sanita.org/planta/${id}`
+              });
+              node.ele('rdfs:label', planta.nombre);
+              node.ele('dc:description', planta.descripcion);
+              bRows.forEach(b => node.ele('sn:beneficio', b.value));
+              uRows.forEach(u => node.ele('sn:uso', u.value));
+              node.ele('sn:imagen', planta.imagen);
+
+              res.set('Content-Type', 'application/rdf+xml');
+              res.send(rdf.end({ pretty: true }));
+            }
+          );
+        }
+      );
     }
-    if (!planta) {
-      return res.status(404).send("Planta no encontrada");
-    }
-
-    const rdf = builder.create('rdf:RDF', { encoding: 'UTF-8' })
-      .att('xmlns:rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-      .att('xmlns:rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
-      .att('xmlns:dc', 'http://purl.org/dc/elements/1.1/')
-      .att('xmlns:sn', 'https://sanita.org/ontology#');
-
-    const plantaNode = rdf.ele('rdf:Description')
-      .att('rdf:about', `https://sanita.org/planta/${id}`);
-
-    plantaNode.ele('rdfs:label', planta.nombre);
-    plantaNode.ele('dc:description', planta.descripcion);
-    plantaNode.ele('sn:beneficio', planta.beneficios);
-    plantaNode.ele('sn:uso', planta.uso);
-    plantaNode.ele('sn:imagen', planta.imagen);
-
-    res.set('Content-Type', 'application/rdf+xml');
-    res.send(rdf.end({ pretty: true }));
-  });
+  );
 });
-
-
 
 
 

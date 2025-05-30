@@ -45,6 +45,31 @@ async function renderizarCarrito() {
     console.error("Error cargando el carrito:", err);
   }
 }
+// 🛠️ Endpoint PUT /carrito/:id para actualizar la cantidad
+app.put('/carrito/:id', (req, res) => {
+  if (!req.session.usuarioId)
+    return res.status(401).json({ error: "No autenticado" });
+
+  const carritoId = req.params.id;
+  const { cantidad } = req.body;
+
+  if (!cantidad || cantidad < 1)
+    return res.status(400).json({ error: "Cantidad inválida" });
+
+  // Verifica que el ítem pertenezca al usuario antes de actualizar
+  db.run(
+    'UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?',
+    [cantidad, carritoId, req.session.usuarioId],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      if (this.changes === 0)
+        return res.status(404).json({ error: "Producto no encontrado en el carrito" });
+
+      res.json({ mensaje: "Cantidad actualizada" });
+    }
+  );
+});
+
 
 // Elimina un producto del carrito
 async function eliminarDelCarrito(carritoId) {
