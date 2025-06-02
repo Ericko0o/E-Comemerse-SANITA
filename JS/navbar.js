@@ -40,8 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         <input type="text" placeholder="🔍 Buscar plantas..." class="search-box"/>
       </div>
 
+      <div class="menu-toggle" id="menu-toggle">☰</div>
+
       <nav>
-        <ul class="nav-links">
+        <ul class="nav-links" id="nav-links">
           <li><a href="inicio.html" class="${window.location.pathname.includes('inicio.html') ? 'active' : ''}">Inicio</a></li>
           <li><a href="catalogo.html" class="${window.location.pathname.includes('catalogo.html') ? 'active' : ''}">Catálogo</a></li>
           <li><a href="comunidad.html" class="${window.location.pathname.includes('comunidad.html') ? 'active' : ''}">Comunidad</a></li>
@@ -51,11 +53,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       </nav>
     </header>
   `;
-  document.dispatchEvent(new Event("navbar-ready"));
 
+  // Activar evento para mostrar/ocultar menú responsive
+  const toggleButton = document.getElementById("menu-toggle");
+  const navLinks = document.getElementById("nav-links");
+
+  toggleButton.addEventListener("click", () => {
+    navLinks.classList.toggle("show");
+  });
+
+  document.dispatchEvent(new Event("navbar-ready"));
 });
 
-// Funciones globales (usadas en HTML dinámico)
+// Funciones globales
 window.toggleMenu = function () {
   document.getElementById("user-dropdown").classList.toggle("hidden");
 };
@@ -76,12 +86,9 @@ window.guardarRutaActual = function () {
   localStorage.setItem("ruta-previa", window.location.pathname);
 };
 
-
-
 // --- Búsqueda de plantas ---
 document.addEventListener('navbar-ready', () => {
   const input = document.querySelector('.search-box');
-
   if (!input) return;
 
   const resultBox = document.createElement('div');
@@ -95,7 +102,6 @@ document.addEventListener('navbar-ready', () => {
       resultBox.style.display = 'none';
       return;
     }
-    console.log("Buscando:", q);
 
     const res = await fetch(`/api/buscar?q=${encodeURIComponent(q)}`);
     const data = await res.json();
