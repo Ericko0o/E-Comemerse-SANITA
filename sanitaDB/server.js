@@ -78,9 +78,6 @@ app.use('/img', express.static(path.join(__dirname, '../img')));
 
 
 // Servir archivos HTML directamente
-app.get('/', (req, res) => {
-  res.send('Servidor funcionando y ruta raíz activa');
-});
 
 app.get('/inicio.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../inicio.html'));
