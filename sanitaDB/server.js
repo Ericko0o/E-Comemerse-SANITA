@@ -13,7 +13,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;;
 
 //------------------------------------------------------------------------
 
@@ -78,6 +78,9 @@ app.use('/img', express.static(path.join(__dirname, '../img')));
 
 
 // Servir archivos HTML directamente
+app.get('/', (req, res) => {
+  res.send('Servidor funcionando y ruta raíz activa');
+});
 
 app.get('/inicio.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../inicio.html'));
@@ -682,6 +685,5 @@ app.get('/rdf/:id', (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, () => {
-  console.log(`Servidor corriendo en puerto ${port}`);
+  console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-
