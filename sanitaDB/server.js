@@ -31,7 +31,7 @@ app.use(session({
   saveUninitialized: true,
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, '..')));
+
 
 
 
@@ -683,4 +683,6 @@ app.get('/rdf/:id', (req, res) => {
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
+}).on('error', (err) => {
+  console.error('Error al iniciar el servidor:', err);
 });
