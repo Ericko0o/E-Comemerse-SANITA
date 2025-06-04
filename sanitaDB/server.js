@@ -70,6 +70,8 @@ app.get('/api/buscar', (req, res) => {
 
 //=========================================================================
 
+// Servir archivos HTML estáticos desde la raíz del proyecto
+app.use(express.static(path.join(__dirname, '..')));
 
 // Servir archivos estáticos (CSS, JS, img)
 app.use('/CSS', express.static(path.join(__dirname, '../CSS')));
@@ -80,10 +82,9 @@ app.use('/img', express.static(path.join(__dirname, '../img')));
 // Servir archivos HTML directamente
 
 app.get('/inicio.html', (req, res) => {
-  const ruta = path.join(__dirname, '../inicio.html');
-  console.log('Enviando archivo:', ruta);
-  res.sendFile(ruta);
+  res.sendFile(path.resolve(__dirname, '..', 'inicio.html'));
 });
+
 
 
 app.get('/login.html', (req, res) => {
