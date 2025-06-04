@@ -13,7 +13,6 @@ const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
-
 const app = express();
 const port = process.env.PORT || 3000;;
 
@@ -21,7 +20,7 @@ const port = process.env.PORT || 3000;;
 
 
 // 1. Servir archivos estáticos desde la raíz del proyecto
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(__dirname));
 
 // 3. Middleware de sesión
 app.use(session({
@@ -64,18 +63,17 @@ app.get('/api/buscar', (req, res) => {
 // 2. Servir carpetas específicas con alias opcional (por claridad)
 
 // Servir archivos estáticos (CSS, JS, img)
-app.use('/CSS', express.static(path.join(__dirname, '../CSS')));
-app.use('/JS', express.static(path.join(__dirname, '../JS')));
-app.use('/img', express.static(path.join(__dirname, '../img')));
+app.use('/CSS', express.static(path.join(__dirname, 'CSS')));
+app.use('/JS', express.static(path.join(__dirname, 'JS')));
+app.use('/img', express.static(path.join(__dirname, 'img')));
+
 
 
 
 // ------------------ RUTAS ------------------ //
 
 // Redirigir / a /inicio.html
-app.get('/', (req, res) => {
-  res.redirect('/inicio.html');
-});
+
 
 /* 
 app.get('/inicio.html', (req, res) => {
@@ -135,7 +133,7 @@ app.get('/', (req, res) => {
 
 //a
 
-const filePath = path.join(__dirname, '../inicio.html');
+const filePath = path.join(__dirname, 'inicio.html');
 console.log('Enviando archivo:', filePath);
 
 app.get('/', (req, res) => {
@@ -159,6 +157,7 @@ fs.readdir(rootPath, (err, files) => {
 });
 
 
+console.log('¿Existe inicio.html en carpeta del servidor?', fs.existsSync(filePath));
 
 //------------------------------------------------------------------------
 // Configurar base de datos SQLite
