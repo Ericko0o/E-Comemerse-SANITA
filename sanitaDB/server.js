@@ -13,6 +13,7 @@ const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;;
@@ -148,6 +149,16 @@ app.get('/', (req, res) => {
 });
 
 console.log('__dirname:', __dirname);
+
+const rootPath = path.join(__dirname, '..');
+fs.readdir(rootPath, (err, files) => {
+  if (err) {
+    console.error('Error leyendo root:', err);
+  } else {
+    console.log('Archivos en raíz del proyecto:', files);
+  }
+});
+
 
 
 //------------------------------------------------------------------------
