@@ -72,6 +72,10 @@ app.use('/img', express.static(path.join(__dirname, '../img')));
 
 // ------------------ RUTAS ------------------ //
 
+// Redirigir / a /inicio.html
+app.get('/', (req, res) => {
+  res.redirect('/inicio.html');
+});
 
 /* 
 app.get('/inicio.html', (req, res) => {
@@ -129,34 +133,21 @@ app.get('/', (req, res) => {
 
 */
 
-const filePath = path.join(__dirname, '..', 'inicio.html');
+//a
+
+const filePath = path.join(__dirname, '../inicio.html');
+console.log('Enviando archivo:', filePath);
 
 app.get('/', (req, res) => {
   res.sendFile(filePath, (err) => {
     if (err) {
-      console.error('Error enviando archivo:', err);
-      res.status(500).send('Error interno del servidor');
+      console.error('Error al enviar archivo:', err);
+      res.status(err.status).end();
     }
   });
 });
 
-app.get('/debug-files', (req, res) => {
-  const folder = path.join(__dirname, '..');
-  const files = require('fs').readdirSync(folder);
-  res.json(files);
-});
-
-
-
-
-
 console.log('__dirname:', __dirname);
-
-
-
-
-
-
 
 
 //------------------------------------------------------------------------
