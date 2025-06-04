@@ -80,8 +80,11 @@ app.use('/img', express.static(path.join(__dirname, '../img')));
 // Servir archivos HTML directamente
 
 app.get('/inicio.html', (req, res) => {
-  res.sendFile(path.join(__dirname, '../inicio.html'));
+  const ruta = path.join(__dirname, '../inicio.html');
+  console.log('Enviando archivo:', ruta);
+  res.sendFile(ruta);
 });
+
 
 app.get('/login.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../login.html'));
