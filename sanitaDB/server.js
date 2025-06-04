@@ -9,22 +9,21 @@ productos desde la base de datos y los envía como respuesta en formato JSON.
 
 // server.js
 const express = require('express');
+const session = require('express-session');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000;;
 
-//------------------------------------------------------------------------
+// ------------------ CONFIGURACIÓN ------------------ //
 
-// 
+
+// 1. Servir archivos estáticos desde la raíz del proyecto
 app.use(express.static(path.join(__dirname, '..')));
 
-
-// Middleware de sesión (Asegurarse de instalar express-session: npm install express-session)
-
-const session = require('express-session');
-
+// 3. Middleware de sesión
 app.use(session({
   secret: 'sanita_clave_secreta', // cambia esto en producción
   resave: false,
@@ -32,16 +31,8 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-
-//------------------------------------------------------------------------
-
-// Configurar servidor para aceptar JSON
+// 4. Aceptar JSON en peticiones
 app.use(express.json());
-
-
-
 
 //=========================================================================
 // Endpoint para buscar plantas por nombre - Adaptado a la tabla 'plantas'
@@ -70,8 +61,7 @@ app.get('/api/buscar', (req, res) => {
 
 //=========================================================================
 
-// Servir archivos HTML estáticos desde la raíz del proyecto
-app.use(express.static(path.join(__dirname, '..')));
+// 2. Servir carpetas específicas con alias opcional (por claridad)
 
 // Servir archivos estáticos (CSS, JS, img)
 app.use('/CSS', express.static(path.join(__dirname, '../CSS')));
@@ -79,12 +69,18 @@ app.use('/JS', express.static(path.join(__dirname, '../JS')));
 app.use('/img', express.static(path.join(__dirname, '../img')));
 
 
-// Servir archivos HTML directamente
 
+// ------------------ RUTAS ------------------ //
+
+// Redirigir / a /inicio.html
+app.get('/', (req, res) => {
+  res.redirect('/inicio.html');
+});
+
+/* 
 app.get('/inicio.html', (req, res) => {
   res.sendFile(path.resolve(__dirname, '..', 'inicio.html'));
 });
-
 
 
 app.get('/login.html', (req, res) => {
@@ -134,6 +130,8 @@ app.get('/pago.html', (req, res) => {
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../inicio.html'));
 });
+
+*/
 
 const filePath = path.join(__dirname, '../inicio.html');
 console.log('Enviando archivo:', filePath);
