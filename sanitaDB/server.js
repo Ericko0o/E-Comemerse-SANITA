@@ -150,6 +150,10 @@ app.get('/', (req, res) => {
 console.log('__dirname:', __dirname);
 
 
+app.get('/', (req, res) => {
+  res.redirect('/inicio.html');
+});
+
 //------------------------------------------------------------------------
 // Configurar base de datos SQLite
 
