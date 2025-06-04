@@ -9,7 +9,7 @@
 /* Fondo del body */
 body {
   background: linear-gradient(rgba(30, 28, 28, 0.6), rgb(8, 37, 8)),
-    url('../IMG/fondoComunidad.jpg');
+    url('../IMG/fondocomunidad.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
