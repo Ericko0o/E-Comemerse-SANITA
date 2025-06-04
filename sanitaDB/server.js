@@ -679,10 +679,19 @@ app.get('/rdf/:id', (req, res) => {
 
 
 
+console.log("Valor de process.env.PORT:", process.env.PORT);
 
 // Iniciar el servidor
+
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`Servidor corriendo en puerto http://localhost:${port}`);
 }).on('error', (err) => {
   console.error('Error al iniciar el servidor:', err);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
 });
