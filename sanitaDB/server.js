@@ -131,6 +131,18 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../inicio.html'));
 });
 
+const filePath = path.join(__dirname, '../inicio.html');
+console.log('Enviando archivo:', filePath);
+
+app.get('/', (req, res) => {
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error('Error al enviar archivo:', err);
+      res.status(err.status).end();
+    }
+  });
+});
+
 
 //------------------------------------------------------------------------
 // Configurar base de datos SQLite
