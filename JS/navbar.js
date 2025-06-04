@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.dispatchEvent(new Event("navbar-ready"));
 });
 
-// Funciones globales
+// --- Funciones globales ---
 window.toggleMenu = function () {
   document.getElementById("user-dropdown").classList.toggle("hidden");
 };
@@ -103,21 +103,27 @@ document.addEventListener('navbar-ready', () => {
       return;
     }
 
-    const res = await fetch(`/api/buscar?q=${encodeURIComponent(q)}`);
-    const data = await res.json();
+    try {
+      const res = await fetch(`/api/buscar?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
 
-    resultBox.innerHTML = data.map(planta => `
-      <div class="search-item" onclick="window.location.href='informacion.html?id=${planta.id}'">
-        <img src="${planta.imagen}" alt="${planta.nombre}" />
-        <span>${planta.nombre}</span>
-      </div>
-    `).join('');
+      resultBox.innerHTML = data.map(planta => `
+        <div class="search-item" onclick="window.location.href='informacion.html?id=${planta.id}'">
+          <img src="${planta.imagen}" alt="${planta.nombre}" />
+          <span>${planta.nombre}</span>
+        </div>
+      `).join('');
 
-    resultBox.style.display = 'block';
-    const rect = input.getBoundingClientRect();
-    resultBox.style.left = `${rect.left}px`;
-    resultBox.style.top = `${rect.bottom + window.scrollY}px`;
-    resultBox.style.width = `${input.offsetWidth}px`;
+      resultBox.style.display = 'block';
+      const rect = input.getBoundingClientRect();
+      resultBox.style.left = `${rect.left}px`;
+      resultBox.style.top = `${rect.bottom + window.scrollY}px`;
+      resultBox.style.width = `${input.offsetWidth}px`;
+    } catch (e) {
+      console.error('Error en la búsqueda:', e);
+      resultBox.innerHTML = '';
+      resultBox.style.display = 'none';
+    }
   });
 
   document.addEventListener('click', (e) => {
