@@ -143,6 +143,8 @@ app.get('/', (req, res) => {
   });
 });
 
+console.log('__dirname:', __dirname);
+
 
 //------------------------------------------------------------------------
 // Configurar base de datos SQLite
