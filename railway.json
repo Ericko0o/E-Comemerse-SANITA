@@ -1,0 +1,10 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksConfigPath": "sanitaDB"
+  },
+  "start": {
+    "cmd": "node server.js",
+    "cwd": "sanitaDB"
+  }
+}
