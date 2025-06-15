@@ -77,3 +77,36 @@ th {
 .btn-comprar:hover {
   background-color: #27ae60;
 }
+
+/* Estilos responsivos para tabletas */
+@media (max-width: 1024px) {
+  .carrito {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .resumen {
+    width: 100%;
+  }
+}
+
+/* Estilos responsivos para móviles */
+@media (max-width: 600px) {
+  .carrito-container {
+    padding: 20px;
+  }
+
+  th, td {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+
+  .btn-comprar {
+    font-size: 0.95em;
+    padding: 12px;
+  }
+}
