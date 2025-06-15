@@ -19,14 +19,15 @@ body {
 .catalogo {
   padding-top: 80px;
   text-align: center;
+  position: relative; /* Necesario para que el ícono se posicione dentro */
 }
 
 /* Icono carrito */
 .carrito-icono {
   position: fixed;
-  top: 80px;
-  right: 20px;
-  z-index: 100;
+  top: 223px; /* Altura respecto a la parte superior de .catalogo */
+  right: 140px; /* Separado del borde derecho */
+  z-index: 10;
 }
 
 .carrito-circulo {
@@ -130,5 +131,26 @@ body {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Ícono flotante en móvil y tablet */
+@media (max-width: 768px) {
+  .carrito-icono {
+    position: fixed;
+    top: unset;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+  }
+
+  .carrito-circulo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .carrito-img {
+    width: 24px;
+    height: 24px;
   }
 }
