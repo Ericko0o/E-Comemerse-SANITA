@@ -79,3 +79,8 @@ body {
   font-size: 0.9em;
   margin-top: 10px;
 }
+
+.registro-form input::placeholder {
+  color: #95ce95;
+  opacity: 1;
+}

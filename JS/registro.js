@@ -3,6 +3,7 @@ async function registrarUsuario() {
   const correo = document.getElementById("correo").value.trim();
   const contrasena = document.getElementById("contrasena").value.trim();
   const imagen = document.getElementById("imagen").value.trim() || "img/usuario.png";
+  const codigoRol = document.getElementById("codigo-rol").value.trim().toLowerCase();
   const status = document.getElementById("status-msg");
 
   status.textContent = "";
@@ -16,7 +17,7 @@ async function registrarUsuario() {
     const res = await fetch('/registrar', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre, correo, contrasena, imagen })
+      body: JSON.stringify({ nombre, correo, contrasena, imagen, codigoRol })
     });
 
     const data = await res.json();
