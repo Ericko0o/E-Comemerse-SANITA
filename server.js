@@ -182,7 +182,7 @@ app.get('/api/noticia/:id', (req, res) => {
 
 //Registro de usuario
 app.post('/registrar', (req, res) => {
-  const { nombre, correo, contrasena, imagen } = req.body;
+  const { nombre, correo, contrasena, imagen, codigoRol } = req.body;
 
   if (!nombre || !correo || !contrasena) {
     return res.status(400).json({ error: "Faltan campos obligatorios." });
@@ -190,9 +190,13 @@ app.post('/registrar', (req, res) => {
 
   const imagenFinal = imagen && imagen.trim() !== "" ? imagen : "img/usuario.png";
 
+  let rol = 'normal';
+  if (codigoRol === 'proveedor2024') rol = 'proveedor';
+  else if (codigoRol === 'moderador2024') rol = 'moderador';
+
   db.run(
-    "INSERT INTO usuarios (nombre, correo, contrasena, imagen) VALUES (?, ?, ?, ?)",
-    [nombre, correo, contrasena, imagenFinal],
+    "INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol) VALUES (?, ?, ?, ?, ?)",
+    [nombre, correo, contrasena, imagenFinal, rol],
     function (err) {
       if (err) {
         if (err.message.includes("UNIQUE constraint failed")) {
@@ -217,10 +221,14 @@ app.post('/login', (req, res) => {
       if (err) return res.status(500).json({ error: err.message });
       if (!row) return res.status(401).json({ error: 'Credenciales inválidas' });
 
+      // Guardar el ID y el rol en la sesión
       req.session.usuarioId = row.id;
-      res.json({ mensaje: 'Inicio de sesión exitoso', usuario: row.nombre });
+      req.session.usuarioRol = row.rol;
+
+      res.json({ mensaje: 'Inicio de sesión exitoso', usuario: row.nombre, rol: row.rol });
     });
 });
+
 
 //Verificar sesion
 app.get('/usuario', (req, res) => {
@@ -228,11 +236,16 @@ app.get('/usuario', (req, res) => {
     return res.json({ logueado: false });
   }
 
-  db.get("SELECT id, nombre, correo, imagen FROM usuarios WHERE id = ?", [req.session.usuarioId], (err, row) => {
+  db.get("SELECT id, nombre, correo, imagen, rol FROM usuarios WHERE id = ?", [req.session.usuarioId], (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ logueado: true, usuario: row });
+
+    res.json({
+      logueado: true,
+      usuario: row
+    });
   });
 });
+
 
 app.post('/usuario/actualizar', (req, res) => {
   if (!req.session.usuarioId) {
