@@ -1,45 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Sanita - Inicio</title>
-<link rel="stylesheet" href="CSS/navbar.css" />
-<link rel="stylesheet" href="CSS/inicio.css" />
-<link rel="stylesheet" href="CSS/noticias.css" />
-<script src="JS/navbar.js" defer></script>
-<script src="JS/inicio.js" defer></script> <!-- Enlace al archivo JS -->
-<script src="JS/noticias.js" defer></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sanita - Noticias</title>
+    <link rel="stylesheet" href="CSS/navbar.css" />
+    <link rel="stylesheet" href="CSS/inicio.css" />
+    <link rel="stylesheet" href="CSS/noticias.css" />
+    <script src="JS/navbar.js" defer></script>
+    <script src="JS/noticias.js" defer></script>
 </head>
 <body>
 
-<!-- Navbar insertada por JS -->
-<div id="navbar-placeholder"></div>
+    <div id="navbar-placeholder"></div>
 
-<!-- Fondo general -->
- <div class="noticias-fondo">
+    <div class="noticias-fondo">
 
-   <!-- NOTICIA PRINCIPAL (se llena con JS) -->
-   <div class="bloque-translucido">
-     <div class="noticia-principal tarjeta-blanca"></div>
-   </div>
+        <div class="noticias-contenido-wrapper">
+            <div class="noticia-principal-wrapper">
+                <div class="noticia-principal"></div>
+            </div>
 
-   <!-- OTRAS NOTICIAS -->
-   <div class="bloque-translucido">
-     <div class="contenedor-otras-noticias">
-       <div class="titulo-secundario">
-         <h2>Otras Noticias</h2>
-         <h3>Subcategoría</h3>
-       </div>
-       <div class="grid-noticias">
-         <!-- Aquí se insertan dinámicamente las tarjetas -->
-       </div>
-     </div>
-   </div>
+            <div class="otras-noticias-wrapper">
+                <div class="titulo-secundario">
+                    <h2>Otras Noticias</h2>
+                    <h3>Subcategoría</h3>
+                </div>
+                <div class="grid-noticias">
+                    </div>
+            </div>
+        </div>
 
-
- </div>
+    </div>
 </body>
 </html>
-
-
