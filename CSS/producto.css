@@ -1,42 +1,38 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  body {
-    background-color: #f5fff5;
-    color: #333;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
 
-  body {
-    background: linear-gradient(rgba(11, 51, 11, 0.6), rgb(8, 37, 8)), url('../IMG/fondo catalogo.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    font-family: 'Segoe UI', sans-serif;
-    color: white;
-    margin: 0;
-    padding: 0;
-  }
+body {
+  background: linear-gradient(rgba(11, 51, 11, 0.6), rgb(8, 37, 8)), url('../IMG/fondo catalogo.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+}
 
-  .producto-detalle {
+.producto-detalle {
   max-width: 1000px;
   margin: 50px auto;
   background-color: rgba(255, 255, 255, 0.08);
   border-radius: 30px;
   padding: 30px;
   display: flex;
-  flex-wrap: wrap;
   gap: 30px;
-  align-items: center;
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  flex-wrap: wrap;
+  align-items: center;
 }
 
-.producto-detalle img {
+.detalle-imagen {
+  flex-shrink: 0;
+}
+
+.detalle-imagen img {
   width: 360px;
-  height: 360px; /* Tamaño cuadrado fijo */
+  height: 360px;
   border-radius: 20px;
   object-fit: cover;
   box-shadow: 0 0 12px rgba(0,0,0,0.4);
@@ -44,74 +40,159 @@
 
 .detalle-info {
   flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 15px;
+}
+
+.carrito-integrado {
+  position: absolute;
+  top: -70px;                /* ← lo sube más arriba */
+  right: -20px;              /* ← lo saca un poco fuera del borde derecho */
+  background: rgba(0, 128, 0, 0.8);
+  width: 56px;               /* ← más grande */
+  height: 56px;              /* ← más grande */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  transform: none;          /* ← quita el pequeño desplazamiento anterior */
+}
+
+.carrito-img {
+  width: 28px;               /* ← más grande */
+  height: 28px;
+  filter: invert(1);
 }
 
 .detalle-info h2 {
   font-size: 2.2em;
-  margin-bottom: 15px;
   color: #fff;
 }
 
 .precio-detalle {
   font-size: 1.8em;
-  margin-bottom: 20px;
   color: #ffdb4d;
   font-weight: bold;
 }
 
 .detalle-info p {
   font-size: 1.1em;
-  margin-bottom: 25px;
   line-height: 1.6;
   color: #ddd;
 }
 
 .boton-agregar {
-  background-color: #27ae60;
+  background-color: #000000;
   color: white;
-  padding: 14px 26px;
+  padding: 0 26px;
+  height: 48px; /* altura uniforme */
   font-size: 1em;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .boton-agregar:hover {
   background-color: #219653;
 }
 
-/* Ícono flotante del carrito */
-.carrito-icono {
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  z-index: 100;
+.info-planta {
+  color: white;
+  text-decoration: underline;
 }
 
-.carrito-circulo {
-  width: 60px;
-  height: 60px;
-  background: rgba(0, 128, 0, 0.6);
-  border-radius: 50%;
+.info-planta:hover {
+  color: #ffd700;
+}
+
+.botones-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+.cantidad-container {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.carrito-img {
-  width: 30px;
-  height: 30px;
-  filter: invert(1);
-}
-
-/* Enlace “Ver más sobre esta planta” en blanco */
-.info-planta {
+  background-color: rgba(13, 53, 13, 0.7);
+  border-radius: 12px;
+  padding: 4px 10px;                  /* menos padding = más compacto */
+  font-size: 0.95em;                  /* letra más pequeña */
   color: white;
-  text-decoration: underline; /* opcional, para resaltarlo */
+  font-weight: normal;
+  height: 40px;                       /* menos alto */
+  gap: 8px;
+  font-family: 'Segoe UI', sans-serif;
+  min-width: auto;                   /* elimina el ancho mínimo fijo */
 }
 
-/* Opcional: cambiar el hover */
-.info-planta:hover {
-  color: #ffd700; /* cambia a un dorado suave al pasar el mouse */
+.btn-cantidad {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.1em;                   /* botón más pequeño también */
+  padding: 2px 6px;
+  cursor: pointer;
+  font-weight: normal;
+  transition: color 0.3s ease;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+#cantidad {
+  font-size: 1em;
+  min-width: 20px;
+  text-align: center;
+  font-weight: normal;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+@media (max-width: 768px) {
+  .producto-detalle {
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    margin: 30px 20px;
+    padding: 20px;
+  }
+
+  .detalle-imagen {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .detalle-imagen img {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+  }
+
+  .detalle-info {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .carrito-integrado {
+    top: 10px;
+    right: 10px;
+    transform: none;
+  }
+
+  .boton-agregar {
+    align-self: flex-start;
+  }
 }
