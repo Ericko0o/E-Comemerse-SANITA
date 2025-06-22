@@ -72,6 +72,30 @@ async function agregarAlCarrito(idProducto) {
   }
 }
 
+function actualizarCantidadVisual(nuevaCantidad) {
+  document.getElementById('cantidad').textContent = nuevaCantidad;
+}
+
+// Funciones de los botones + y –
+async function cambiarCantidad(productoId, operacion) {
+  try {
+    const res = await fetch('/carrito/cantidad', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ producto_id: productoId, operacion })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      actualizarCantidadVisual(data.nuevaCantidad);
+    } else {
+      alert(data.error || 'Error al actualizar cantidad');
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 //renderizar el producto, descripción y enlace a información
 function renderProducto(producto, info) {
   const cont = document.getElementById("producto-detalle");
@@ -100,9 +124,9 @@ function renderProducto(producto, info) {
           Agregar al carrito
         </button>
         <div class="cantidad-container">
-          <button class="btn-cantidad" onclick="modificarCantidad(-1)">–</button>
+          <button class="btn-cantidad" onclick="cambiarCantidad(${producto.id}, 'menos')">–</button>
           <span id="cantidad">0</span>
-          <button class="btn-cantidad" onclick="modificarCantidad(1)">+</button>
+          <button class="btn-cantidad" onclick="cambiarCantidad(${producto.id}, 'mas')">+</button>
         </div>
       </div>
       ${linkInfo}

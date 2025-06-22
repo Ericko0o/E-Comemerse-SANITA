@@ -350,6 +350,39 @@ app.post('/carrito', (req, res) => {
   );
 });
 
+// Cambiar cantidad desde la vista de producto
+app.put('/carrito/cantidad', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  const { producto_id, operacion } = req.body;
+  if (!producto_id || !['mas', 'menos'].includes(operacion)) {
+    return res.status(400).json({ error: "Datos inválidos" });
+  }
+
+  db.get(
+    "SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?",
+    [req.session.usuarioId, producto_id],
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (!row) return res.status(404).json({ error: "Producto no encontrado en carrito" });
+
+      let nuevaCantidad = operacion === 'mas' ? row.cantidad + 1 : row.cantidad - 1;
+      if (nuevaCantidad < 1) {
+        // Si la cantidad llega a 0, eliminar del carrito
+        db.run("DELETE FROM carrito WHERE id = ?", [row.id], (err2) => {
+          if (err2) return res.status(500).json({ error: err2.message });
+          res.json({ mensaje: "Producto eliminado", nuevaCantidad: 0 });
+        });
+      } else {
+        db.run("UPDATE carrito SET cantidad = ? WHERE id = ?", [nuevaCantidad, row.id], function (err2) {
+          if (err2) return res.status(500).json({ error: err2.message });
+          res.json({ mensaje: "Cantidad actualizada", nuevaCantidad });
+        });
+      }
+    }
+  );
+});
+
 // Eliminar un producto del carrito
 app.delete('/carrito/:id', (req, res) => {
   if (!req.session.usuarioId) 
