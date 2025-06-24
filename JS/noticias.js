@@ -1,127 +1,122 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Inserta la barra de navegación (asumiendo que navbar.js se encarga de esto)
-    // Este código aquí es solo un recordatorio si necesitas verificar la inserción.
-    // Si tu navbar.js ya lo hace, puedes ignorar o eliminar este comentario.
-    // fetch('/navbar.html') // O la ruta a tu archivo HTML de la navbar
-    //     .then(response => response.text())
-    //     .then(html => {
-    //         document.getElementById('navbar-placeholder').innerHTML = html;
-    //     });
+    const gridDestacadas = document.querySelector('.grid-noticias-destacadas');
+    const gridOtrasNoticias = document.querySelector('.grid-noticias');
 
-    const grid = document.querySelector('.grid-noticias');
-    const contenedorPrincipal = document.querySelector('.noticia-principal');
+    // Verificar si es moderador para mostrar botón
+    mostrarBotonAgregarNoticiaSiModerador();
 
-    // Obtener noticia aleatoria para la principal
-    fetch('/api/noticias/aleatoria')
+    // Fetch todas las noticias para luego dividirlas
+    fetch('/api/noticias')
         .then(res => {
             if (!res.ok) {
-                // Si la respuesta no es 2xx, lanza un error para que el catch lo capture
                 throw new Error(`HTTP error! status: ${res.status}`);
             }
             return res.json();
         })
-        .then(noticiaPrincipal => {
-            // Mostrar noticia principal
-            contenedorPrincipal.innerHTML = `
-                <div class="noticia-img" style="background-image: url('${noticiaPrincipal.imagen}');"></div>
-                <div class="noticia-texto">
-                    <h2>${noticiaPrincipal.titulo}</h2>
-                    <h3>${noticiaPrincipal.fecha}</h3>
-                    <p>${noticiaPrincipal.contenido_resumen || noticiaPrincipal.contenido.substring(0, 180) + '...'}</p>
-                </div>
-            `;
-            // Agrega el evento de clic a la noticia principal
-            contenedorPrincipal.addEventListener('click', () => {
-                localStorage.setItem('noticiaSeleccionada', noticiaPrincipal.id);
-                window.location.href = 'noticia.html';
-            });
+        .then(data => {
+            const noticiasCompletas = data;
 
-            // Guardar ID de la principal para evitar duplicarla
-            const idPrincipal = noticiaPrincipal.id;
+            // Tomar las primeras 5 noticias para la sección destacada
+            const noticiasDestacadas = noticiasCompletas.slice(0, 5);
+            // El resto de las noticias para la sección "Otras Noticias"
+            const otrasNoticias = noticiasCompletas.slice(5);
 
-            // Ahora cargar el resto de las noticias
-            fetch('/api/noticias')
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! status: ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    grid.innerHTML = ''; // Limpia el grid
-
-                    // Filtra para no repetir la principal (opcional)
-                    const otrasNoticias = data.filter(n => n.id !== idPrincipal);
-                    otrasNoticias.forEach(noticia => {
-                        const tarjeta = document.createElement('div');
-                        tarjeta.className = 'tarjeta'; // Asigna la clase 'tarjeta' al div principal
-                        tarjeta.style.backgroundImage = `url('${noticia.imagen}')`;
-                        tarjeta.setAttribute('data-id', noticia.id);
-                        tarjeta.innerHTML = `
-                            <div class="tarjeta-img-overlay">
-                                <div class="tarjeta-texto">
-                                    <h4>${noticia.titulo}</h4>
-                                    <p>${noticia.fecha}</p>
-                                </div>
-                            </div>
-                        `;
-                        grid.appendChild(tarjeta);
-                    });
-
-                    // Eventos para redireccionar al hacer clic en las tarjetas de la cuadrícula
-                    document.querySelectorAll('.grid-noticias .tarjeta').forEach(tarjeta => { // Más específico
-                        tarjeta.addEventListener('click', () => {
-                            const id = tarjeta.getAttribute('data-id');
-                            localStorage.setItem('noticiaSeleccionada', id);
-                            window.location.href = 'noticia.html';
-                        });
-                    });
-                })
-                .catch(err => {
-                    console.error('Error al cargar otras noticias:', err);
-                    grid.innerHTML = '<p>No se pudieron cargar otras noticias. Intente de nuevo más tarde.</p>';
-                });
+            renderNoticiasDestacadas(noticiasDestacadas);
+            renderOtrasNoticias(otrasNoticias);
         })
         .catch(err => {
-            console.error('Error al obtener noticia principal:', err);
-            // Manejo de error si no se puede cargar la noticia principal
-            contenedorPrincipal.innerHTML = '<p>Error al cargar la noticia principal. Intente de nuevo más tarde.</p>';
-            // De igual manera, intenta cargar las otras noticias aunque no haya principal
-            fetch('/api/noticias')
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! status: ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    grid.innerHTML = '';
-                    data.forEach(noticia => {
-                        const tarjeta = document.createElement('div');
-                        tarjeta.className = 'tarjeta';
-                        tarjeta.style.backgroundImage = `url('${noticia.imagen}')`;
-                        tarjeta.setAttribute('data-id', noticia.id);
-                        tarjeta.innerHTML = `
-                            <div class="tarjeta-img-overlay">
-                                <div class="tarjeta-texto">
-                                    <h4>${noticia.titulo}</h4>
-                                    <p>${noticia.fecha}</p>
-                                </div>
-                            </div>
-                        `;
-                        grid.appendChild(tarjeta);
-                    });
-                    document.querySelectorAll('.grid-noticias .tarjeta').forEach(tarjeta => {
-                        tarjeta.addEventListener('click', () => {
-                            const id = tarjeta.getAttribute('data-id');
-                            localStorage.setItem('noticiaSeleccionada', id);
-                            window.location.href = 'noticia.html';
-                        });
-                    });
-                })
-                .catch(err => {
-                    console.error('Error al cargar noticias alternativas (sin principal):', err);
-                    grid.innerHTML = '<p>No se pudieron cargar las noticias.</p>';
-                });
+            console.error('Error al cargar las noticias:', err);
+            gridDestacadas.innerHTML = '<p>Error al cargar las noticias destacadas.</p>';
+            gridOtrasNoticias.innerHTML = '<p>Error al cargar otras noticias.</p>';
         });
 });
+
+function renderNoticiasDestacadas(noticias) {
+    const gridDestacadas = document.querySelector('.grid-noticias-destacadas');
+    if (!gridDestacadas || !noticias || noticias.length === 0) {
+        gridDestacadas.innerHTML = '<p>No hay noticias destacadas para mostrar.</p>';
+        return;
+    }
+
+    gridDestacadas.innerHTML = ''; // Limpia el grid
+
+    noticias.forEach((noticia, index) => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'tarjeta-destacada';
+        tarjeta.style.backgroundImage = `url('${noticia.imagen}')`;
+        tarjeta.setAttribute('data-id', noticia.id);
+
+        if (index === 0) {
+            tarjeta.classList.add('main-featured-item');
+        } else {
+            tarjeta.classList.add('secondary-featured-item');
+        }
+
+        tarjeta.innerHTML = `
+            <div class="tarjeta-destacada-overlay">
+                <div class="tarjeta-texto">
+                    <h4>${noticia.titulo}</h4>
+                    <p>${noticia.fecha}</p>
+                </div>
+            </div>
+        `;
+        gridDestacadas.appendChild(tarjeta);
+    });
+
+    document.querySelectorAll('.grid-noticias-destacadas .tarjeta-destacada').forEach(tarjeta => {
+        tarjeta.addEventListener('click', () => {
+            const id = tarjeta.getAttribute('data-id');
+            localStorage.setItem('noticiaSeleccionada', id);
+            window.location.href = 'noticia.html';
+        });
+    });
+}
+
+function renderOtrasNoticias(noticias) {
+    const gridOtrasNoticias = document.querySelector('.grid-noticias');
+    if (!gridOtrasNoticias || !noticias || noticias.length === 0) {
+        gridOtrasNoticias.innerHTML = '<p>No hay otras noticias disponibles.</p>';
+        return;
+    }
+
+    gridOtrasNoticias.innerHTML = '';
+
+    noticias.forEach(noticia => {
+        const tarjeta = document.createElement('div');
+        tarjeta.className = 'tarjeta';
+        tarjeta.style.backgroundImage = `url('${noticia.imagen}')`;
+        tarjeta.setAttribute('data-id', noticia.id);
+        tarjeta.innerHTML = `
+            <div class="tarjeta-img-overlay">
+                <div class="tarjeta-texto">
+                    <h4>${noticia.titulo}</h4>
+                    <p>${noticia.fecha}</p>
+                </div>
+            </div>
+        `;
+        gridOtrasNoticias.appendChild(tarjeta);
+    });
+
+    document.querySelectorAll('.grid-noticias .tarjeta').forEach(tarjeta => {
+        tarjeta.addEventListener('click', () => {
+            const id = tarjeta.getAttribute('data-id');
+            localStorage.setItem('noticiaSeleccionada', id);
+            window.location.href = 'noticia.html';
+        });
+    });
+}
+
+// ✅ Mostrar botón si es moderador
+async function mostrarBotonAgregarNoticiaSiModerador() {
+    const rol = await window.obtenerRolUsuario?.();
+    if (rol === 'moderador') {
+        const contenedor = document.getElementById("boton-agregar-noticia");
+        if (contenedor) {
+            contenedor.innerHTML = `
+                <div class="btn-agregar-noticia-wrapper"> <button onclick="window.location.href='agregar-noticia.html'" class="btn-agregar-noticia">
+                        ➕ Agregar Noticia
+                    </button>
+                </div>`;
+        }
+    }
+}

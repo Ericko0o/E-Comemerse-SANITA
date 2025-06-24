@@ -1,3 +1,39 @@
+// --- Funciones globales ---
+window.toggleMenu = function () {
+  document.getElementById("user-dropdown").classList.toggle("hidden");
+};
+
+window.irPerfil = function () {
+  window.location.href = "perfil.html";
+};
+
+window.cerrarSesion = function () {
+  fetch('/logout')
+    .then(() => {
+      localStorage.removeItem('ruta-previa');
+      window.location.href = window.location.pathname;
+    });
+};
+
+window.guardarRutaActual = function () {
+  localStorage.setItem("ruta-previa", window.location.pathname);
+};
+
+// ✅ Función global para obtener el rol del usuario actual
+window.obtenerRolUsuario = async function () {
+  try {
+    const res = await fetch('/usuario');
+    const data = await res.json();
+    if (data.logueado && data.usuario.rol) {
+      return data.usuario.rol;
+    }
+    return "normal";
+  } catch (e) {
+    console.error("Error obteniendo rol:", e);
+    return "normal";
+  }
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
   const placeholder = document.getElementById("navbar-placeholder");
 
@@ -5,6 +41,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let logueado = false;
   let nombre = '';
   let imagen = '';
+  let rol = '';
 
   try {
     const res = await fetch('/usuario');
@@ -13,6 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       logueado = true;
       nombre = data.usuario.nombre;
       imagen = data.usuario.imagen || 'img/usuario.jpg';
+      rol = data.usuario.rol || 'normal';
     }
   } catch (err) {
     console.error('Error al verificar sesión:', err);
@@ -64,27 +102,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.dispatchEvent(new Event("navbar-ready"));
 });
-
-// --- Funciones globales ---
-window.toggleMenu = function () {
-  document.getElementById("user-dropdown").classList.toggle("hidden");
-};
-
-window.irPerfil = function () {
-  window.location.href = "perfil.html";
-};
-
-window.cerrarSesion = function () {
-  fetch('/logout')
-    .then(() => {
-      localStorage.removeItem('ruta-previa');
-      window.location.href = window.location.pathname;
-    });
-};
-
-window.guardarRutaActual = function () {
-  localStorage.setItem("ruta-previa", window.location.pathname);
-};
 
 // --- Búsqueda de plantas ---
 document.addEventListener('navbar-ready', () => {

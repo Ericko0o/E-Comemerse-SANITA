@@ -4,11 +4,12 @@ body {
     background-color: #f0f0f0; /* Un color de fondo base por si el fondo de la imagen no cubre todo */
 }
 
+/* Estilos de fondo para la página principal de noticias */
 .noticias-fondo {
     background-image: url('../img/fondo_noticias.jpg');
     background-repeat: no-repeat;
     background-position: center top;
-    background-size: cover; /* Cambiado a cover para que la imagen cubra todo el espacio */
+    background-size: cover;
     min-height: 100vh;
     padding: 120px 0; /* Espacio para el navbar y contenido */
     position: relative;
@@ -19,14 +20,15 @@ body {
     align-items: flex-start; /* Alinea el contenido al inicio */
 }
 
-.noticias-fondo::after {
+/* Degradado oscuro en la parte inferior, SOLO para la página principal de noticias */
+.pagina-noticias-principal .noticias-fondo::after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #132e17 80%); /* Degradado oscuro en la parte inferior */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #132e17 80%);
     z-index: 0;
     pointer-events: none;
 }
@@ -40,78 +42,137 @@ body {
     padding: 0 1rem; /* Padding horizontal para evitar que el contenido toque los bordes en pantallas pequeñas */
 }
 
-/* NOTICIA PRINCIPAL */
-.noticia-principal-wrapper {
-    margin-bottom: 3rem; /* Espacio debajo de la noticia principal */
-    display: flex;
-    justify-content: center; /* Centrar la noticia principal */
+/* NOTICIAS DESTACADAS - AHORA CON GLASSMORPHISM */
+.noticias-destacadas-wrapper {
+    margin-bottom: 3.5rem; /* Espacio debajo de la sección de destacadas */
+    background-color: rgba(255, 255, 255, 0.08); /* Fondo blanco translúcido */
+    backdrop-filter: blur(12px); /* Efecto de desenfoque */
+    border-radius: 0.7rem; /* Bordes redondeados */
+    padding: 2.5rem; /* Espacio interno */
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.15); /* Sombra sutil */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borde translúcido */
 }
 
-.noticia-principal {
-    width: 100%; /* Ocupa todo el ancho disponible en su contenedor */
-    height: 450px; /* Altura definida para la imagen principal */
-    /* background-color: #fff; REMOVIDO: Ya no será blanco sólido */
+/* Contenedor para el título de destacadas y el botón */
+.header-destacadas {
+    display: flex;
+    justify-content: space-between; /* Espacio entre el título y el botón */
+    align-items: center; /* Centrado vertical */
+    margin-bottom: 2.5rem; /* Ajusta este margen si es necesario */
+    padding: 0 1.5rem; /* Padding horizontal para que no se pegue a los bordes del wrapper glassmorphism */
+}
+
+.titulo-destacadas {
+    text-align: left; /* Alineado a la izquierda para el flexbox */
+    margin-bottom: 0; /* No margin-bottom aquí, lo controla el header-destacadas */
+    color: white; /* Color de texto blanco para que se vea sobre el fondo */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Sombra para legibilidad */
+}
+
+.titulo-destacadas h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.titulo-destacadas h3 {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.grid-noticias-destacadas {
+    display: grid;
+    gap: 1.5rem; /* Espacio entre los elementos de la cuadrícula */
+    grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    /* Definimos las áreas de la cuadrícula para organizar los elementos */
+    grid-template-areas:
+        "main right-top"
+        "main right-bottom"
+        "bottom-left bottom-right";
+}
+
+/* Estilos para las tarjetas dentro de la cuadrícula de destacadas */
+.tarjeta-destacada {
+    position: relative;
     border-radius: 0.7rem;
     overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25); /* Sombra más pronunciada */
-    display: flex;
-    flex-direction: column;
-    position: relative; /* Para posicionar el texto sobre la imagen */
-    cursor: pointer; /* Indica que es clickeable */
-    /* Reintroducimos el glassmorphism para la noticia principal si se desea,
-       pero la solicitud era solo para 'Otras Noticias'.
-       Si quieres que esta también sea transparente, agrega aquí:
-       background-color: rgba(255, 255, 255, 0.08);
-       backdrop-filter: blur(12px);
-       padding: 2rem; /* El padding debe ir si aplicas color al fondo */
-    
-}
-
-.noticia-principal .noticia-img {
-    height: 100%; /* La imagen ocupa toda la altura del contenedor principal */
-    width: 100%;
     background-size: cover;
     background-position: center;
-    border-radius: 0.7rem; /* Redondeado para coincidir con la tarjeta */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: flex-end; /* Para que el texto se alinee al final */
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-.noticia-principal .noticia-texto {
+.tarjeta-destacada:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.tarjeta-destacada .tarjeta-destacada-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 1.5rem 2rem;
+    padding: 1rem 1.2rem;
     color: white;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%); /* Degradado para legibilidad del texto */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0) 100%);
     border-bottom-left-radius: 0.7rem;
     border-bottom-right-radius: 0.7rem;
 }
 
-.noticia-principal .noticia-texto h2 {
+.tarjeta-destacada .tarjeta-destacada-overlay h4 {
     margin: 0;
-    font-size: 2.2rem;
-    line-height: 1.2;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Sombra para el texto del título */
+    font-size: 1.4rem;
+    line-height: 1.3;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
-.noticia-principal .noticia-texto h3 {
-    margin-top: 0.5rem;
+.tarjeta-destacada .tarjeta-destacada-overlay p {
+    margin-top: 0.3rem;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Posicionamiento y tamaño de cada tarjeta destacada */
+.grid-noticias-destacadas .tarjeta-destacada:nth-child(1) {
+    grid-area: main;
+    min-height: 500px; /* Altura de la tarjeta principal */
+}
+
+.grid-noticias-destacadas .tarjeta-destacada:nth-child(2) {
+    grid-area: right-top;
+    min-height: calc((500px - 1.5rem) / 2); /* Mitad de la principal menos el gap */
+}
+
+.grid-noticias-destacadas .tarjeta-destacada:nth-child(3) {
+    grid-area: right-bottom;
+    min-height: calc((500px - 1.5rem) / 2); /* Mitad de la principal menos el gap */
+}
+
+.grid-noticias-destacadas .tarjeta-destacada:nth-child(4) {
+    grid-area: bottom-left;
+    min-height: 250px; /* Altura para las de abajo */
+}
+
+.grid-noticias-destacadas .tarjeta-destacada:nth-child(5) {
+    grid-area: bottom-right;
+    min-height: 250px; /* Altura para las de abajo */
+}
+
+/* Ajustes de tamaño de texto para la tarjeta principal destacada */
+.grid-noticias-destacadas .tarjeta-destacada:nth-child(1) .tarjeta-destacada-overlay h4 {
+    font-size: 2rem;
+}
+.grid-noticias-destacadas .tarjeta-destacada:nth-child(1) .tarjeta-destacada-overlay p {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.8);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
-.noticia-principal .noticia-texto p {
-    margin-top: 0.75rem;
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    line-height: 1.4;
-}
 
-/* OTRAS NOTICIAS */
+/* OTRAS NOTICIAS (Sección con fondo difuminado) */
 .otras-noticias-wrapper {
-    /* Aquí reintroducimos el efecto de glassmorphism */
     background-color: rgba(255, 255, 255, 0.08); /* Fondo blanco muy translúcido */
     backdrop-filter: blur(12px); /* Efecto de desenfoque */
     border-radius: 0.7rem;
@@ -143,7 +204,7 @@ body {
     gap: 2rem; /* Espacio entre las tarjetas */
 }
 
-/* TARJETAS INDIVIDUALES */
+/* TARJETAS INDIVIDUALES (de "Otras Noticias") */
 .tarjeta {
     position: relative;
     height: 280px; /* Altura definida para las tarjetas de noticias */
@@ -190,92 +251,213 @@ body {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
-/* ESTILOS PARA LA PÁGINA DE NOTICIA INDIVIDUAL (noticia.html) */
-.extendida {
-    max-width: 1000px; /* Reducido para una mejor legibilidad en artículos largos */
-    margin: 3rem auto;
-    padding: 3rem;
-    min-height: 80vh;
+
+/* --- DISEÑO PARA LA NOTICIA INDIVIDUAL (noticia.html) --- */
+
+.noticia-individual-fondo {
+    background-image: url('../img/fondo_noticias.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    min-height: 100vh; /* Asegura que el fondo cubra toda la altura */
+    padding: 120px 0; /* Espacio para el navbar y contenido */
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem; /* Aumentado el espacio entre elementos */
-    line-height: 1.6; /* Aumentada la altura de línea para mejor legibilidad */
-    font-size: 1.15rem;
-    background-color: rgba(255, 255, 255, 0.95); /* Fondo casi blanco para el contenido del artículo */
-    border-radius: 0.7rem;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    color: #333; /* Color de texto oscuro para legibilidad */
+    justify-content: center;
+    align-items: flex-start;
+    position: relative;
+    z-index: 0;
 }
 
-.extendida h1 {
-    font-size: 2.5rem;
-    color: #132e17; /* Un color de título que combine con el fondo verde */
-    margin-bottom: 1rem;
-    line-height: 1.2;
+.noticia-individual-fondo::after { /* Degradado sutil para el fondo de la noticia individual */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Un velo oscuro para que el contenido resalte */
+    z-index: 0;
+    pointer-events: none;
 }
-.extendida h2,
-.extendida h3,
-.extendida h4 {
-    color: #132e17; /* Un color de título que combine con el fondo verde */
+
+
+.noticia-individual-wrapper { /* Contenedor principal de la noticia - AHORA CON GLASSMORPHISM */
+    position: relative;
+    z-index: 1; /* Para que esté sobre el fondo y su degradado */
+    max-width: 900px;
+    width: 95%;
+    margin: 2rem auto;
+    background-color: rgba(255, 255, 255, 0.12); /* Fondo más translúcido (blanco) */
+    backdrop-filter: blur(15px); /* Efecto de desenfoque, un poco más fuerte */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil transparente */
+    border-radius: 1rem; /* Bordes más redondeados */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Sombra un poco más pronunciada para contraste */
+    overflow: hidden; /* Para que la imagen principal se vea bien dentro */
+    padding-bottom: 2.5rem; /* Espacio en la parte inferior */
+    color: white; /* Color de texto por defecto para todo el wrapper, se ajustará abajo */
+}
+
+.noticia-cabecera { /* Contenedor para el título y la imagen principal */
+    position: relative;
+    height: 450px; /* Altura fija para la imagen principal */
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+.noticia-cabecera .noticia-principal-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra el espacio */
+    z-index: 0;
+}
+
+.noticia-cabecera .titulo-fecha-overlay {
+    position: relative;
+    z-index: 1;
+    padding: 2rem 2.5rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+    width: 100%;
+    box-sizing: border-box; /* Incluye padding en el ancho */
+}
+
+.noticia-cabecera h1 {
+    font-size: 3rem;
+    margin: 0;
+    line-height: 1.2;
+    color: white; /* Color de texto blanco para el título */
+}
+
+.noticia-cabecera .noticia-fecha {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0.5rem;
+}
+
+.noticia-cuerpo { /* Contenido del texto de la noticia */
+    padding: 2.5rem;
+    line-height: 1.7;
+    font-size: 1.1rem;
+    color: white; /* Texto blanco en el cuerpo de la noticia */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7); /* Sombra para mejor legibilidad */
+}
+
+.noticia-cuerpo p {
+    margin-bottom: 1.5rem;
+}
+
+.noticia-cuerpo h2, .noticia-cuerpo h3, .noticia-cuerpo h4 {
+    color: white; /* Títulos también en blanco */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8); /* Sombra más fuerte para los títulos */
+    margin-top: 2rem;
     margin-bottom: 1rem;
     line-height: 1.3;
 }
 
-.extendida p {
-    color: #555;
-    margin-bottom: 1rem;
-}
-
-.extendida .noticia-fecha {
-    font-size: 1rem;
-    color: #888;
-    margin-bottom: 1.5rem;
-}
-
-
-.extendida .noticia-principal-img { /* Estilo para la imagen principal en la vista extendida */
-    max-width: 100%;
-    height: auto;
-    border-radius: 0.7rem;
-    margin-bottom: 2rem; /* Más espacio debajo de la imagen principal */
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
-
-
-/* Galería de imágenes dentro de noticia */
 .galeria-imagenes {
-    display: grid; /* Cambiado a grid para mejor control */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
 }
 
 .imagen-extra {
-    width: 100%; /* Asegura que la imagen ocupe el ancho de su celda */
-    height: 180px; /* Altura fija para las imágenes de la galería */
+    width: 100%;
+    height: 200px;
     background-size: cover;
     background-position: center;
-    border-radius: 0.7rem;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Media Queries para responsividad */
+/* Contenedor de glassmorphism para el botón */
+.btn-agregar-noticia-wrapper {
+    background-color: rgba(30, 200, 80, 0.15); /* Verde translúcido para el glassmorphism del botón */
+    backdrop-filter: blur(10px); /* Desenfoque */
+    border-radius: 0.6rem; /* Bordes redondeados */
+    padding: 0.7rem 1.2rem; /* Padding interno */
+    border: 1px solid rgba(46, 204, 113, 0.2); /* Borde sutil, un verde más brillante */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra para profundidad */
+    transition: all 0.3s ease; /* Transición para el hover */
+}
+
+.btn-agregar-noticia-wrapper:hover {
+    background-color: rgba(30, 200, 80, 0.25); /* Un poco más opaco al pasar el ratón */
+    border-color: rgba(46, 204, 113, 0.4); /* Borde más visible */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+}
+
+/* Estilos del botón de agregar noticia (AJUSTADO: fondo transparente, sin sombra fuerte) */
+.btn-agregar-noticia {
+    padding: 0.6rem 1.2rem;
+    background: transparent; /* Fondo transparente para que se vea el glassmorphism del wrapper */
+    color: white;
+    border: none;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    box-shadow: none; /* No queremos sombra en el botón interno */
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-agregar-noticia:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Sutil fondo blanco translúcido al pasar el ratón */
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+
+.btn-agregar-noticia:active {
+    background-color: rgba(255, 255, 255, 0.05); /* Más sutil al hacer click */
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+
+/* Media Queries para responsividad (mantienen ajustes previos y añaden para el nuevo diseño) */
 @media (max-width: 992px) {
     .noticias-contenido-wrapper {
         margin: 1.5rem auto;
     }
-    .noticia-principal {
-        height: 350px;
+    .titulo-destacadas h2 {
+        font-size: 2rem;
     }
-    .noticia-principal .noticia-texto h2 {
+    .titulo-destacadas h3 {
+        font-size: 1.1rem;
+    }
+    .grid-noticias-destacadas {
+        grid-template-areas:
+            "main main" /* En tablet, la principal ocupa las 2 columnas superiores */
+            "right-top right-bottom"
+            "bottom-left bottom-right";
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+        gap: 1rem;
+    }
+    .grid-noticias-destacadas .tarjeta-destacada:nth-child(1) {
+        min-height: 380px; /* Altura ajustada para principal en tablet */
+    }
+    .grid-noticias-destacadas .tarjeta-destacada:nth-child(2),
+    .grid-noticias-destacadas .tarjeta-destacada:nth-child(3),
+    .grid-noticias-destacadas .tarjeta-destacada:nth-child(4),
+    .grid-noticias-destacadas .tarjeta-destacada:nth-child(5) {
+        min-height: 185px; /* Altura ajustada para las secundarias en tablet */
+    }
+    .grid-noticias-destacadas .tarjeta-destacada:nth-child(1) .tarjeta-destacada-overlay h4 {
         font-size: 1.8rem;
     }
-    .noticia-principal .noticia-texto h3 {
+    .grid-noticias-destacadas .tarjeta-destacada:nth-child(1) .tarjeta-destacada-overlay p {
         font-size: 1rem;
-    }
-    .noticia-principal .noticia-texto p {
-        font-size: 0.9rem;
     }
     .grid-noticias {
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -290,45 +472,79 @@ body {
     .tarjeta .tarjeta-texto p {
         font-size: 0.9rem;
     }
-    .extendida {
+    /* Noticia Individual Tablet */
+    .noticia-individual-wrapper {
+        width: 90%;
+        margin: 1.5rem auto;
+    }
+    .noticia-cabecera {
+        height: 350px;
+    }
+    .noticia-cabecera h1 {
+        font-size: 2.5rem;
+    }
+    .noticia-cabecera .noticia-fecha {
+        font-size: 1rem;
+    }
+    .noticia-cuerpo {
         padding: 2rem;
-        margin: 2rem auto;
         font-size: 1.05rem;
     }
-    .extendida h1 {
-        font-size: 2rem;
-    }
     .galeria-imagenes {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     }
     .imagen-extra {
-        height: 150px;
+        height: 160px;
     }
 }
 
 @media (max-width: 768px) {
     .noticias-fondo {
-        padding: 80px 0 40px; /* Ajuste de padding para pantallas más pequeñas */
+        padding: 80px 0 40px;
     }
     .noticias-contenido-wrapper {
         margin: 1rem auto;
         padding: 0 0.5rem;
     }
-    .noticia-principal {
-        height: 300px;
+    .titulo-destacadas h2 {
+        font-size: 2rem;
+    }
+    .titulo-destacadas h3 {
+        font-size: 1rem;
+    }
+    /* Media query para el header-destacadas en móvil */
+    .header-destacadas {
+        flex-direction: column; /* Apila el título y el botón en pantallas pequeñas */
+        align-items: center; /* Centra los ítems en columna */
+        gap: 1rem; /* Espacio entre ellos */
+        padding: 0 1rem; /* Ajustar padding */
         margin-bottom: 2rem;
     }
-    .noticia-principal .noticia-texto {
-        padding: 1rem 1.5rem;
+    .titulo-destacadas {
+        text-align: center; /* Centrar el texto en móvil */
+        width: 100%; /* Ocupar todo el ancho */
     }
-    .noticia-principal .noticia-texto h2 {
+    #boton-agregar-noticia {
+        width: 100%; /* Que ocupe todo el ancho disponible */
+        text-align: center; /* Centrar el botón */
+    }
+    .btn-agregar-noticia-wrapper {
+        width: fit-content; /* El wrapper se ajusta al contenido */
+        margin: 0 auto; /* Centrar el wrapper en pantallas pequeñas */
+    }
+    .grid-noticias-destacadas {
+        grid-template-columns: 1fr; /* Una columna en móviles */
+        grid-template-areas: none; /* Elimina las áreas para apilar */
+        gap: 1.2rem;
+    }
+    .grid-noticias-destacadas .tarjeta-destacada {
+        min-height: 250px !important; /* Altura fija para todas en móvil */
+    }
+    .grid-noticias-destacadas .tarjeta-destacada .tarjeta-destacada-overlay h4 {
         font-size: 1.5rem;
     }
-    .noticia-principal .noticia-texto h3 {
+    .grid-noticias-destacadas .tarjeta-destacada .tarjeta-destacada-overlay p {
         font-size: 0.9rem;
-    }
-    .noticia-principal .noticia-texto p {
-        font-size: 0.85rem;
     }
     .otras-noticias-wrapper {
         padding: 1.5rem;
@@ -340,7 +556,7 @@ body {
         font-size: 1rem;
     }
     .grid-noticias {
-        grid-template-columns: 1fr; /* Una columna en móviles */
+        grid-template-columns: 1fr;
         gap: 1.2rem;
     }
     .tarjeta {
@@ -352,19 +568,32 @@ body {
     .tarjeta .tarjeta-texto p {
         font-size: 0.85rem;
     }
-    .extendida {
-        padding: 1.5rem;
-        margin: 1.5rem auto;
-        font-size: 1rem;
+    /* Noticia Individual Mobile */
+    .noticia-individual-wrapper {
+        padding: 0; /* No padding en el contenedor principal */
+        margin: 1rem auto;
+        width: 98%;
+        border-radius: 0.5rem;
     }
-    .extendida h1 {
+    .noticia-cabecera {
+        height: 250px;
+    }
+    .noticia-cabecera .titulo-fecha-overlay {
+        padding: 1.5rem;
+    }
+    .noticia-cabecera h1 {
         font-size: 1.8rem;
     }
-    .extendida .noticia-fecha {
+    .noticia-cabecera .noticia-fecha {
         font-size: 0.9rem;
     }
-    .extendida .noticia-principal-img {
-        margin-bottom: 1.5rem;
+    .noticia-cuerpo {
+        padding: 1.5rem;
+        font-size: 1rem;
+    }
+    .noticia-cuerpo h2, .noticia-cuerpo h3, .noticia-cuerpo h4 {
+        font-size: 1.4rem;
+        margin-top: 1.5rem;
     }
     .galeria-imagenes {
         grid-template-columns: 1fr;

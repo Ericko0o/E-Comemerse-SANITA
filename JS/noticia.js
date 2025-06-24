@@ -1,11 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Inserta la barra de navegación (asumiendo que navbar.js se encarga de esto)
-    // fetch('/navbar.html')
-    //     .then(response => response.text())
-    //     .then(html => {
-    //         document.getElementById('navbar-placeholder').innerHTML = html;
-    //     });
-
     const id = localStorage.getItem('noticiaSeleccionada');
     const contenedor = document.getElementById('noticia-container');
 
@@ -23,10 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(noticia => {
             contenedor.innerHTML = `
-                <h1>${noticia.titulo}</h1>
-                <p class="noticia-fecha">${noticia.fecha}</p>
-                <img class="noticia-principal-img" src="${noticia.imagen}" alt="${noticia.titulo}">
-                <p>${noticia.contenido}</p>
+                <div class="noticia-cabecera">
+                    <img class="noticia-principal-img" src="${noticia.imagen}" alt="${noticia.titulo}">
+                    <div class="titulo-fecha-overlay">
+                        <h1>${noticia.titulo}</h1>
+                        <p class="noticia-fecha">${noticia.fecha}</p>
+                    </div>
+                </div>
+                <div class="noticia-cuerpo">
+                    <p>${noticia.contenido}</p>
+                    <div id="galeria-placeholder"></div>
+                </div>
             `;
 
             // Si tiene imágenes extra (opcional)
@@ -39,10 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         imagenes.forEach(img => {
                             const div = document.createElement('div');
                             div.className = 'imagen-extra';
-                            div.style.backgroundImage = `url('${img}')`; // Usa backgroundImage para las imágenes de galería
+                            div.style.backgroundImage = `url('${img}')`;
                             galeria.appendChild(div);
                         });
-                        contenedor.appendChild(galeria);
+                        // Insertar la galería en el lugar correcto dentro del cuerpo
+                        document.getElementById('galeria-placeholder').appendChild(galeria);
                     }
                 } catch (e) {
                     console.warn('No se pudo parsear imagenesExtra:', e);
