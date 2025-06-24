@@ -51,3 +51,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   obtenerProductos();
 });
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch('/usuario');
+    const data = await res.json();
+
+    if (data.logueado && data.usuario.rol === 'proveedor') {
+      document.getElementById('boton-agregar-planta').style.display = 'block';
+    }
+  } catch (e) {
+    console.error("Error verificando rol de usuario:", e);
+  }
+});

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agregar Nueva Planta</title>
+  <link rel="stylesheet" href="CSS/estilos.css" />
+</head>
+<body>
+  <h2>Agregar Nueva Planta</h2>
+
+  <form id="form-nueva-planta" enctype="multipart/form-data">
+    <label>Nombre de la planta:</label>
+    <input type="text" name="nombre" required />
+
+    <label>Precio:</label>
+    <input type="number" name="precio" step="0.01" required />
+
+    <label>Descripción:</label>
+    <textarea name="descripcion" required></textarea>
+
+    <label>Imagen:</label>
+    <input type="file" name="imagen" accept="image/*" required />
+
+    <button type="submit">Registrar planta</button>
+  </form>
+
+  <script src="JS/nueva-planta.js"></script>
+</body>
+</html>

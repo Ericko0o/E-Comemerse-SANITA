@@ -667,6 +667,49 @@ app.get('/api/informacion', (req, res) => {
   );
 });
 
+//---------------------- SUBIR IMAGENES ---------------------------
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'img/');
+  },
+  filename: (req, file, cb) => {
+    const nombrePlanta = req.body.nombre || 'planta';
+    const ext = path.extname(file.originalname);
+    const nombreFinal = nombrePlanta.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '') + ext;
+    cb(null, nombreFinal);
+  }
+});
+const upload = multer({ storage });
+
+// Ruta para agregar nueva planta
+app.post('/api/plantas', upload.single('imagen'), (req, res) => {
+  if (!req.session.usuarioId || req.session.usuarioRol !== 'proveedor') {
+    return res.status(403).json({ error: 'Solo los proveedores pueden agregar plantas' });
+  }
+
+  const { nombre, precio, descripcion } = req.body;
+  const imagen = req.file ? `img/${req.file.filename}` : null;
+
+  if (!nombre || !precio || !descripcion || !imagen) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+
+  // Por ahora colocamos una categoría por defecto (por ejemplo, 1)
+  const categoria_id = 1;
+
+  const sql = `INSERT INTO plantas (nombre, precio, imagen, descripcion, categoria_id)
+               VALUES (?, ?, ?, ?, ?)`;
+
+  db.run(sql, [nombre, precio, imagen, descripcion, categoria_id], function(err) {
+    if (err) {
+      console.error('Error insertando planta:', err.message);
+      return res.status(500).json({ error: 'Error al guardar en base de datos' });
+    }
+    res.json({ mensaje: 'Planta registrada', id: this.lastID });
+  });
+});
+
 //---------------------- BUSQUEDA ---------------------------
 
 
