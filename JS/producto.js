@@ -56,6 +56,9 @@ async function agregarAlCarrito(idProducto) {
     if (res.ok) {
       const data = await res.json();
       alert(data.mensaje || "Producto agregado al carrito");
+
+      // 👉 Aquí actualizamos el contador a 1
+      document.getElementById("cantidad").textContent = "1";
     } else if (res.status === 401) {
       alert("Debe iniciar sesión.");
       window.location.href = "/login.html";
@@ -73,29 +76,45 @@ async function agregarAlCarrito(idProducto) {
 function renderProducto(producto, info) {
   const cont = document.getElementById("producto-detalle");
 
-  // Escoger descripción: primero la de info, luego producto, luego placeholder
   const descripcion = info?.descripcion || producto.descripcion || "Sin descripción disponible.";
-  // Si hay info, construye el link a informacion.html?id=info.id
   const linkInfo = info
     ? `<p>
         <a href="/informacion.html?id=${info.id}" class="info-planta">
           Ver más sobre esta planta
         </a>
-      </p>`
-    : "";
+      </p>` : "";
 
   cont.innerHTML = `
-    <img src="/img/${producto.imagen.split("/").pop()}" alt="${producto.nombre}">
+    <div class="detalle-imagen">
+      <img src="/img/${producto.imagen.split("/").pop()}" alt="${producto.nombre}">
+    </div>
     <div class="detalle-info">
+      <a href="/carrito.html" class="carrito-integrado" title="Ir al carrito">
+        <img src="/img/Carrito.png" alt="Carrito" class="carrito-img">
+      </a>
       <h2>${producto.nombre}</h2>
       <div class="precio-detalle">S/. ${producto.precio}</div>
       <p>${descripcion}</p>
-      <button class="boton-agregar" onclick="agregarAlCarrito(${producto.id})">
-        Agregar al carrito
-      </button>
+      <div class="botones-container">
+        <button class="boton-agregar" onclick="agregarAlCarrito(${producto.id})">
+          Agregar al carrito
+        </button>
+        <div class="cantidad-container">
+          <button class="btn-cantidad" onclick="modificarCantidad(-1)">–</button>
+          <span id="cantidad">0</span>
+          <button class="btn-cantidad" onclick="modificarCantidad(1)">+</button>
+        </div>
+      </div>
       ${linkInfo}
     </div>
   `;
+}
+
+function modificarCantidad(cambio) {
+  const cantidadElem = document.getElementById("cantidad");
+  let cantidad = parseInt(cantidadElem.textContent, 10);
+  cantidad = Math.max(0, cantidad + cambio);
+  cantidadElem.textContent = cantidad;
 }
 
 //Al cargar la página, unir todo
