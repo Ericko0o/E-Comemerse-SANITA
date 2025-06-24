@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (data.logueado) {
       logueado = true;
       nombre = data.usuario.nombre;
-      imagen = data.usuario.imagen || 'img/usuario.jpg';
+      imagen = data.usuario.imagen || 'img/usuario.png';
       rol = data.usuario.rol || 'normal';
     }
   } catch (err) {
