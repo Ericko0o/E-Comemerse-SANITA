@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agregar Nueva Planta</title>
+  <link rel="stylesheet" href="CSS/navbar.css" />
+  <link rel="stylesheet" href="CSS/nueva-planta.css" />
+  <script src="JS/navbar.js" defer></script>
+  <script src="JS/carrito.js" defer></script>
+</head>
+<body>
+
+  <!-- Navbar insertada por JS -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Espaciado debajo de la navbar -->
+  <div style="height: 80px;"></div> <!-- Agregado para el espaciado -->
+
+  <h2>Agregar Nueva Planta</h2>
+
+  <div class="planta-container">
+    <form id="form-nueva-planta" enctype="multipart/form-data">
+      <label>Nombre de la planta:</label>
+      <input type="text" name="nombre" required />
+
+      <label>Precio:</label>
+      <input type="number" name="precio" step="0.01" min="1" required />
+
+      <label>Descripción:</label>
+      <textarea name="descripcion" required></textarea>
+
+      <label>Imagen:</label>
+      <input type="file" name="imagen" accept="image/*" required />
+
+      <button type="submit">Registrar planta</button>
+    </form>
+  </div>
+
+  <script src="JS/nueva-planta.js"></script>
+</body>
+</html>

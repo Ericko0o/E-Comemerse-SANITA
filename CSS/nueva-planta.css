@@ -1,0 +1,114 @@
+/* Reset y fuente */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Fondo general */
+body {
+  background: linear-gradient(rgba(11, 51, 11, 0.6), rgb(8, 37, 8)), url('../IMG/fondo catalogo.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+}
+
+/* Título */
+h2 {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 2em;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+/* Contenedor del formulario */
+.planta-container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 25px 30px;
+  background-color: rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+}
+
+/* Formulario */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Etiquetas */
+label {
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Inputs y textarea */
+input[type="text"],
+input[type="number"],
+textarea,
+input[type="file"] {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Botón */
+button {
+  background-color: #4CAF50;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #388e3c;
+}
+
+/* Vínculo de volver opcional */
+.volver-catalogo {
+  display: block;
+  margin-top: 20px;
+  text-align: center;
+  color: white;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.volver-catalogo:hover {
+  color: #ffd700;
+}
+
+/* Campos con error */
+.input-error {
+  border: 2px solid red;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .planta-container {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 1.5em;
+  }
+}

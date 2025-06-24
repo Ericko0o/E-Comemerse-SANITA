@@ -350,6 +350,39 @@ app.post('/carrito', (req, res) => {
   );
 });
 
+// Cambiar cantidad desde la vista de producto
+app.put('/carrito/cantidad', (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
+
+  const { producto_id, operacion } = req.body;
+  if (!producto_id || !['mas', 'menos'].includes(operacion)) {
+    return res.status(400).json({ error: "Datos inválidos" });
+  }
+
+  db.get(
+    "SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?",
+    [req.session.usuarioId, producto_id],
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (!row) return res.status(404).json({ error: "Producto no encontrado en carrito" });
+
+      let nuevaCantidad = operacion === 'mas' ? row.cantidad + 1 : row.cantidad - 1;
+      if (nuevaCantidad < 1) {
+        // Si la cantidad llega a 0, eliminar del carrito
+        db.run("DELETE FROM carrito WHERE id = ?", [row.id], (err2) => {
+          if (err2) return res.status(500).json({ error: err2.message });
+          res.json({ mensaje: "Producto eliminado", nuevaCantidad: 0 });
+        });
+      } else {
+        db.run("UPDATE carrito SET cantidad = ? WHERE id = ?", [nuevaCantidad, row.id], function (err2) {
+          if (err2) return res.status(500).json({ error: err2.message });
+          res.json({ mensaje: "Cantidad actualizada", nuevaCantidad });
+        });
+      }
+    }
+  );
+});
+
 // Eliminar un producto del carrito
 app.delete('/carrito/:id', (req, res) => {
   if (!req.session.usuarioId) 
@@ -632,6 +665,49 @@ app.get('/api/informacion', (req, res) => {
       res.redirect(`/api/plantas/${row.id}`);
     }
   );
+});
+
+//---------------------- SUBIR IMAGENES ---------------------------
+const multer = require('multer');
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'img/');
+  },
+  filename: (req, file, cb) => {
+    const nombrePlanta = req.body.nombre || 'planta';
+    const ext = path.extname(file.originalname);
+    const nombreFinal = nombrePlanta.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '') + ext;
+    cb(null, nombreFinal);
+  }
+});
+const upload = multer({ storage });
+
+// Ruta para agregar nueva planta
+app.post('/api/plantas', upload.single('imagen'), (req, res) => {
+  if (!req.session.usuarioId || req.session.usuarioRol !== 'proveedor') {
+    return res.status(403).json({ error: 'Solo los proveedores pueden agregar plantas' });
+  }
+
+  const { nombre, precio, descripcion } = req.body;
+  const imagen = req.file ? `img/${req.file.filename}` : null;
+
+  if (!nombre || !precio || !descripcion || !imagen) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+
+  // Por ahora colocamos una categoría por defecto (por ejemplo, 1)
+  const categoria_id = 1;
+
+  const sql = `INSERT INTO plantas (nombre, precio, imagen, descripcion, categoria_id)
+               VALUES (?, ?, ?, ?, ?)`;
+
+  db.run(sql, [nombre, precio, imagen, descripcion, categoria_id], function(err) {
+    if (err) {
+      console.error('Error insertando planta:', err.message);
+      return res.status(500).json({ error: 'Error al guardar en base de datos' });
+    }
+    res.json({ mensaje: 'Planta registrada', id: this.lastID });
+  });
 });
 
 //---------------------- BUSQUEDA ---------------------------

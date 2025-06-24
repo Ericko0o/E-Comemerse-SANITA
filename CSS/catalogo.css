@@ -33,9 +33,10 @@ body {
 .carrito-circulo {
   width: 60px;
   height: 60px;
-  background: rgba(0, 128, 0, 0.6);
+  background: rgba(0, 128, 0, 0.8);
   border-radius: 50%;
   display: flex;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
   align-items: center;
   justify-content: center;
 }
@@ -122,22 +123,37 @@ body {
   font-size: 14px;
 }
 
-/* Animación entrada opcional */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Ícono agregar planta - igual que carrito pero más abajo */
+.agregar-icono {
+  position: fixed;
+  top: 303px; /* debajo del carrito */
+  right: 140px;
+  z-index: 10;
+}
+
+.agregar-circulo {
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 128, 0, 0.8);
+  border-radius: 50%;
+  display: flex;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.agregar-mas {
+  font-size: 36px;
+  color: white;
+  font-weight: bold;
+  line-height: 1;
+  margin-top: -2px;
 }
 
 /* Ícono flotante en móvil y tablet */
 @media (max-width: 768px) {
   .carrito-icono {
-    position: fixed;
     top: unset;
     bottom: 20px;
     right: 20px;
@@ -152,5 +168,20 @@ body {
   .carrito-img {
     width: 24px;
     height: 24px;
+  }
+
+  .agregar-icono {
+    top: unset;
+    bottom: 90px;
+    right: 20px;
+  }
+
+  .agregar-circulo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .agregar-mas {
+    font-size: 30px;
   }
 }
