@@ -275,35 +275,24 @@ app.get('/logout', (req, res) => {
 
 // ---------------------- CARRITO ---------------------
 
-// Obtener productos del carrito del usuario logueado
-// CREAR TABLA CARRITO SI NO EXISTE (con cantidad)
+// Crear tabla si no existe
+db.run(`
+  CREATE TABLE IF NOT EXISTS carrito (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    planta_id INTEGER NOT NULL,
+    cantidad INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (planta_id) REFERENCES plantas(id)
+  )
+`);
 
-
-// (Recreamos la tabla carrito apuntando ahora a plantas)
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS carrito (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      usuario_id INTEGER NOT NULL,
-      planta_id INTEGER NOT NULL,
-      cantidad INTEGER NOT NULL DEFAULT 1,
-      FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-      FOREIGN KEY (planta_id) REFERENCES plantas(id)
-    )
-  `);
-});
-
+// Obtener todos los productos del carrito
 app.get('/carrito', (req, res) => {
   if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   const sql = `
-    SELECT
-      c.id            AS carrito_id,
-      c.cantidad,
-      p.id            AS producto_id,
-      p.nombre,
-      p.precio,
-      p.imagen
+    SELECT c.id AS carrito_id, c.cantidad, p.id AS producto_id, p.nombre, p.precio, p.imagen
     FROM carrito c
     JOIN plantas p ON c.planta_id = p.id
     WHERE c.usuario_id = ?
@@ -314,111 +303,168 @@ app.get('/carrito', (req, res) => {
   });
 });
 
+// Agregar producto al carrito (o aumentar cantidad si ya existe)
 app.post('/carrito', (req, res) => {
-  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
   const { producto_id } = req.body;
+  const uid = req.session.usuarioId;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
   if (!producto_id) return res.status(400).json({ error: "Falta producto_id" });
 
-  // nota: renombramos internamente a planta_id
-  db.get(
-    "SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?",
-    [req.session.usuarioId, producto_id],
-    (err, row) => {
-      if (err) return res.status(500).json({ error: err.message });
+  db.get("SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?", [uid, producto_id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
 
-      if (row) {
-        const nuevaCantidad = row.cantidad + 1;
-        db.run(
-          "UPDATE carrito SET cantidad = ? WHERE id = ?",
-          [nuevaCantidad, row.id],
-          function (err) {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ mensaje: "Cantidad actualizada", cantidad: nuevaCantidad });
-          }
-        );
-      } else {
-        db.run(
-          "INSERT INTO carrito (usuario_id, planta_id, cantidad) VALUES (?, ?, ?)",
-          [req.session.usuarioId, producto_id, 1],
-          function (err) {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ mensaje: "Producto agregado", id: this.lastID });
-          }
-        );
-      }
+    if (row) {
+      db.run("UPDATE carrito SET cantidad = cantidad + 1 WHERE id = ?", [row.id], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ mensaje: "Cantidad actualizada" });
+      });
+    } else {
+      db.run("INSERT INTO carrito (usuario_id, planta_id, cantidad) VALUES (?, ?, 1)", [uid, producto_id], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ mensaje: "Producto agregado", id: this.lastID });
+      });
     }
-  );
+  });
 });
 
-// Cambiar cantidad desde la vista de producto
+// Actualizar cantidad desde producto (+/-)
 app.put('/carrito/cantidad', (req, res) => {
-  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
-
   const { producto_id, operacion } = req.body;
+  const uid = req.session.usuarioId;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
   if (!producto_id || !['mas', 'menos'].includes(operacion)) {
     return res.status(400).json({ error: "Datos inválidos" });
   }
 
-  db.get(
-    "SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?",
-    [req.session.usuarioId, producto_id],
-    (err, row) => {
-      if (err) return res.status(500).json({ error: err.message });
-      if (!row) return res.status(404).json({ error: "Producto no encontrado en carrito" });
+  db.get("SELECT id, cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?", [uid, producto_id], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.status(404).json({ error: "Producto no encontrado" });
 
-      let nuevaCantidad = operacion === 'mas' ? row.cantidad + 1 : row.cantidad - 1;
-      if (nuevaCantidad < 1) {
-        // Si la cantidad llega a 0, eliminar del carrito
-        db.run("DELETE FROM carrito WHERE id = ?", [row.id], (err2) => {
-          if (err2) return res.status(500).json({ error: err2.message });
-          res.json({ mensaje: "Producto eliminado", nuevaCantidad: 0 });
-        });
-      } else {
-        db.run("UPDATE carrito SET cantidad = ? WHERE id = ?", [nuevaCantidad, row.id], function (err2) {
-          if (err2) return res.status(500).json({ error: err2.message });
-          res.json({ mensaje: "Cantidad actualizada", nuevaCantidad });
-        });
-      }
+    const nueva = operacion === 'mas' ? row.cantidad + 1 : row.cantidad - 1;
+    if (nueva < 1) {
+      db.run("DELETE FROM carrito WHERE id = ?", [row.id], err2 => {
+        if (err2) return res.status(500).json({ error: err2.message });
+        res.json({ mensaje: "Producto eliminado", nuevaCantidad: 0 });
+      });
+    } else {
+      db.run("UPDATE carrito SET cantidad = ? WHERE id = ?", [nueva, row.id], function (err2) {
+        if (err2) return res.status(500).json({ error: err2.message });
+        res.json({ mensaje: "Cantidad actualizada", nuevaCantidad: nueva });
+      });
     }
-  );
+  });
 });
 
-// Eliminar un producto del carrito
+// Actualizar cantidad desde input manual (vista carrito)
+app.put('/carrito/:id', (req, res) => {
+  const { cantidad } = req.body;
+  const uid = req.session.usuarioId;
+  const id = req.params.id;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+  if (!cantidad || isNaN(cantidad) || cantidad < 1) {
+    return res.status(400).json({ error: "Cantidad inválida" });
+  }
+
+  db.run("UPDATE carrito SET cantidad = ? WHERE id = ? AND usuario_id = ?", [cantidad, id, uid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: "Carrito no encontrado" });
+    res.json({ mensaje: "Cantidad actualizada correctamente" });
+  });
+});
+
+// Obtener cantidad actual de un producto
+app.get('/carrito/cantidad/:idProducto', (req, res) => {
+  const uid = req.session.usuarioId;
+  const idProd = req.params.idProducto;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+
+  db.get("SELECT cantidad FROM carrito WHERE usuario_id = ? AND planta_id = ?", [uid, idProd], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ cantidad: row ? row.cantidad : 0 });
+  });
+});
+
+// Eliminar producto del carrito
 app.delete('/carrito/:id', (req, res) => {
-  if (!req.session.usuarioId) 
-    return res.status(401).json({ error: "No autenticado" });
+  const uid = req.session.usuarioId;
+  const id = req.params.id;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
 
-  const carritoId = req.params.id;
-
-  db.run(
-    `DELETE FROM carrito 
-     WHERE id = ? AND usuario_id = ?`,
-    [carritoId, req.session.usuarioId],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      if (this.changes === 0) 
-        return res.status(404).json({ error: "No encontrado" });
-      res.json({ mensaje: "Producto eliminado del carrito" });
-    }
-  );
+  db.run("DELETE FROM carrito WHERE id = ? AND usuario_id = ?", [id, uid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ error: "No encontrado" });
+    res.json({ mensaje: "Producto eliminado" });
+  });
 });
 
-// Vaciar todo el carrito del usuario logueado
+// Vaciar carrito completo
 app.delete('/vaciar-carrito', (req, res) => {
-  if (!req.session.usuarioId) 
-    return res.status(401).json({ error: "No autenticado" });
+  const uid = req.session.usuarioId;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
 
-  db.run(
-    `DELETE FROM carrito 
-     WHERE usuario_id = ?`,
-    [req.session.usuarioId],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ mensaje: "Carrito vaciado" });
-    }
-  );
+  db.run("DELETE FROM carrito WHERE usuario_id = ?", [uid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ mensaje: "Carrito vaciado" });
+  });
 });
 
+// ---------------------- HISTORIAL DE PEDIDO ---------------------
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS historial_pedidos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado TEXT DEFAULT 'origen',
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+  )
+`);
+
+app.post('/pedido', (req, res) => {
+  const uid = req.session.usuarioId;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+
+  db.run("INSERT INTO historial_pedidos (usuario_id) VALUES (?)", [uid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ mensaje: "Pedido registrado", pedido_id: this.lastID });
+  });
+});
+
+app.put('/pedido/estado', (req, res) => {
+  const uid = req.session.usuarioId;
+  const { estado } = req.body;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+
+  db.run(`
+    UPDATE historial_pedidos
+    SET estado = ?
+    WHERE usuario_id = ? AND id = (
+      SELECT id FROM historial_pedidos
+      WHERE usuario_id = ?
+      ORDER BY fecha DESC
+      LIMIT 1
+    )
+  `, [estado, uid, uid], function (err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ mensaje: "Estado actualizado" });
+  });
+});
+
+app.get('/pedido/estado', (req, res) => {
+  const uid = req.session.usuarioId;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+
+  db.get(`
+    SELECT estado FROM historial_pedidos
+    WHERE usuario_id = ?
+    ORDER BY fecha DESC
+    LIMIT 1
+  `, [uid], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!row) return res.json({ estado: null });  // No hay pedido
+    res.json({ estado: row.estado });
+  });
+});
 
 
 // --------------------- PRODUCTOS (ahora plantas) ---------------------

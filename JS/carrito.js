@@ -1,4 +1,4 @@
-// Renderiza todo el carrito al cargar la página o tras actualizaciones
+// Renderizar carrito completo
 async function renderizarCarrito() {
   try {
     const res = await fetch("/carrito", { credentials: 'include' });
@@ -9,7 +9,7 @@ async function renderizarCarrito() {
     const totalSpan = document.getElementById("total");
     let subtotal = 0;
 
-    contenedor.innerHTML = ""; // Limpiar filas previas
+    contenedor.innerHTML = "";
 
     if (Array.isArray(carrito) && carrito.length > 0) {
       carrito.forEach(item => {
@@ -51,7 +51,7 @@ async function renderizarCarrito() {
   }
 }
 
-// Elimina un producto del carrito
+// Eliminar producto del carrito
 async function eliminarDelCarrito(carritoId) {
   try {
     await fetch(`/carrito/${carritoId}`, {
@@ -64,24 +64,23 @@ async function eliminarDelCarrito(carritoId) {
   }
 }
 
-// Actualiza la cantidad de un producto
+// Actualizar cantidad desde input
 async function actualizarCantidad(carritoId, nuevaCantidad) {
-  try {
-    const cantidad = parseInt(nuevaCantidad, 10);
-    if (isNaN(cantidad) || cantidad < 1) return;
+  const cantidad = parseInt(nuevaCantidad, 10);
+  if (isNaN(cantidad) || cantidad < 1) return;
 
+  try {
     await fetch(`/carrito/${carritoId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: 'include',
       body: JSON.stringify({ cantidad })
     });
-
     renderizarCarrito();
   } catch (err) {
     console.error("Error actualizando cantidad:", err);
   }
 }
 
-// Inicializar
+// Iniciar render al cargar
 document.addEventListener("DOMContentLoaded", renderizarCarrito);

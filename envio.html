@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seguimiento de envio</title>
+  <link rel="stylesheet" href="CSS/navbar.css" />
+  <link rel="stylesheet" href="CSS/envio.css" /> <!-- Cambié a catalogo.css -->
+  <script src="JS/navbar.js" defer></script>
+  <script src="JS/envio.js" defer></script>
+</head>
+<body>
+
+  <!-- Navbar insertada por JS -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Espaciado debajo de la navbar -->
+  <div style="height: 80px;"></div> <!-- Agregado para el espaciado -->
+
+  <main class="envio-container">
+    <h1>Seguimiento de tu Pedido</h1>
+
+    <div class="estado-envio">
+      <div class="estado" id="origen">
+        <div class="circulo">
+          <img src="img/origen.png" alt="Origen" />
+        </div>
+        <p>Origen</p>
+        <small id="fecha-origen"></small>
+      </div>
+      <div class="estado" id="camino">
+        <div class="circulo">
+          <img src="img/camino.png" alt="Camino" />
+        </div>
+        <p>En camino</p>
+        <small id="fecha-camino"></small>
+      </div>
+      <div class="estado" id="destino">
+        <div class="circulo">
+          <img src="img/destino.png" alt="Destino" />
+        </div>
+        <p>Entregado</p>
+        <small id="fecha-destino"></small>
+      </div>
+    </div>
+
+    <button id="btn-recibido">Ya lo recogí</button>
+  </main>
+</body>
+</html>

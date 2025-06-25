@@ -12,9 +12,11 @@
 <body>
   <div id="navbar-placeholder"></div>
   <div style="height: 80px;"></div>
+
   <main class="pago-container">
     <h1>Simulación de Pago</h1>
     <p>Ingresa los datos simulados para realizar tu compra:</p>
+
     <form id="pago-form">
       <input type="text" placeholder="Nombre en tarjeta" required />
 
@@ -26,6 +28,7 @@
         required
         title="Introduce entre 13 y 18 dígitos. Se insertan espacios automáticamente."
       />
+
       <input
         type="text"
         id="fecha-exp"
@@ -35,10 +38,21 @@
         pattern="(0[1-9]|1[0-2])\/[0-9]{2}"
         title="Formato válido: MM/AA"
       />
+
       <input type="text" placeholder="CVV" required />
       <button type="submit">Pagar ahora</button>
     </form>
+
     <div id="mensaje-pago"></div>
+
+    <!-- Segundo formulario, oculto inicialmente -->
+    <form id="form-envio" style="display: none; margin-top: 30px;">
+      <h2>Información de envío</h2>
+      <input type="text" id="direccion-envio" placeholder="Dirección de entrega" required />
+      <input type="text" id="telefono-envio" placeholder="Teléfono" required />
+      <input type="text" id="dni-envio" placeholder="DNI" required />
+      <button type="submit">Confirmar Envío</button>
+    </form>
   </main>
 </body>
 </html>

@@ -60,3 +60,28 @@ button:hover {
 .input-error {
   border: 2px solid red;
 }
+
+#form-envio {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#form-envio input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+#form-envio button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+#form-envio button:hover {
+  background-color: #388e3c;
+}

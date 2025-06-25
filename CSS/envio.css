@@ -1,0 +1,97 @@
+/* Reset y fuente */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Fondo general */
+body {
+  background: linear-gradient(rgba(11, 51, 11, 0.6), rgb(8, 37, 8)), url('../IMG/fondo catalogo.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: white;
+}
+
+.envio-container {
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+  padding: 30px;
+}
+
+.estado-envio {
+  display: flex;
+  justify-content: space-around;
+  margin: 40px 0;
+}
+
+.estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.estado img {
+  width: 70px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.estado p {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+.estado small {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.circulo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #ccc;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: background 0.3s ease;
+  padding-top: 8px; /* para bajarla un poco más */
+}
+
+.circulo img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* blanco puro */
+  transition: transform 0.3s ease;
+}
+
+/* Efecto visual si se desea en hover */
+.circulo:hover img {
+  transform: scale(1.1);
+}
+
+.estado.activo .circulo {
+  background-color: #4CAF50;
+}
+
+#btn-recibido {
+  padding: 12px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+#btn-recibido:hover {
+  background-color: #388e3c;
+}

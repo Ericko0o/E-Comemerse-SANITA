@@ -67,6 +67,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     </li>`
     : `<li><a href="login.html" onclick="guardarRutaActual()">Login</a></li>`;
 
+  // Comprobar si el usuario tiene un pedido activo no recibido
+  let mostrarCamion = false;
+  if (logueado) {
+    try {
+      const pedidoRes = await fetch('/pedido/estado', { credentials: 'include' });
+      const pedidoData = await pedidoRes.json();
+      if (pedidoData.estado && pedidoData.estado !== 'recibido') {
+        mostrarCamion = true;
+      }
+    } catch (e) {
+      console.error('Error al verificar estado de pedido:', e);
+    }
+  }
+
   placeholder.innerHTML = `
     <header class="navbar">
       <div class="logo">
@@ -82,6 +96,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       <nav>
         <ul class="nav-links" id="nav-links">
+          <li id="btn-camion" style="display: ${mostrarCamion ? "block" : "none"};">
+            <a href="envio.html">
+              <img src="img/camion.png" alt="Seguimiento" class="icono-envio-navbar" />
+            </a>
+          </li>
           <li><a href="inicio.html" class="${window.location.pathname.includes('inicio.html') ? 'active' : ''}">Inicio</a></li>
           <li><a href="catalogo.html" class="${window.location.pathname.includes('catalogo.html') ? 'active' : ''}">Catálogo</a></li>
           <li><a href="comunidad.html" class="${window.location.pathname.includes('comunidad.html') ? 'active' : ''}">Comunidad</a></li>

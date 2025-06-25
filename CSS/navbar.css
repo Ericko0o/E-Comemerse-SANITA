@@ -93,6 +93,46 @@
   color: white;
 }
 
+/* --- Camion de envio --- */
+
+.icono-envio-navbar {
+  width: 40px;
+  height: 40px;
+  filter: brightness(0) invert(1); /* Convierte la imagen a blanco */
+  transition: transform 0.3s ease;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.icono-envio-navbar:hover {
+  transform: scale(1.1);
+}
+
+#btn-camion a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  background: transparent;
+  transition: background 0.3s;
+}
+
+#btn-camion a:hover {
+  background: #4CAF50;
+}
+
+#btn-camion .icono-envio-navbar {
+  width: 40px;
+  height: 40px;
+  filter: brightness(0) invert(1);
+  transition: transform 0.3s;
+}
+
+#btn-camion a:hover .icono-envio-navbar {
+  transform: scale(1.1);
+}
+
 /* --- Menú de usuario (ícono redondo) --- */
 .user-menu {
   position: relative;
