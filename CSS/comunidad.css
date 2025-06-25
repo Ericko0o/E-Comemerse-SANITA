@@ -4,6 +4,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', sans-serif;
+    scroll-behavior: smooth;
 }
 
 /* Fondo del body */
@@ -14,29 +15,36 @@ body {
     background-position: center;
     background-attachment: fixed;
     color: #f0f0f0;
-    min-height: 100vh; /* Para asegurar que el fondo cubra toda la altura */
+    min-height: 100vh;
     display: flex;
-    flex-direction: column; /* Para que la navbar fija no oculte el contenido */
+    flex-direction: column;
 }
 
 /* Contenedor principal de la página de comunidad */
 .comunidad {
-    max-width: 1200px; /* Un poco más ancho para acomodar el diseño */
-    margin: 100px auto 2rem; /* Margen superior para la navbar */
+    max-width: 1200px;
+    margin: 100px auto 2rem; /* Mantener un margen superior para que no se superponga con el navbar */
     padding: 2rem;
-    background-color: rgba(255, 255, 255, 0.05); /* Transparencia base */
+    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(12px); /* Mayor blur para glassmorphism */
-    -webkit-backdrop-filter: blur(12px); /* Compatibilidad Safari */
-    border: 1px solid rgba(255, 255, 255, 0.18); /* Borde translúcido */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     animation: fadeIn 0.6s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem; /* Aumento de la separación */
+    display: block;
+    /* Remover 'position: relative;' de aquí si no es estrictamente necesario,
+       o asegúrate de que no tenga propiedades que creen un nuevo contexto de apilamiento para 'fixed' children.
+       Ya que lo movimos fuera, no debería ser un problema, pero es buena práctica saberlo.
+    */
+    position: static; /* O lo que necesites, pero NO `relative` si no hay `fixed` children */
 }
 
 /* Título y descripción de la sección */
+.comunidad-content {
+    margin-bottom: 2.5rem;
+}
+
 .comunidad-content h1 {
     font-size: 3rem;
     color: #b5fcb5;
@@ -46,30 +54,24 @@ body {
 
 .comunidad-content p {
     font-size: 1.15rem;
-    margin-bottom: 1rem;
     color: #e0e0e0;
 }
 
-/* Layout de columnas principal */
-.comunidad-layout {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap; /* Permite que las columnas se envuelvan en pantallas pequeñas */
-}
-
-/* Columna principal del contenido (Publicaciones) */
-.main-content {
-    flex: 3; /* Ocupa 3 partes del espacio */
+/* Contenedor principal de publicaciones (últimas y todos los hilos) */
+.publicaciones-container-fixed {
+    width: 880px;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    min-width: 0; /* Permite que se encoja correctamente */
+    flex-shrink: 0;
+    margin: 0 auto;
 }
 
 /* Estilos para las secciones de publicaciones */
 .seccion-destacada,
 .seccion-posts {
-    background-color: rgba(30, 50, 30, 0.4); /* Fondo más claro para el glassmorphism */
+    background-color: rgba(30, 50, 30, 0.4);
     border-radius: 16px;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -91,14 +93,8 @@ body {
     padding-bottom: 0.8rem;
 }
 
-
 /* Contenedores de publicaciones individuales */
-.publicaciones-destacadas {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
+.publicaciones-destacadas,
 .posts {
     display: flex;
     flex-direction: column;
@@ -107,16 +103,17 @@ body {
 
 /* Estilo para cada publicación (post) */
 .post {
-    background-color: rgba(50, 70, 50, 0.5); /* Ligeramente más oscuro que el contenedor principal */
+    background-color: rgba(50, 70, 50, 0.5);
     color: #f0f0f0;
     padding: 1.5rem;
     border-radius: 16px;
-    backdrop-filter: blur(10px); /* Blur para el post */
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    width: 100%;
 }
 
 .post:hover {
@@ -133,57 +130,55 @@ body {
 }
 
 .post-header .avatar {
-    width: 50px; /* Un poco más grande */
+    width: 50px;
     height: 50px;
     border-radius: 50%;
     object-fit: cover;
-    border: 3px solid #b5fcb5; /* Borde más pronunciado */
+    border: 3px solid #b5fcb5;
     box-shadow: 0 0 8px rgba(181, 252, 181, 0.4);
+    flex-shrink: 0;
 }
 
 .post-header h2 {
     font-size: 1.4rem;
     color: #b5fcb5;
     margin: 0;
+    word-break: break-word;
 }
 
 .post-header small {
     color: #d0d0d0;
     font-size: 0.9rem;
-    display: block; /* Para que la fecha vaya debajo del nombre */
+    display: block;
 }
 
 .post p {
     margin-bottom: 0.8rem;
     line-height: 1.6;
     color: #e0e0e0;
+    word-break: break-word;
 }
 
-.post p strong { /* Este strong es para el título anterior, ahora es h3 */
-    font-size: 1.1rem;
-    color: #b5fcb5;
-}
-
-.post h3 { /* Nuevo estilo para el título de la publicación */
+.post h3 {
     font-size: 1.3rem;
     color: #e0f2e0;
     margin-bottom: 0.8rem;
+    word-break: break-word;
 }
-
 
 /* Botón de comentarios */
 .mostrar-comentarios {
-    background-color: rgba(76, 175, 80, 0.8); /* Glassmorphism en el botón */
+    background-color: rgba(76, 175, 80, 0.8);
     color: white;
     border: none;
     border-radius: 50%;
-    font-size: 1.3rem; /* Más grande */
+    font-size: 1.3rem;
     width: 35px;
     height: 35px;
     cursor: pointer;
     position: absolute;
-    top: 15px; /* Ajustado */
-    right: 15px; /* Ajustado */
+    top: 15px;
+    right: 15px;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     backdrop-filter: blur(5px);
@@ -199,45 +194,47 @@ body {
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    display: none; /* Controlado por JS */
-    display: flex; /* Usamos flexbox para el layout interno */
+    display: none;
+    display: flex;
     flex-direction: column;
     gap: 0.8rem;
 }
 
 .area-comentarios .comentario {
     display: flex;
-    align-items: flex-start; /* Alineación al inicio */
+    align-items: flex-start;
     gap: 0.8rem;
     padding: 0.7rem;
-    background-color: rgba(255, 255, 255, 0.08); /* Fondo más claro para comentarios */
+    background-color: rgba(255, 255, 255, 0.08);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .area-comentarios .comentario img {
-    width: 35px; /* Avatar más grande */
+    width: 35px;
     height: 35px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #94d094;
-    flex-shrink: 0; /* Previene que la imagen se encoja */
+    flex-shrink: 0;
 }
 
 .area-comentarios .comentario strong {
     font-weight: bold;
     color: #cceccc;
     font-size: 1rem;
+    word-break: break-word;
 }
 
 .area-comentarios .comentario span {
     font-size: 0.95rem;
     color: #e0e0e0;
+    word-break: break-word;
 }
 
 /* Input y botón de nuevo comentario */
-.area-comentarios .comment-input-area { /* Nuevo contenedor para input y botón */
+.area-comentarios .comment-input-area {
     display: flex;
     gap: 0.5rem;
     margin-top: 1rem;
@@ -246,13 +243,13 @@ body {
 
 .area-comentarios .comment-input-area input {
     flex-grow: 1;
-    margin-top: 0; /* Resetear margin-top si está dentro de un flex */
-    width: auto; /* Ancho automático dentro de flexbox */
+    margin-top: 0;
+    width: auto;
     padding: 0.8rem 1rem;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     outline: none;
-    background-color: rgba(255, 255, 255, 0.15); /* Fondo glassmorphism para input */
+    background-color: rgba(255, 255, 255, 0.15);
     color: white;
     font-size: 1rem;
     transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -284,73 +281,46 @@ body {
     transform: translateY(-2px);
 }
 
-.area-comentarios .aviso {
-    color: #ffcccc !important; /* Rojo más suave y !important para sobrescribir */
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    padding: 0.5rem;
-    background-color: rgba(255, 0, 0, 0.1);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 0, 0, 0.2);
-    text-align: center;
-}
-
-.area-comentarios .aviso a {
-    color: #ffb5b5; /* Un rojo más claro para el enlace */
-    text-decoration: underline;
-}
-
-
-/* Barra lateral de acciones (Glassmorphism) */
-.acciones-laterales {
-    flex: 1; /* Ocupa 1 parte del espacio */
-    min-width: 250px; /* Ancho mínimo para que se vea bien */
-    position: sticky;
-    top: 100px; /* Ajuste para la navbar */
-    align-self: flex-start; /* Para que no se estire y se pegue arriba */
-    background-color: rgba(255, 255, 255, 0.08); /* Fondo transparente */
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 1.5rem;
+/* Círculos flotantes de acciones - REVISADO Y ASEGURADO */
+.acciones-laterales-flotantes {
+    position: fixed; /* ¡MUY IMPORTANTE! Esto los hace seguir la ventana */
+    top: 150px; /* Posición inicial desde el top, el JS la ajustará */
+    right: 21vw; /* <--- VALOR AJUSTADO PARA RESPONSIVE CON VW. Puedes probar con 2vw, 4vw, etc., según lo necesites. */
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
-    height: fit-content; /* Se ajusta al contenido */
-}
-
-.acciones-laterales h3 {
-    color: #b5fcb5;
-    font-size: 1.8rem;
-    margin-bottom: 0.8rem;
-    text-align: center;
-    border-bottom: 1px solid rgba(181, 252, 181, 0.3);
-    padding-bottom: 0.8rem;
-}
-
-.acciones-laterales button {
-    background-color: rgba(78, 104, 79, 0.7); /* Color base con transparencia */
-    color: white;
+    gap: 15px;
+    z-index: 1000; /* Asegura que estén por encima de otros elementos */
+    background-color: transparent; /* Fondo transparente para el contenedor */
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
     border: none;
-    padding: 0.8rem 1.2rem; /* Más padding para el texto */
-    border-radius: 10px; /* Bordes más suaves */
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    pointer-events: auto; /* Permite interacciones con el mouse */
+}
+
+.acciones-laterales-flotantes button {
+    background-color: rgba(78, 104, 79, 0.7); /* Fondo verde semitransparente */
+    color: white; /* Color del texto/icono */
+    border: none;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%; /* Para que sean círculos */
+    font-size: 1.8rem; /* Tamaño de los íconos/texto */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    line-height: 1; /* Asegura que el contenido esté centrado verticalmente */
 }
 
-.acciones-laterales button:hover {
-    background-color: #4CAF50; /* Verde más brillante al pasar el mouse */
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+.acciones-laterales-flotantes button:hover {
+    background-color: #4CAF50;
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
 }
 
 /* Animación */
@@ -367,31 +337,45 @@ body {
 
 /* Media Queries para Responsive Design */
 @media (max-width: 992px) {
-    .comunidad-layout {
-        flex-direction: column; /* Apila las columnas en pantallas más pequeñas */
-        align-items: center; /* Centra el contenido apilado */
+    .comunidad {
+        width: auto;
+        max-width: 100%;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-    .main-content {
-        width: 100%; /* Ocupa todo el ancho */
-        flex: none; /* Desactiva flex-grow */
+    .publicaciones-container-fixed {
+        width: 100%;
+        max-width: 100%;
     }
 
-    .acciones-laterales {
-        width: 90%; /* Ocupa la mayor parte del ancho */
-        max-width: 400px; /* Pero con un máximo */
-        position: static; /* Desactiva sticky para móviles */
-        align-self: center; /* Centra el menú lateral */
+    /* Aquí ajustamos el comportamiento de los botones en pantallas pequeñas */
+    .acciones-laterales-flotantes {
+        position: static; /* Vuelven a ser estáticos en móviles */
+        flex-direction: row; /* Se colocan en fila */
+        width: 100%;
+        justify-content: center;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        transform: none;
+        top: auto;
+        right: auto;
+        left: auto;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
     }
 
     .comunidad {
-        margin: 100px 1rem 2rem; /* Reduce márgenes laterales en móviles */
+        margin: 100px 1rem 2rem;
         padding: 1.5rem;
     }
 
     .seccion-destacada h2,
-    .seccion-posts h2,
-    .acciones-laterales h3 {
+    .seccion-posts h2 {
         font-size: 1.8rem;
     }
 }
@@ -428,8 +412,9 @@ body {
         font-size: 1rem;
     }
 
-    .acciones-laterales button {
-        padding: 0.7rem 1rem;
-        font-size: 0.9rem;
+    .acciones-laterales-flotantes button {
+        width: 45px;
+        height: 45px;
+        font-size: 1.5rem;
     }
 }

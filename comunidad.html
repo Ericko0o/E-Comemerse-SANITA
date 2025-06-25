@@ -11,45 +11,29 @@
 </head>
 <body>
     <div id="navbar-placeholder"></div>
-    <div style="height: 80px;"></div>
-
-    <section class="comunidad">
+    <div style="height: 80px;"></div> <section class="comunidad">
         <div class="comunidad-content">
             <h1>Comunidad Sanita</h1>
             <p>Bienvenido a nuestro espacio de experiencias y comentarios.</p>
         </div>
 
-        <div class="comunidad-layout">
-            <div class="main-content">
-                <div class="seccion-destacada">
-                    <h2>Últimas Publicaciones</h2>
-                    <div class="publicaciones-destacadas">
-                        </div>
-                </div>
-
-                <div class="seccion-posts">
-                    <h2>Todos los Hilos</h2>
-                    <div class="posts">
-                        </div>
-                </div>
+        <div class="publicaciones-container-fixed">
+            <div class="seccion-destacada">
+                <h2>Últimas Publicaciones</h2>
+                <div class="publicaciones-destacadas">
+                    </div>
             </div>
 
-            <div class="acciones-laterales">
-                <h3>Acciones Rápidas</h3>
-                <button onclick="location.href='inicio.html'">🏠 Inicio</button>
-                <button onclick="buscar()">🔍 Buscar Publicación</button>
-                <button id="btnNuevaPublicacion">➕ Nueva Publicación</button>
-                </div>
+            <div class="seccion-posts">
+                <h2>Todos los Hilos</h2>
+                <div class="posts">
+                    </div>
+            </div>
         </div>
     </section>
 
-    <script>
-        function buscar() {
-            const termino = prompt("¿Qué deseas buscar?");
-            if (termino) {
-                alert("Buscando: " + termino);
-            }
-        }
-    </script>
+    <div class="acciones-laterales-flotantes">
+        <button id="btnSubir" title="Ir arriba">⬆️</button> <button id="btnBuscar" title="Buscar Publicación">🔎</button> <button id="btnNuevaPublicacion" title="Nueva Publicación">➕</button>
+    </div>
 </body>
 </html>
