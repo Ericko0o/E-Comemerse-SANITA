@@ -1,197 +1,435 @@
 /* Reset general */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 /* Fondo del body */
 body {
-  background: linear-gradient(rgba(30, 28, 28, 0.6), rgb(8, 37, 8)),
-    url('../IMG/fondocomunidad.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: #f0f0f0;
+    background: linear-gradient(rgba(30, 28, 28, 0.6), rgb(8, 37, 8)),
+        url('../IMG/fondocomunidad.jpg'); /* Asegúrate de que esta ruta sea correcta */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #f0f0f0;
+    min-height: 100vh; /* Para asegurar que el fondo cubra toda la altura */
+    display: flex;
+    flex-direction: column; /* Para que la navbar fija no oculte el contenido */
 }
 
-/* Contenedor principal */
+/* Contenedor principal de la página de comunidad */
 .comunidad {
-  max-width: 1100px;
-  margin: 100px auto 2rem;
-  padding: 2rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(8px);
-  animation: fadeIn 0.6s ease-in-out;
-  display: flex;
-  flex-direction: column; /* Se coloca todo en columna */
-  gap: 2rem;
+    max-width: 1200px; /* Un poco más ancho para acomodar el diseño */
+    margin: 100px auto 2rem; /* Margen superior para la navbar */
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.05); /* Transparencia base */
+    border-radius: 20px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px); /* Mayor blur para glassmorphism */
+    -webkit-backdrop-filter: blur(12px); /* Compatibilidad Safari */
+    border: 1px solid rgba(255, 255, 255, 0.18); /* Borde translúcido */
+    animation: fadeIn 0.6s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem; /* Aumento de la separación */
 }
 
-/* Título */
+/* Título y descripción de la sección */
 .comunidad-content h1 {
-  font-size: 2.8rem;
-  color: #b5fcb5;
-  margin-bottom: 1rem;
+    font-size: 3rem;
+    color: #b5fcb5;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
 }
 
 .comunidad-content p {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+    color: #e0e0e0;
 }
 
-/* Layout de columnas */
-.comunidad-wrapper {
-  display: flex;
-  gap: 2rem;
+/* Layout de columnas principal */
+.comunidad-layout {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap; /* Permite que las columnas se envuelvan en pantallas pequeñas */
 }
 
-/* Columna de posts */
+/* Columna principal del contenido (Publicaciones) */
+.main-content {
+    flex: 3; /* Ocupa 3 partes del espacio */
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 0; /* Permite que se encoja correctamente */
+}
+
+/* Estilos para las secciones de publicaciones */
+.seccion-destacada,
+.seccion-posts {
+    background-color: rgba(30, 50, 30, 0.4); /* Fondo más claro para el glassmorphism */
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.seccion-destacada h2,
+.seccion-posts h2 {
+    color: #b5fcb5;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(181, 252, 181, 0.3);
+    padding-bottom: 0.8rem;
+}
+
+
+/* Contenedores de publicaciones individuales */
+.publicaciones-destacadas {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .posts {
-  flex: 1; /* Asegura que ocupe todo el ancho disponible */
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  width: 100%; /* Asegura que ocupe todo el espacio disponible */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-/* Post */
+/* Estilo para cada publicación (post) */
 .post {
-  background-color: rgba(30, 50, 30, 0.6);
-  color: #f0f0f0;
-  padding: 1.2rem;
-  border-radius: 16px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
+    background-color: rgba(50, 70, 50, 0.5); /* Ligeramente más oscuro que el contenedor principal */
+    color: #f0f0f0;
+    padding: 1.5rem;
+    border-radius: 16px;
+    backdrop-filter: blur(10px); /* Blur para el post */
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.post:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Encabezado del post */
 .post-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
 }
 
 .post-header .avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #b5fcb5;
+    width: 50px; /* Un poco más grande */
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #b5fcb5; /* Borde más pronunciado */
+    box-shadow: 0 0 8px rgba(181, 252, 181, 0.4);
+}
+
+.post-header h2 {
+    font-size: 1.4rem;
+    color: #b5fcb5;
+    margin: 0;
 }
 
 .post-header small {
-  color: #ccc;
-  font-size: 0.85rem;
+    color: #d0d0d0;
+    font-size: 0.9rem;
+    display: block; /* Para que la fecha vaya debajo del nombre */
 }
+
+.post p {
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    color: #e0e0e0;
+}
+
+.post p strong { /* Este strong es para el título anterior, ahora es h3 */
+    font-size: 1.1rem;
+    color: #b5fcb5;
+}
+
+.post h3 { /* Nuevo estilo para el título de la publicación */
+    font-size: 1.3rem;
+    color: #e0f2e0;
+    margin-bottom: 0.8rem;
+}
+
 
 /* Botón de comentarios */
 .mostrar-comentarios {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  position: absolute;
-  top: 10px;
-  right: 10px;
+    background-color: rgba(76, 175, 80, 0.8); /* Glassmorphism en el botón */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.3rem; /* Más grande */
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    position: absolute;
+    top: 15px; /* Ajustado */
+    right: 15px; /* Ajustado */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
+}
+
+.mostrar-comentarios:hover {
+    background-color: #4CAF50;
+    transform: scale(1.1);
 }
 
 /* Área de comentarios debajo de cada post */
 .area-comentarios {
-  margin-top: 1rem;
-  display: none;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: none; /* Controlado por JS */
+    display: flex; /* Usamos flexbox para el layout interno */
+    flex-direction: column;
+    gap: 0.8rem;
 }
 
 .area-comentarios .comentario {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start; /* Alineación al inicio */
+    gap: 0.8rem;
+    padding: 0.7rem;
+    background-color: rgba(255, 255, 255, 0.08); /* Fondo más claro para comentarios */
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .area-comentarios .comentario img {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
+    width: 35px; /* Avatar más grande */
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #94d094;
+    flex-shrink: 0; /* Previene que la imagen se encoja */
+}
+
+.area-comentarios .comentario strong {
+    font-weight: bold;
+    color: #cceccc;
+    font-size: 1rem;
 }
 
 .area-comentarios .comentario span {
-  font-weight: bold;
-  color: #cceccc;
-  font-size: 0.95rem;
+    font-size: 0.95rem;
+    color: #e0e0e0;
 }
 
-/* Input de nuevo comentario */
-.area-comentarios input {
-  width: 100%;
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: white;
-  margin-top: 0.5rem;
+/* Input y botón de nuevo comentario */
+.area-comentarios .comment-input-area { /* Nuevo contenedor para input y botón */
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    align-items: center;
 }
 
-/* Botón enviar */
-.area-comentarios button {
-  margin-top: 0.4rem;
-  padding: 0.4rem 1rem;
-  background-color: #66bb6a;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  transition: background 0.2s ease;
+.area-comentarios .comment-input-area input {
+    flex-grow: 1;
+    margin-top: 0; /* Resetear margin-top si está dentro de un flex */
+    width: auto; /* Ancho automático dentro de flexbox */
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.15); /* Fondo glassmorphism para input */
+    color: white;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.area-comentarios button:hover {
-  background-color: #4caf50;
+.area-comentarios .comment-input-area input::placeholder {
+    color: #bbb;
 }
 
-/* Barra lateral de acciones */
+.area-comentarios .comment-input-area input:focus {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: #b5fcb5;
+}
+
+.area-comentarios .comment-input-area button {
+    padding: 0.8rem 1.2rem;
+    background-color: #66bb6a;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.area-comentarios .comment-input-area button:hover {
+    background-color: #4caf50;
+    transform: translateY(-2px);
+}
+
+.area-comentarios .aviso {
+    color: #ffcccc !important; /* Rojo más suave y !important para sobrescribir */
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(255, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    text-align: center;
+}
+
+.area-comentarios .aviso a {
+    color: #ffb5b5; /* Un rojo más claro para el enlace */
+    text-decoration: underline;
+}
+
+
+/* Barra lateral de acciones (Glassmorphism) */
 .acciones-laterales {
-  position: sticky;
-  top: 100px; /* Comienza justo debajo del header */
-  right: 20px; /* Se alinea al costado derecho */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  z-index: 10; /* Para que esté por encima del contenido */
+    flex: 1; /* Ocupa 1 parte del espacio */
+    min-width: 250px; /* Ancho mínimo para que se vea bien */
+    position: sticky;
+    top: 100px; /* Ajuste para la navbar */
+    align-self: flex-start; /* Para que no se estire y se pegue arriba */
+    background-color: rgba(255, 255, 255, 0.08); /* Fondo transparente */
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    height: fit-content; /* Se ajusta al contenido */
+}
+
+.acciones-laterales h3 {
+    color: #b5fcb5;
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(181, 252, 181, 0.3);
+    padding-bottom: 0.8rem;
 }
 
 .acciones-laterales button {
-  background-color: #4e684f;
-  color: white;
-  border: none;
-  padding: 0.8rem;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  cursor: pointer;
+    background-color: rgba(78, 104, 79, 0.7); /* Color base con transparencia */
+    color: white;
+    border: none;
+    padding: 0.8rem 1.2rem; /* Más padding para el texto */
+    border-radius: 10px; /* Bordes más suaves */
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    backdrop-filter: blur(5px);
+}
+
+.acciones-laterales button:hover {
+    background-color: #4CAF50; /* Verde más brillante al pasar el mouse */
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 /* Animación */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Media Queries para Responsive Design */
+@media (max-width: 992px) {
+    .comunidad-layout {
+        flex-direction: column; /* Apila las columnas en pantallas más pequeñas */
+        align-items: center; /* Centra el contenido apilado */
+    }
+
+    .main-content {
+        width: 100%; /* Ocupa todo el ancho */
+        flex: none; /* Desactiva flex-grow */
+    }
+
+    .acciones-laterales {
+        width: 90%; /* Ocupa la mayor parte del ancho */
+        max-width: 400px; /* Pero con un máximo */
+        position: static; /* Desactiva sticky para móviles */
+        align-self: center; /* Centra el menú lateral */
+    }
+
+    .comunidad {
+        margin: 100px 1rem 2rem; /* Reduce márgenes laterales en móviles */
+        padding: 1.5rem;
+    }
+
+    .seccion-destacada h2,
+    .seccion-posts h2,
+    .acciones-laterales h3 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .comunidad {
+        padding: 1rem;
+    }
+
+    .comunidad-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .comunidad-content p {
+        font-size: 1rem;
+    }
+
+    .post {
+        padding: 1rem;
+    }
+
+    .post-header .avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    .post-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .mostrar-comentarios {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
+
+    .acciones-laterales button {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
 }

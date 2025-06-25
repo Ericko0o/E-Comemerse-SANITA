@@ -1,51 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sanita - Comunidad</title>
-  <link rel="stylesheet" href="CSS/navbar.css" />
-  <link rel="stylesheet" href="CSS/comunidad.css" />
-  <script src="JS/navbar.js" defer></script>
-  <script src="JS/comunidad.js" defer></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sanita - Comunidad</title>
+    <link rel="stylesheet" href="CSS/navbar.css" />
+    <link rel="stylesheet" href="CSS/comunidad.css" />
+    <script src="JS/navbar.js" defer></script>
+    <script src="JS/comunidad.js" defer></script>
 </head>
 <body>
-  <!-- Navbar insertada por JS -->
-  <div id="navbar-placeholder"></div>
-  <div style="height: 80px;"></div>
+    <div id="navbar-placeholder"></div>
+    <div style="height: 80px;"></div>
 
-  <section class="comunidad">
-    <div class="comunidad-content">
-      <h1>Comunidad Sanita</h1>
-      <p>Bienvenido a nuestro espacio de experiencias y comentarios.</p>
-    </div>
-
-    <div class="comunidad-wrapper">
-      <!-- Barra lateral de acciones -->
-      <div class="acciones-laterales">
-        <button onclick="location.href='inicio.html'">🏠</button>
-        <button onclick="buscar()">🔍</button>
-        <button id="btnNuevaPublicacion">➕</button>
-      </div>
-
-      <!-- Área principal de publicaciones -->
-      <div class="comunidad-layout">
-        <!-- Publicaciones -->
-        <div class="posts">
-          <!-- Aquí se insertarán dinámicamente las publicaciones desde comunidad.js -->
+    <section class="comunidad">
+        <div class="comunidad-content">
+            <h1>Comunidad Sanita</h1>
+            <p>Bienvenido a nuestro espacio de experiencias y comentarios.</p>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Buscar función -->
-  <script>
-    function buscar() {
-      const termino = prompt("¿Qué deseas buscar?");
-      if (termino) {
-        alert("Buscando: " + termino);
-      }
-    }
-  </script>
+        <div class="comunidad-layout">
+            <div class="main-content">
+                <div class="seccion-destacada">
+                    <h2>Últimas Publicaciones</h2>
+                    <div class="publicaciones-destacadas">
+                        </div>
+                </div>
+
+                <div class="seccion-posts">
+                    <h2>Todos los Hilos</h2>
+                    <div class="posts">
+                        </div>
+                </div>
+            </div>
+
+            <div class="acciones-laterales">
+                <h3>Acciones Rápidas</h3>
+                <button onclick="location.href='inicio.html'">🏠 Inicio</button>
+                <button onclick="buscar()">🔍 Buscar Publicación</button>
+                <button id="btnNuevaPublicacion">➕ Nueva Publicación</button>
+                </div>
+        </div>
+    </section>
+
+    <script>
+        function buscar() {
+            const termino = prompt("¿Qué deseas buscar?");
+            if (termino) {
+                alert("Buscando: " + termino);
+            }
+        }
+    </script>
 </body>
 </html>
