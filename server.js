@@ -10,14 +10,13 @@ const builder = require('xmlbuilder');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ---------------------- CONEXIÓN POSTGRES ---------------------- //
-// ---------------------- CONEXIÓN POSTGRES (RAILWAY) ---------------------- //
+// ---------------------- CONEXIÓN POSTGRES (RAILWAY - con variables de entorno) ---------------------- //
 const pool = new Pool({
-  user: 'postgres',
-  host: 'shortline.proxy.rlwy.net', // Host público de Railway
-  database: 'railway',               // Nombre de la base de datos en Railway
-  password: 'eaaXhGSqNhMAGGXSlDkUzlxZAqtSiiLg', // Contraseña de Railway
-  port: 29359,                       // Puerto público de Railway
+  host: process.env.PGHOST,
+  port: process.env.PGPORT,
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  database: process.env.PGDATABASE,
 });
 
 // ---------------------- CONFIGURACIÓN GENERAL ---------------------- //
