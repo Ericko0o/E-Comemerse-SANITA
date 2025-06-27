@@ -1,3 +1,4 @@
+require('dotenv').config(); 
 // ---------------------- DEPENDENCIAS ---------------------- //
 const express = require('express');
 const session = require('express-session');
@@ -39,6 +40,7 @@ pool.connect((err, client, done) => {
     done();
   }
 });
+
 // ---------------------- CONFIGURACIÓN GENERAL ---------------------- //
 app.use(express.static(__dirname));
 app.use('/CSS', express.static(path.join(__dirname, 'CSS')));
@@ -255,7 +257,6 @@ app.get('/pedido/estado', async (req, res) => {
 });
 
 // ------------------ PLANTAS DESTACADAS ------------------
-
 app.get('/api/plantas', async (req, res) => {
   try {
     const result = await pool.query(
@@ -268,7 +269,179 @@ app.get('/api/plantas', async (req, res) => {
   }
 });
 
+// ------------------ PRODUCTOS (CATÁLOGO) - NUEVA RUTA ------------------
+// En server.js, dentro de la ruta /api/productos
+app.get('/api/productos', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT
+         p.id,
+         p.nombre,
+         p.precio,
+         p.imagen,
+         c.nombre AS categoria  -- <--- Obtenemos el nombre de la categoría
+       FROM
+         plantas p
+       JOIN
+         categorias c ON p.categoria_id = c.id`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error al obtener productos del catálogo:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
 
+// ------------------ OBTENER PRODUCTO POR ID - NUEVA RUTA ------------------
+// Ruta para obtener un producto específico por su ID
+app.get('/api/productos/:id', async (req, res) => {
+  const id = req.params.id; // Captura el ID de la URL
+  try {
+    const result = await pool.query(
+      // Consulta la tabla 'plantas' para encontrar el producto con el ID
+      'SELECT id, nombre, precio, imagen, descripcion FROM plantas WHERE id = $1',
+      [id]
+    );
+
+    const producto = result.rows[0]; // El primer (y único) resultado
+    
+    if (!producto) {
+      // Si no se encuentra el producto, devuelve un 404
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    // Devuelve el producto encontrado
+    res.json(producto);
+  } catch (err) {
+    console.error('Error al obtener producto por ID:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// ------------------ OBTENER INFORMACIÓN ADICIONAL POR NOMBRE - CORREGIDA ------------------
+// Esta ruta busca información extendida (descripción, beneficios, usos) de una planta por su nombre.
+app.get('/api/informacion', async (req, res) => {
+  const nombrePlanta = req.query.nombre; // Captura el parámetro 'nombre' de la URL
+  
+  if (!nombrePlanta) {
+    return res.status(400).json({ error: "Falta el parámetro 'nombre'." });
+  }
+  
+  try {
+    // 1. Busca la planta por su nombre para obtener su ID y descripción
+    const plantaResult = await pool.query(
+      `SELECT id, descripcion FROM plantas WHERE nombre = $1`,
+      [nombrePlanta]
+    );
+    
+    const planta = plantaResult.rows[0];
+    
+    if (!planta) {
+      return res.status(404).json({ error: "Información de planta no encontrada." });
+    }
+    
+    const plantaId = planta.id;
+
+    // 2. Busca los beneficios usando el ID de la planta
+    const beneficiosResult = await pool.query(
+      `SELECT beneficio FROM beneficios WHERE planta_id = $1`,
+      [plantaId]
+    );
+    
+    // 3. Busca los usos usando el ID de la planta
+    const usosResult = await pool.query(
+      `SELECT uso FROM usos WHERE planta_id = $1`,
+      [plantaId]
+    );
+    
+    // 4. Construye el objeto de respuesta combinando toda la información
+    const infoAdicional = {
+      id: plantaId,
+      descripcion: planta.descripcion,
+      beneficios: beneficiosResult.rows.map(row => row.beneficio).join('; '), // Unir con un separador
+      uso: usosResult.rows.map(row => row.uso).join('; ') // Unir con un separador
+    };
+    
+    res.json(infoAdicional);
+  } catch (err) {
+    console.error('Error al obtener info adicional:', err);
+    res.status(500).json({ error: 'Error interno del servidor.' });
+  }
+});
+
+// ------------------ OBTENER INFORMACIÓN DE PLANTA POR ID - NUEVA RUTA ------------------
+// Esta ruta es usada por informacion.js
+app.get('/api/plantas/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const plantaResult = await pool.query(
+      `SELECT id, nombre, descripcion, imagen FROM plantas WHERE id = $1`,
+      [id]
+    );
+    const planta = plantaResult.rows[0];
+    
+    if (!planta) {
+      return res.status(404).json({ error: 'Planta no encontrada' });
+    }
+
+    const beneficiosResult = await pool.query(
+      `SELECT beneficio FROM beneficios WHERE planta_id = $1`,
+      [id]
+    );
+    
+    const usosResult = await pool.query(
+      `SELECT uso FROM usos WHERE planta_id = $1`,
+      [id]
+    );
+    
+    // Combina toda la información en un solo objeto
+    const data = {
+      id: planta.id,
+      nombre: planta.nombre,
+      descripcion: planta.descripcion,
+      imagen: planta.imagen,
+      beneficios: beneficiosResult.rows.map(row => row.beneficio).join('\n'),
+      uso: usosResult.rows.map(row => row.uso).join('\n')
+    };
+
+    res.json(data);
+  } catch (err) {
+    console.error('Error al obtener la información de la planta:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+
+// ------------------ PUBLICACIONES (COMUNIDAD) - NUEVA RUTA ------------------
+// Esta ruta es necesaria para cargar los datos en la página de la comunidad.
+app.get('/api/publicaciones', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT p.id, p.titulo, p.contenido, p.fecha, u.nombre AS autor, u.imagen AS autor_imagen
+      FROM publicaciones p
+      JOIN usuarios u ON p.usuario_id = u.id
+      ORDER BY p.fecha DESC
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error al obtener publicaciones:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ------------------ NOTICIAS - NUEVA RUTA ------------------
+// Esta ruta es necesaria para cargar los datos en la página de noticias.
+app.get('/api/noticias', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, titulo, contenido, imagen, fecha FROM noticias ORDER BY fecha DESC'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error al obtener noticias:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // ---------------------- RDF/XML ---------------------- //
 app.get('/rdf/:id', async (req, res) => {
@@ -317,8 +490,8 @@ app.get('/api/resumen-inicio', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT r.id, r.tipo, r.referencia_id,
-             n.titulo AS noticia_titulo, n.imagen AS noticia_imagen,
-             p.titulo AS pub_titulo, u.imagen AS usuario_imagen
+              n.titulo AS noticia_titulo, n.imagen AS noticia_imagen,
+              p.titulo AS pub_titulo, u.imagen AS usuario_imagen
       FROM resumen_inicio r
       LEFT JOIN noticias n ON r.tipo = 'noticia' AND n.id = r.referencia_id
       LEFT JOIN publicaciones p ON r.tipo = 'publicacion' AND p.id = r.referencia_id
