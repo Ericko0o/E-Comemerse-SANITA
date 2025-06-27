@@ -11,6 +11,13 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // ---------------------- CONEXIÓN POSTGRES (RAILWAY - con variables de entorno) ---------------------- //
+console.log("Intentando conectar a la base de datos con las siguientes variables de entorno:");
+console.log("PGHOST:", process.env.PGHOST);
+console.log("PGPORT:", process.env.PGPORT);
+console.log("PGUSER:", process.env.PGUSER);
+console.log("PGPASSWORD:", process.env.PGPASSWORD ? '********' : 'undefined'); // No mostrar la contraseña real por seguridad
+console.log("PGDATABASE:", process.env.PGDATABASE);
+
 const pool = new Pool({
   host: process.env.PGHOST,
   port: process.env.PGPORT,
@@ -19,6 +26,19 @@ const pool = new Pool({
   database: process.env.PGDATABASE,
 });
 
+// AÑADE ESTE BLOQUE PARA MANEJAR ERRORES DE CONEXIÓN INICIAL
+pool.connect((err, client, done) => {
+  if (err) {
+    console.error('Error al intentar conectar a la base de datos:', err.stack);
+    // Este `throw` detendrá el proceso de Node.js si la conexión inicial falla
+    // para evitar que se quede atascado.
+    throw err;
+  } else {
+    console.log('¡Conexión exitosa a la base de datos!');
+    // Libera el cliente de la conexión
+    done();
+  }
+});
 // ---------------------- CONFIGURACIÓN GENERAL ---------------------- //
 app.use(express.static(__dirname));
 app.use('/CSS', express.static(path.join(__dirname, 'CSS')));
