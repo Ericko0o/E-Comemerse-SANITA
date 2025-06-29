@@ -1,47 +1,58 @@
-let todosLosProductos = [];
+// ------------------ catalogo.js (corregido y limpio) ------------------ //
 
-async function obtenerProductos() {
+async function mostrarCategoria(categoria, tabElement) {
   try {
-    const respuesta = await fetch('/api/productos');
-    todosLosProductos = await respuesta.json();
+    console.log("📦 Mostrando categoría:", categoria);
 
-    // Usamos el primer tab como default si no hay ninguno activo
-    const tabActiva = document.querySelector(".tab.active") || document.querySelector(".tab");
-    const categoriaInicial = tabActiva?.dataset.categoria || 'cicatrizantes';
-    mostrarCategoria(categoriaInicial, tabActiva);
+    const res = await fetch(`/api/productos/categoria/${categoria}`);
+    const productos = await res.json();
+
+    const contenedor = document.getElementById("productos-container");
+    contenedor.innerHTML = "";
+
+    if (productos.length === 0) {
+      contenedor.innerHTML = "<p>No hay productos en esta categoría.</p>";
+      return;
+    }
+
+    productos.forEach(prod => {
+      contenedor.innerHTML += `
+        <a href="/producto.html?id=${prod.id}" class="producto">
+          <img src="/img/${prod.imagen.split('/').pop()}" alt="${prod.nombre}">
+          <div class="producto-info">
+            ${prod.nombre}
+            <span class="precio">S/.${prod.precio}</span>
+          </div>
+        </a>`;
+    });
+
+    // Actualizar tab activa
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    if (tabElement) tabElement.classList.add("active");
+
   } catch (error) {
-    console.error('Error al obtener productos:', error);
+    console.error("Error mostrando categoría:", error);
   }
 }
 
-function mostrarCategoria(categoria, tabElement) {
-  console.log("Mostrando categoría:", categoria);
+// Verificar si es proveedor
+async function verificarProveedor() {
+  try {
+    const res = await fetch('/usuario');
+    const data = await res.json();
 
-  const contenedor = document.getElementById("productos-container");
-  contenedor.innerHTML = "";
-
-  const productosFiltrados = todosLosProductos.filter(prod => prod.categoria === categoria);
-
-  productosFiltrados.forEach(prod => {
-    contenedor.innerHTML += `
-      <a href="/producto.html?id=${prod.id}" class="producto">
-        <img src="/img/${prod.imagen.split('/').pop()}" alt="${prod.nombre}">
-        <div class="producto-info">
-          ${prod.nombre}
-          <span class="precio">S/.${prod.precio}</span>
-        </div>
-      </a>`;
-  });
-
-  // Actualizar el estilo de la pestaña activa
-  document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-  if (tabElement) {
-    tabElement.classList.add("active");
+    if (data.logueado && data.usuario.rol === 'proveedor') {
+      const boton = document.getElementById('boton-agregar-planta');
+      if (boton) boton.style.display = 'block';
+    }
+  } catch (e) {
+    console.error("Error verificando rol:", e);
   }
 }
 
+// Inicialización al cargar
 document.addEventListener("DOMContentLoaded", () => {
-  // Asignar eventos a las pestañas
+  // Evento tabs
   document.querySelectorAll(".tab").forEach(tab => {
     tab.addEventListener("click", () => {
       const categoria = tab.dataset.categoria;
@@ -49,18 +60,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  obtenerProductos();
-});
+  // Cargar primera categoría
+  const tabActiva = document.querySelector(".tab.active") || document.querySelector(".tab");
+  const categoriaInicial = tabActiva?.dataset.categoria || 'cicatrizantes';
+  mostrarCategoria(categoriaInicial, tabActiva);
 
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const res = await fetch('/usuario');
-    const data = await res.json();
-
-    if (data.logueado && data.usuario.rol === 'proveedor') {
-      document.getElementById('boton-agregar-planta').style.display = 'block';
-    }
-  } catch (e) {
-    console.error("Error verificando rol de usuario:", e);
-  }
+  verificarProveedor();
 });

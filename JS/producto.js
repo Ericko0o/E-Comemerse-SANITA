@@ -1,39 +1,29 @@
-// Obtener producto por ID
+// ------------------ producto.js (Ultra Optimizado) ------------------ //
+
 async function obtenerProductoPorId(id) {
-  try {
-    const res = await fetch(`/api/productos/${id}`, { credentials: 'include' });
-    if (!res.ok) throw new Error("Producto no encontrado");
-    return await res.json();
-  } catch (err) {
-    console.error("Error al obtener producto:", err);
-    return null;
-  }
+  const res = await fetch(`/api/productos/${id}`, { credentials: 'include' });
+  if (!res.ok) throw new Error("Producto no encontrado");
+  return await res.json();
 }
 
-// Obtener info adicional por nombre
 async function obtenerInfoPorNombre(nombre) {
   try {
     const res = await fetch(`/api/informacion?nombre=${encodeURIComponent(nombre)}`, { credentials: 'include' });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch (err) {
-    console.error("Error al obtener info adicional:", err);
-    return null;
-  }
-}
-
-// Verificar sesión de usuario
-async function verificarUsuario() {
-  try {
-    const res = await fetch("/usuario", { credentials: 'include' });
-    if (!res.ok) return null;
-    return await res.json();
+    return res.ok ? await res.json() : null;
   } catch {
     return null;
   }
 }
 
-// Agregar producto al carrito
+async function verificarUsuario() {
+  try {
+    const res = await fetch("/usuario", { credentials: 'include' });
+    return res.ok ? await res.json() : null;
+  } catch {
+    return null;
+  }
+}
+
 async function agregarAlCarrito(idProducto) {
   const usuario = await verificarUsuario();
   if (!usuario || !usuario.logueado) {
@@ -42,27 +32,22 @@ async function agregarAlCarrito(idProducto) {
     return window.location.href = "/login.html";
   }
 
-  try {
-    const res = await fetch("/carrito", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: 'include',
-      body: JSON.stringify({ producto_id: idProducto })
-    });
+  const res = await fetch("/carrito", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: 'include',
+    body: JSON.stringify({ producto_id: idProducto })
+  });
 
-    const data = await res.json();
-    if (res.ok) {
-      alert(data.mensaje || "Producto agregado");
-      actualizarCantidadVisual(data.cantidad || 1);
-    } else {
-      alert(data.error || "Error al agregar producto");
-    }
-  } catch (err) {
-    console.error("Error al agregar producto:", err);
+  const data = await res.json();
+  if (res.ok) {
+    alert(data.mensaje || "Producto agregado");
+    actualizarCantidadVisual(data.cantidad || 1);
+  } else {
+    alert(data.error || "Error al agregar producto");
   }
 }
 
-// Modificar cantidad desde botones +/–
 async function modificarCantidad(cambio) {
   const cantidadElem = document.getElementById("cantidad");
   const id = new URLSearchParams(window.location.search).get("id");
@@ -70,35 +55,29 @@ async function modificarCantidad(cambio) {
 
   const operacion = cambio > 0 ? "mas" : "menos";
 
-  try {
-    const res = await fetch("/carrito/cantidad", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      credentials: 'include',
-      body: JSON.stringify({ producto_id: id, operacion })
-    });
-    const data = await res.json();
-    if (res.ok) {
-      actualizarCantidadVisual(data.nuevaCantidad);
-    } else {
-      alert(data.error || "Error al modificar cantidad");
-    }
-  } catch (err) {
-    console.error("Error modificando cantidad:", err);
+  const res = await fetch("/carrito/cantidad", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: 'include',
+    body: JSON.stringify({ producto_id: id, operacion })
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    actualizarCantidadVisual(data.nuevaCantidad);
+  } else {
+    alert(data.error || "Error al modificar cantidad");
   }
 }
 
-// Mostrar cantidad visualmente
 function actualizarCantidadVisual(cantidad) {
   const cantidadElem = document.getElementById("cantidad");
   if (cantidadElem) cantidadElem.textContent = cantidad;
 }
 
-// Renderizar detalle del producto
-function renderProducto(producto, info) {
+function renderProducto(producto, descripcion = "Sin descripción.", linkInfo = "") {
   const cont = document.getElementById("producto-detalle");
-  const descripcion = info?.descripcion || producto.descripcion || "Sin descripción.";
-  const linkInfo = info ? `<p><a href="/informacion.html?id=${info.id}" class="info-planta">Ver más sobre esta planta</a></p>` : "";
+  if (!cont) return;
 
   cont.innerHTML = `
     <div class="detalle-imagen">
@@ -110,7 +89,7 @@ function renderProducto(producto, info) {
       </a>
       <h2>${producto.nombre}</h2>
       <div class="precio-detalle">S/. ${producto.precio}</div>
-      <p>${descripcion}</p>
+      <p id="descripcion">${descripcion}</p>
       <div class="botones-container">
         <button class="boton-agregar" onclick="agregarAlCarrito(${producto.id})">Agregar al carrito</button>
         <div class="cantidad-container">
@@ -119,12 +98,11 @@ function renderProducto(producto, info) {
           <button class="btn-cantidad" onclick="modificarCantidad(1)">+</button>
         </div>
       </div>
-      ${linkInfo}
+      <div id="info-extra">${linkInfo}</div>
     </div>
   `;
 }
 
-// Al cargar la página
 document.addEventListener("DOMContentLoaded", async () => {
   const id = new URLSearchParams(window.location.search).get("id");
   const contenedor = document.getElementById("producto-detalle");
@@ -134,23 +112,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const producto = await obtenerProductoPorId(id);
-  if (!producto) {
-    contenedor.textContent = "Producto no encontrado.";
-    return;
-  }
+  // ⏳ Mostrar mensaje de carga
+  contenedor.innerHTML = "<div class='loader'>Cargando producto...</div>";
 
-  const info = await obtenerInfoPorNombre(producto.nombre);
-
-  // Renderizar primero
-  renderProducto(producto, info);
-
-  // Luego de renderizar, cargar cantidad real desde base de datos
   try {
-    const res = await fetch(`/carrito/cantidad/${id}`, { credentials: 'include' });
-    const data = await res.json();
-    actualizarCantidadVisual(data.cantidad || 0);
+    const producto = await obtenerProductoPorId(id);
+    renderProducto(producto); // render básico de inmediato
+
+    // Paralelo: obtener info adicional y cantidad actual
+    const [info, cantidadRes] = await Promise.all([
+      obtenerInfoPorNombre(producto.nombre),
+      fetch(`/carrito/cantidad/${id}`, { credentials: 'include' })
+        .then(res => res.json())
+        .catch(() => ({ cantidad: 0 }))
+    ]);
+
+    if (cantidadRes?.cantidad != null) {
+      actualizarCantidadVisual(cantidadRes.cantidad);
+    }
+
+    if (info?.descripcion) {
+      document.getElementById("descripcion").textContent = info.descripcion;
+    }
+
+    if (info?.id) {
+      document.getElementById("info-extra").innerHTML = `
+        <p><a href="/informacion.html?id=${info.id}" class="info-planta">Ver más sobre esta planta</a></p>
+      `;
+    }
+
   } catch (err) {
-    console.error("Error obteniendo cantidad:", err);
+    contenedor.innerHTML = "<p>Error al cargar el producto.</p>";
+    console.error(err);
   }
 });

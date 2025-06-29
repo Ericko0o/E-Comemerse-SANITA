@@ -1,4 +1,5 @@
-// Renderizar carrito completo
+// ------------------ carrito.js (Optimizado) ------------------ //
+
 async function renderizarCarrito() {
   try {
     const res = await fetch("/carrito", { credentials: 'include' });
@@ -12,6 +13,8 @@ async function renderizarCarrito() {
     contenedor.innerHTML = "";
 
     if (Array.isArray(carrito) && carrito.length > 0) {
+      const fragment = document.createDocumentFragment();
+
       carrito.forEach(item => {
         const precio = parseFloat(item.precio);
         const cantidad = parseInt(item.cantidad) || 1;
@@ -33,15 +36,20 @@ async function renderizarCarrito() {
           </td>
           <td>S/. ${total.toFixed(2)}</td>
           <td>
-            <button onclick="eliminarDelCarrito(${item.carrito_id})" style="padding: 6px 10px; border-radius: 6px; background-color: #e74c3c; color: white; border: none; cursor: pointer;">
+            <button onclick="eliminarDelCarrito(${item.carrito_id})"
+              style="padding: 6px 10px; border-radius: 6px; background-color: #e74c3c; color: white; border: none; cursor: pointer;">
               Eliminar
             </button>
           </td>
         `;
-        contenedor.appendChild(fila);
+        fragment.appendChild(fila);
       });
+
+      contenedor.appendChild(fragment);
     } else {
-      contenedor.innerHTML = "<tr><td colspan='5'>Tu carrito está vacío.</td></tr>";
+      const filaVacia = document.createElement("tr");
+      filaVacia.innerHTML = `<td colspan="5" style="text-align: center;">Tu carrito está vacío.</td>`;
+      contenedor.appendChild(filaVacia);
     }
 
     subtotalSpan.textContent = `S/. ${subtotal.toFixed(2)}`;
@@ -51,36 +59,45 @@ async function renderizarCarrito() {
   }
 }
 
-// Eliminar producto del carrito
 async function eliminarDelCarrito(carritoId) {
+  if (!carritoId) return;
   try {
-    await fetch(`/carrito/${carritoId}`, {
+    const res = await fetch(`/carrito/${carritoId}`, {
       method: "DELETE",
       credentials: 'include'
     });
-    renderizarCarrito();
+    const data = await res.json();
+    if (res.ok) {
+      renderizarCarrito();
+    } else {
+      alert(data.error || "Error al eliminar el producto");
+    }
   } catch (err) {
     console.error("Error al eliminar producto:", err);
   }
 }
 
-// Actualizar cantidad desde input
 async function actualizarCantidad(carritoId, nuevaCantidad) {
   const cantidad = parseInt(nuevaCantidad, 10);
-  if (isNaN(cantidad) || cantidad < 1) return;
+  if (!carritoId || isNaN(cantidad) || cantidad < 1) return;
 
   try {
-    await fetch(`/carrito/${carritoId}`, {
+    const res = await fetch(`/carrito/${carritoId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: 'include',
       body: JSON.stringify({ cantidad })
     });
-    renderizarCarrito();
+
+    const data = await res.json();
+    if (res.ok) {
+      renderizarCarrito();
+    } else {
+      alert(data.error || "Error al actualizar cantidad");
+    }
   } catch (err) {
     console.error("Error actualizando cantidad:", err);
   }
 }
 
-// Iniciar render al cargar
 document.addEventListener("DOMContentLoaded", renderizarCarrito);

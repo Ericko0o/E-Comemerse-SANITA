@@ -160,6 +160,13 @@ body {
   font-family: 'Segoe UI', sans-serif;
 }
 
+.loader {
+  font-size: 18px;
+  text-align: center;
+  color: #2e7d32;
+  padding: 40px;
+}
+
 @media (max-width: 768px) {
   .producto-detalle {
     flex-direction: column;

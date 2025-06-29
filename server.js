@@ -7,6 +7,8 @@ const fs = require('fs');
 const { Pool } = require('pg');
 const multer = require('multer');
 const builder = require('xmlbuilder');
+const compression = require('compression');
+const NodeCache = require('node-cache'); 
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,6 +29,8 @@ const pool = new Pool({
   database: process.env.PGDATABASE,
 });
 
+const cache = new NodeCache({ stdTTL: 60 });
+
 // AÑADE ESTE BLOQUE PARA MANEJAR ERRORES DE CONEXIÓN INICIAL
 pool.connect((err, client, done) => {
   if (err) {
@@ -42,6 +46,10 @@ pool.connect((err, client, done) => {
 });
 
 // ---------------------- CONFIGURACIÓN GENERAL ---------------------- //
+app.use(compression());
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '7d' // cache por 7 días
+}));
 app.use(express.static(__dirname));
 app.use('/CSS', express.static(path.join(__dirname, 'CSS')));
 app.use('/JS', express.static(path.join(__dirname, 'JS')));
@@ -51,6 +59,7 @@ app.use(session({
   secret: 'sanita_clave_secreta',
   resave: false,
   saveUninitialized: true,
+  cookie: { httpOnly: true, sameSite: 'lax' }
 }));
 
 app.get('/', (req, res) => {
@@ -60,13 +69,17 @@ app.get('/', (req, res) => {
 
 // ---------------------- SUBIDA DE IMÁGENES ---------------------- //
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, 'img/'),
-  filename: (req, file, cb) => {
-    const nombre = req.body.nombre || 'planta';
-    const ext = path.extname(file.originalname);
-    const limpio = nombre.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
-    cb(null, limpio + ext);
+  destination: (req, file, cb) => {
+    cb(null, 'img/');
   },
+  filename: (req, file, cb) => {
+    const nombrePlanta = req.body.nombre || 'planta';
+    const ext = path.extname(file.originalname);
+    const nombreFinal = nombrePlanta.trim().toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '') + ext;
+    cb(null, nombreFinal);
+  }
 });
 const upload = multer({ storage });
 
@@ -147,71 +160,180 @@ app.get('/logout', (req, res) => {
 
 // ---------------------- AQUI CONTINUAMOS ---------------------- //
 // ---------------------- CARRITO ---------------------- //
-app.post('/carrito/agregar', async (req, res) => {
-  const uid = req.session.usuarioId;
-  const { planta_id, cantidad } = req.body;
-  if (!uid) return res.status(401).json({ error: "No autenticado" });
+// Crear tabla carrito (solo ejecutar una vez o usar migraciones)
+pool.query(`
+  CREATE TABLE IF NOT EXISTS carrito (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id),
+    planta_id INTEGER NOT NULL REFERENCES plantas(id),
+    cantidad INTEGER NOT NULL DEFAULT 1
+  )
+`);
 
-  try {
-    const existe = await pool.query(
-      `SELECT id, cantidad FROM carrito WHERE usuario_id = $1 AND planta_id = $2`,
-      [uid, planta_id]
-    );
-    if (existe.rows.length > 0) {
-      const nueva = existe.rows[0].cantidad + cantidad;
-      await pool.query(
-        `UPDATE carrito SET cantidad = $1 WHERE id = $2`,
-        [nueva, existe.rows[0].id]
-      );
-    } else {
-      await pool.query(
-        `INSERT INTO carrito (usuario_id, planta_id, cantidad) VALUES ($1, $2, $3)`,
-        [uid, planta_id, cantidad]
-      );
-    }
-    res.json({ mensaje: "Producto agregado al carrito" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
+// Obtener todos los productos del carrito
 app.get('/carrito', async (req, res) => {
-  const uid = req.session.usuarioId;
-  if (!uid) return res.status(401).json({ error: "No autenticado" });
+  if (!req.session.usuarioId) return res.status(401).json({ error: "No autenticado" });
 
   try {
-    const result = await pool.query(`
-      SELECT c.id, c.cantidad, p.id AS planta_id, p.nombre, p.precio, p.imagen
+    const { rows } = await pool.query(`
+      SELECT c.id AS carrito_id, c.cantidad, p.id AS producto_id, p.nombre, p.precio, p.imagen
       FROM carrito c
       JOIN plantas p ON c.planta_id = p.id
       WHERE c.usuario_id = $1
-    `, [uid]);
-    res.json(result.rows);
+    `, [req.session.usuarioId]);
+
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// Agregar producto al carrito o aumentar cantidad
+app.post('/carrito', async (req, res) => {
+  const { producto_id } = req.body;
+  const uid = req.session.usuarioId;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, cantidad FROM carrito WHERE usuario_id = $1 AND planta_id = $2",
+      [uid, producto_id]
+    );
+
+    if (rows.length > 0) {
+      await pool.query("UPDATE carrito SET cantidad = cantidad + 1 WHERE id = $1", [rows[0].id]);
+      res.json({ mensaje: "Cantidad actualizada" });
+    } else {
+      const result = await pool.query(
+        "INSERT INTO carrito (usuario_id, planta_id, cantidad) VALUES ($1, $2, 1) RETURNING id",
+        [uid, producto_id]
+      );
+      res.json({ mensaje: "Producto agregado", id: result.rows[0].id });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Actualizar cantidad con botones +/-
+app.put('/carrito/cantidad', async (req, res) => {
+  const { producto_id, operacion } = req.body;
+  const uid = req.session.usuarioId;
+  if (!uid || !producto_id || !['mas', 'menos'].includes(operacion))
+    return res.status(400).json({ error: "Datos inválidos" });
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT id, cantidad FROM carrito WHERE usuario_id = $1 AND planta_id = $2",
+      [uid, producto_id]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: "Producto no encontrado" });
+
+    const nueva = operacion === 'mas' ? rows[0].cantidad + 1 : rows[0].cantidad - 1;
+
+    if (nueva < 1) {
+      await pool.query("DELETE FROM carrito WHERE id = $1", [rows[0].id]);
+      res.json({ mensaje: "Producto eliminado", nuevaCantidad: 0 });
+    } else {
+      await pool.query("UPDATE carrito SET cantidad = $1 WHERE id = $2", [nueva, rows[0].id]);
+      res.json({ mensaje: "Cantidad actualizada", nuevaCantidad: nueva });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Actualizar cantidad manual desde input
+app.put('/carrito/:id', async (req, res) => {
+  const { cantidad } = req.body;
+  const uid = req.session.usuarioId;
+  const id = req.params.id;
+  if (!uid || isNaN(cantidad) || cantidad < 1)
+    return res.status(400).json({ error: "Cantidad inválida" });
+
+  try {
+    const result = await pool.query(
+      "UPDATE carrito SET cantidad = $1 WHERE id = $2 AND usuario_id = $3",
+      [cantidad, id, uid]
+    );
+
+    if (result.rowCount === 0) return res.status(404).json({ error: "Carrito no encontrado" });
+
+    res.json({ mensaje: "Cantidad actualizada correctamente" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Obtener cantidad actual de un producto
+app.get('/carrito/cantidad/:idProducto', async (req, res) => {
+  const uid = req.session.usuarioId;
+  const idProd = req.params.idProducto;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT cantidad FROM carrito WHERE usuario_id = $1 AND planta_id = $2",
+      [uid, idProd]
+    );
+    res.json({ cantidad: rows.length > 0 ? rows[0].cantidad : 0 });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Eliminar producto del carrito
 app.delete('/carrito/:id', async (req, res) => {
   const uid = req.session.usuarioId;
   const id = req.params.id;
   if (!uid) return res.status(401).json({ error: "No autenticado" });
 
   try {
-    await pool.query(`DELETE FROM carrito WHERE id = $1 AND usuario_id = $2`, [id, uid]);
-    res.json({ mensaje: "Producto eliminado del carrito" });
+    const result = await pool.query(
+      "DELETE FROM carrito WHERE id = $1 AND usuario_id = $2",
+      [id, uid]
+    );
+    if (result.rowCount === 0) return res.status(404).json({ error: "No encontrado" });
+
+    res.json({ mensaje: "Producto eliminado" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ---------------------- HISTORIAL PEDIDOS ---------------------- //
+// Vaciar carrito completo
+app.delete('/vaciar-carrito', async (req, res) => {
+  const uid = req.session.usuarioId;
+  if (!uid) return res.status(401).json({ error: "No autenticado" });
+
+  try {
+    await pool.query("DELETE FROM carrito WHERE usuario_id = $1", [uid]);
+    res.json({ mensaje: "Carrito vaciado" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------------------- HISTORIAL DE PEDIDO ---------------------
+
+// Crear la tabla una vez (opcional si ya la creaste desde pgAdmin)
+pool.query(`
+  CREATE TABLE IF NOT EXISTS historial_pedidos (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado TEXT DEFAULT 'origen'
+  )
+`);
+
+// Registrar un nuevo pedido
 app.post('/pedido', async (req, res) => {
   const uid = req.session.usuarioId;
   if (!uid) return res.status(401).json({ error: "No autenticado" });
+
   try {
     const result = await pool.query(
-      `INSERT INTO historial_pedidos (usuario_id) VALUES ($1) RETURNING id`,
+      "INSERT INTO historial_pedidos (usuario_id) VALUES ($1) RETURNING id",
       [uid]
     );
     res.json({ mensaje: "Pedido registrado", pedido_id: result.rows[0].id });
@@ -220,6 +342,7 @@ app.post('/pedido', async (req, res) => {
   }
 });
 
+// Actualizar el estado del pedido más reciente
 app.put('/pedido/estado', async (req, res) => {
   const uid = req.session.usuarioId;
   const { estado } = req.body;
@@ -227,18 +350,23 @@ app.put('/pedido/estado', async (req, res) => {
 
   try {
     await pool.query(`
-      UPDATE historial_pedidos SET estado = $1
+      UPDATE historial_pedidos
+      SET estado = $1
       WHERE usuario_id = $2 AND id = (
-        SELECT id FROM historial_pedidos WHERE usuario_id = $2
-        ORDER BY fecha DESC LIMIT 1
+        SELECT id FROM historial_pedidos
+        WHERE usuario_id = $2
+        ORDER BY fecha DESC
+        LIMIT 1
       )
     `, [estado, uid]);
+
     res.json({ mensaje: "Estado actualizado" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// Obtener estado del último pedido
 app.get('/pedido/estado', async (req, res) => {
   const uid = req.session.usuarioId;
   if (!uid) return res.status(401).json({ error: "No autenticado" });
@@ -247,9 +375,14 @@ app.get('/pedido/estado', async (req, res) => {
     const result = await pool.query(`
       SELECT estado FROM historial_pedidos
       WHERE usuario_id = $1
-      ORDER BY fecha DESC LIMIT 1
+      ORDER BY fecha DESC
+      LIMIT 1
     `, [uid]);
-    if (result.rows.length === 0) return res.json({ estado: null });
+
+    if (result.rows.length === 0) {
+      return res.json({ estado: null });
+    }
+
     res.json({ estado: result.rows[0].estado });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -269,148 +402,205 @@ app.get('/api/plantas', async (req, res) => {
   }
 });
 
-// ------------------ PRODUCTOS (CATÁLOGO) - NUEVA RUTA ------------------
-// En server.js, dentro de la ruta /api/productos
-app.get('/api/productos', async (req, res) => {
+// ---------------------- BUSQUEDA DE PLANTAS ---------------------- //
+app.get('/api/buscar', async (req, res) => {
+  const q = req.query.q || '';
+  const parametro = `%${q}%`;
+
+  const sql = `
+    SELECT
+      p.id,
+      p.nombre,
+      p.precio,
+      p.imagen,
+      c.nombre AS categoria
+    FROM plantas p
+    LEFT JOIN categorias c ON p.categoria_id = c.id
+    WHERE p.nombre ILIKE $1
+  `;
+
   try {
-    const result = await pool.query(
-      `SELECT
-         p.id,
-         p.nombre,
-         p.precio,
-         p.imagen,
-         c.nombre AS categoria  -- <--- Obtenemos el nombre de la categoría
-       FROM
-         plantas p
-       JOIN
-         categorias c ON p.categoria_id = c.id`
-    );
+    const result = await pool.query(sql, [parametro]);
     res.json(result.rows);
   } catch (err) {
-    console.error('Error al obtener productos del catálogo:', err);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ------------------ OBTENER PRODUCTO POR ID - NUEVA RUTA ------------------
-// Ruta para obtener un producto específico por su ID
+// --------------------- PRODUCTOS (ahora plantas) ---------------------
+
+// Obtener todos los productos (plantas) con su categoría
+app.get('/api/productos', async (req, res) => {
+  const cached = cache.get('productos');
+  if (cached) return res.json(cached);
+
+  try {
+    const result = await pool.query(`
+      SELECT p.id, p.nombre, p.precio, p.imagen, c.nombre AS categoria
+      FROM plantas p
+      LEFT JOIN categorias c ON p.categoria_id = c.id
+    `);
+    cache.set('productos', result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error obteniendo productos:', err.message);
+    res.status(500).send("Error al obtener productos");
+  }
+});
+
+// Obtener productos por categoría
+app.get('/api/productos/categoria/:nombre', async (req, res) => {
+  const categoria = req.params.nombre;
+  try {
+    const result = await pool.query(`
+      SELECT p.id, p.nombre, p.precio, p.imagen, c.nombre AS categoria
+      FROM plantas p
+      JOIN categorias c ON p.categoria_id = c.id
+      WHERE LOWER(c.nombre) = LOWER($1)
+    `, [categoria]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error filtrando productos por categoría:", err.message);
+    res.status(500).json({ error: "Error al filtrar productos" });
+  }
+});
+
+// Obtener producto por ID (ahora planta)
 app.get('/api/productos/:id', async (req, res) => {
-  const id = req.params.id; // Captura el ID de la URL
-  try {
-    const result = await pool.query(
-      // Consulta la tabla 'plantas' para encontrar el producto con el ID
-      'SELECT id, nombre, precio, imagen, descripcion FROM plantas WHERE id = $1',
-      [id]
-    );
+  const id = req.params.id;
 
-    const producto = result.rows[0]; // El primer (y único) resultado
-    
-    if (!producto) {
-      // Si no se encuentra el producto, devuelve un 404
-      return res.status(404).json({ error: 'Producto no encontrado' });
+  try {
+    const { rows } = await pool.query(`
+      SELECT id, nombre, precio, imagen, descripcion, categoria_id
+      FROM plantas
+      WHERE id = $1
+    `, [id]);
+
+    const planta = rows[0];
+
+    if (!planta) return res.status(404).send("Producto no encontrado");
+
+    // opcional: incluir nombre de categoría
+    const catRes = await pool.query(`
+      SELECT nombre AS categoria FROM categorias WHERE id = $1
+    `, [planta.categoria_id]);
+
+    if (catRes.rows.length > 0) {
+      planta.categoria = catRes.rows[0].categoria;
     }
 
-    // Devuelve el producto encontrado
-    res.json(producto);
+    res.json(planta);
   } catch (err) {
-    console.error('Error al obtener producto por ID:', err);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('Error obteniendo producto:', err.message);
+    res.status(500).send("Error al obtener producto");
   }
 });
 
-// ------------------ OBTENER INFORMACIÓN ADICIONAL POR NOMBRE - CORREGIDA ------------------
-// Esta ruta busca información extendida (descripción, beneficios, usos) de una planta por su nombre.
-app.get('/api/informacion', async (req, res) => {
-  const nombrePlanta = req.query.nombre; // Captura el parámetro 'nombre' de la URL
-  
-  if (!nombrePlanta) {
-    return res.status(400).json({ error: "Falta el parámetro 'nombre'." });
-  }
-  
-  try {
-    // 1. Busca la planta por su nombre para obtener su ID y descripción
-    const plantaResult = await pool.query(
-      `SELECT id, descripcion FROM plantas WHERE nombre = $1`,
-      [nombrePlanta]
-    );
-    
-    const planta = plantaResult.rows[0];
-    
-    if (!planta) {
-      return res.status(404).json({ error: "Información de planta no encontrada." });
-    }
-    
-    const plantaId = planta.id;
+// ------------------------------ PLANTAS INFORMACION ----------------------------------
 
-    // 2. Busca los beneficios usando el ID de la planta
-    const beneficiosResult = await pool.query(
-      `SELECT beneficio FROM beneficios WHERE planta_id = $1`,
-      [plantaId]
-    );
-    
-    // 3. Busca los usos usando el ID de la planta
-    const usosResult = await pool.query(
-      `SELECT uso FROM usos WHERE planta_id = $1`,
-      [plantaId]
-    );
-    
-    // 4. Construye el objeto de respuesta combinando toda la información
-    const infoAdicional = {
-      id: plantaId,
-      descripcion: planta.descripcion,
-      beneficios: beneficiosResult.rows.map(row => row.beneficio).join('; '), // Unir con un separador
-      uso: usosResult.rows.map(row => row.uso).join('; ') // Unir con un separador
-    };
-    
-    res.json(infoAdicional);
+// Listar todas las plantas destacadas
+app.get('/api/plantas', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, nombre, imagen FROM plantas
+    `);
+    res.json(result.rows);
   } catch (err) {
-    console.error('Error al obtener info adicional:', err);
-    res.status(500).json({ error: 'Error interno del servidor.' });
+    console.error('Error al obtener las plantas:', err.message);
+    res.status(500).json({ error: 'Error al obtener las plantas' });
   }
 });
 
-// ------------------ OBTENER INFORMACIÓN DE PLANTA POR ID - NUEVA RUTA ------------------
-// Esta ruta es usada por informacion.js
+// Obtener planta completa por ID
 app.get('/api/plantas/:id', async (req, res) => {
   const id = req.params.id;
+  const cacheKey = `planta_${id}`;
+
+  const cached = cache.get(cacheKey);
+  if (cached) return res.json(cached);
+
   try {
-    const plantaResult = await pool.query(
-      `SELECT id, nombre, descripcion, imagen FROM plantas WHERE id = $1`,
-      [id]
-    );
-    const planta = plantaResult.rows[0];
-    
-    if (!planta) {
-      return res.status(404).json({ error: 'Planta no encontrada' });
-    }
+    const plantaRes = await pool.query(`
+      SELECT id, nombre, descripcion, imagen, categoria_id
+      FROM plantas
+      WHERE id = $1
+    `, [id]);
 
-    const beneficiosResult = await pool.query(
-      `SELECT beneficio FROM beneficios WHERE planta_id = $1`,
-      [id]
-    );
-    
-    const usosResult = await pool.query(
-      `SELECT uso FROM usos WHERE planta_id = $1`,
-      [id]
-    );
-    
-    // Combina toda la información en un solo objeto
-    const data = {
-      id: planta.id,
-      nombre: planta.nombre,
-      descripcion: planta.descripcion,
-      imagen: planta.imagen,
-      beneficios: beneficiosResult.rows.map(row => row.beneficio).join('\n'),
-      uso: usosResult.rows.map(row => row.uso).join('\n')
-    };
+    const planta = plantaRes.rows[0];
+    if (!planta) return res.status(404).json({ error: 'Planta no encontrada' });
 
-    res.json(data);
+    const catRes = await pool.query(`
+      SELECT nombre FROM categorias WHERE id = $1
+    `, [planta.categoria_id]);
+    planta.categoria = catRes.rows[0]?.nombre || 'Sin categoría';
+
+    const benRes = await pool.query(`
+      SELECT beneficio FROM beneficios WHERE planta_id = $1
+    `, [id]);
+    planta.beneficios = benRes.rows.map(b => b.beneficio);
+
+    const usoRes = await pool.query(`
+      SELECT uso FROM usos WHERE planta_id = $1
+    `, [id]);
+    planta.usos = usoRes.rows.map(u => u.uso);
+
+    cache.set(cacheKey, planta); // Guardar en caché
+    res.json(planta);
   } catch (err) {
-    console.error('Error al obtener la información de la planta:', err);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('Error al obtener la planta:', err.message);
+    res.status(500).json({ error: 'Error al obtener la planta' });
   }
 });
 
+// Búsqueda por nombre
+app.get('/api/informacion', async (req, res) => {
+  const nombre = req.query.nombre;
+  if (!nombre) return res.status(400).json({ error: "Falta nombre" });
+
+  try {
+    const result = await pool.query(`
+      SELECT id FROM plantas WHERE nombre = $1
+    `, [nombre]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Información no encontrada" });
+    }
+
+    const plantaId = result.rows[0].id;
+    res.redirect(`/api/plantas/${plantaId}`);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Subir imagenes desde producto para agregar nueva planta
+app.post('/api/plantas', upload.single('imagen'), async (req, res) => {
+  if (!req.session.usuarioId || req.session.usuarioRol !== 'proveedor') {
+    return res.status(403).json({ error: 'Solo los proveedores pueden agregar plantas' });
+  }
+
+  const { nombre, precio, descripcion } = req.body;
+  const imagen = req.file ? `img/${req.file.filename}` : null;
+
+  if (!nombre || !precio || !descripcion || !imagen) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios' });
+  }
+
+  const categoria_id = 1; // Categoría por defecto (puedes hacer dinámica luego)
+
+  try {
+    const result = await pool.query(`
+      INSERT INTO plantas (nombre, precio, imagen, descripcion, categoria_id)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id
+    `, [nombre, precio, imagen, descripcion, categoria_id]);
+
+    res.json({ mensaje: 'Planta registrada', id: result.rows[0].id });
+  } catch (err) {
+    console.error('Error insertando planta:', err.message);
+    res.status(500).json({ error: 'Error al guardar en base de datos' });
+  }
+});
 
 // ------------------ PUBLICACIONES (COMUNIDAD) - NUEVA RUTA ------------------
 // Esta ruta es necesaria para cargar los datos en la página de la comunidad.
@@ -485,41 +675,51 @@ app.get('/api/noticias/aleatoria', async (req, res) => {
 // ---------------------- RDF/XML ---------------------- //
 app.get('/rdf/:id', async (req, res) => {
   const id = req.params.id;
+
   try {
-    const planta = await pool.query(
+    // 1. Obtener planta
+    const plantaResult = await pool.query(
       `SELECT id, nombre, descripcion, imagen FROM plantas WHERE id = $1`,
       [id]
     );
-    if (planta.rows.length === 0) return res.status(404).send("Planta no encontrada");
 
-    const beneficios = await pool.query(
+    const planta = plantaResult.rows[0];
+    if (!planta) return res.status(404).send("Planta no encontrada");
+
+    // 2. Obtener beneficios
+    const beneficiosResult = await pool.query(
       `SELECT beneficio AS value FROM beneficios WHERE planta_id = $1`,
       [id]
     );
-    const usos = await pool.query(
+
+    // 3. Obtener usos
+    const usosResult = await pool.query(
       `SELECT uso AS value FROM usos WHERE planta_id = $1`,
       [id]
     );
 
+    // 4. Construir RDF/XML
     const rdf = builder.create('rdf:RDF', { encoding: 'UTF-8' })
       .att('xmlns:rdf', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#')
       .att('xmlns:rdfs', 'http://www.w3.org/2000/01/rdf-schema#')
       .att('xmlns:dc', 'http://purl.org/dc/elements/1.1/')
       .att('xmlns:sn', 'https://sanita.org/ontology#');
 
-    const p = planta.rows[0];
     const node = rdf.ele('rdf:Description', {
       'rdf:about': `https://sanita.org/planta/${id}`
     });
-    node.ele('rdfs:label', p.nombre);
-    node.ele('dc:description', p.descripcion);
-    beneficios.rows.forEach(b => node.ele('sn:beneficio', b.value));
-    usos.rows.forEach(u => node.ele('sn:uso', u.value));
-    node.ele('sn:imagen', p.imagen);
+
+    node.ele('rdfs:label', planta.nombre);
+    node.ele('dc:description', planta.descripcion);
+    beneficiosResult.rows.forEach(b => node.ele('sn:beneficio', b.value));
+    usosResult.rows.forEach(u => node.ele('sn:uso', u.value));
+    node.ele('sn:imagen', planta.imagen);
 
     res.set('Content-Type', 'application/rdf+xml');
     res.send(rdf.end({ pretty: true }));
+
   } catch (err) {
+    console.error("Error generando RDF:", err.message);
     res.status(500).send("Error interno");
   }
 });
