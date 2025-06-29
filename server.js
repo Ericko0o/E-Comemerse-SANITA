@@ -604,17 +604,95 @@ app.post('/api/plantas', upload.single('imagen'), async (req, res) => {
 
 // ------------------ PUBLICACIONES (COMUNIDAD) - NUEVA RUTA ------------------
 // Esta ruta es necesaria para cargar los datos en la página de la comunidad.
+const calcularFecha = () => new Date().toISOString().split('T')[0];
+
+// Obtener publicaciones con info de usuario
 app.get('/api/publicaciones', async (req, res) => {
+  const cached = cache.get('publicaciones');
+  if (cached) return res.json(cached);
+
+  const sql = `
+    SELECT p.id, p.titulo, p.contenido, p.fecha, u.nombre, u.imagen
+    FROM publicaciones p
+    JOIN usuarios u ON p.usuario_id = u.id
+    ORDER BY p.fecha DESC
+  `;
   try {
-    const result = await pool.query(`
-      SELECT p.id, p.titulo, p.contenido, p.fecha, u.nombre AS autor, u.imagen AS autor_imagen
-      FROM publicaciones p
-      JOIN usuarios u ON p.usuario_id = u.id
-      ORDER BY p.fecha DESC
-    `);
+    const result = await pool.query(sql);
+    cache.set('publicaciones', result.rows); // guardamos en caché
     res.json(result.rows);
   } catch (err) {
-    console.error('Error al obtener publicaciones:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Obtener hilos de una publicación
+app.get('/api/hilos/:publicacionId', async (req, res) => {
+  const pubId = req.params.publicacionId;
+  const cacheKey = `hilos_${pubId}`;
+  const cached = cache.get(cacheKey);
+  if (cached) return res.json(cached);
+
+  const sql = `
+    SELECT h.contenido, h.fecha, u.nombre, u.imagen
+    FROM hilos h
+    JOIN usuarios u ON h.usuario_id = u.id
+    WHERE h.publicacion_id = $1
+    ORDER BY h.fecha ASC
+  `;
+  try {
+    const result = await pool.query(sql, [pubId]);
+    cache.set(cacheKey, result.rows); // guardamos en caché
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Agregar nueva publicación
+app.post('/api/publicaciones', async (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: 'No autenticado' });
+
+  const { titulo, contenido } = req.body;
+  if (!titulo || !contenido || titulo.trim().length < 5 || contenido.trim().length < 10) {
+    return res.status(400).json({ error: 'El título debe tener al menos 5 caracteres y el contenido al menos 10.' });
+  }
+  const fecha = calcularFecha();
+
+  const sql = `
+    INSERT INTO publicaciones (usuario_id, titulo, contenido, fecha)
+    VALUES ($1, $2, $3, $4)
+    RETURNING id
+  `;
+  try {
+    const result = await pool.query(sql, [req.session.usuarioId, titulo, contenido, fecha]);
+    cache.del('publicaciones'); // Invalida el caché
+    res.json({ mensaje: 'Publicación creada', id: result.rows[0].id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Agregar nuevo comentario (hilo)
+app.post('/api/hilos/:publicacionId', async (req, res) => {
+  if (!req.session.usuarioId) return res.status(401).json({ error: 'No autenticado' });
+
+  const { contenido } = req.body;
+  if (!contenido || contenido.trim().length < 5) {
+    return res.status(400).json({ error: 'El comentario debe tener al menos 5 caracteres.' });
+  }
+  const publicacionId = req.params.publicacionId;
+  const fecha = calcularFecha();
+
+  const sql = `
+    INSERT INTO hilos (publicacion_id, usuario_id, contenido, fecha)
+    VALUES ($1, $2, $3, $4)
+  `;
+  try {
+    await pool.query(sql, [publicacionId, req.session.usuarioId, contenido, fecha]);
+    cache.del(`hilos_${publicacionId}`); // Invalida el caché
+    res.json({ mensaje: 'Comentario agregado' });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
