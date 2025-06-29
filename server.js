@@ -389,6 +389,18 @@ app.get('/pedido/estado', async (req, res) => {
   }
 });
 
+// ------------------ CACHE ------------------
+// Middleware para cache corto (ej. 1 min)
+app.use('/api/resumen-inicio', (req, res, next) => {
+  res.set('Cache-Control', 'public, max-age=60'); // 1 min
+  next();
+});
+
+app.use('/api/plantas', (req, res, next) => {
+  res.set('Cache-Control', 'public, max-age=120'); // 2 mins
+  next();
+});
+
 // ------------------ PLANTAS DESTACADAS ------------------
 app.get('/api/plantas', async (req, res) => {
   try {
@@ -399,6 +411,33 @@ app.get('/api/plantas', async (req, res) => {
   } catch (err) {
     console.error('Error al obtener plantas:', err);
     res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// ------------------ CARRUSEL INICIO ------------------
+app.get('/api/resumen-inicio', async (req, res) => {
+  const sql = `
+    SELECT r.id, r.tipo, r.referencia_id,
+           n.titulo AS noticia_titulo, n.imagen AS noticia_imagen,
+           p.titulo AS pub_titulo, u.imagen AS usuario_imagen
+    FROM resumen_inicio r
+    LEFT JOIN noticias n ON r.tipo = 'noticia' AND n.id = r.referencia_id
+    LEFT JOIN publicaciones p ON r.tipo = 'publicacion' AND p.id = r.referencia_id
+    LEFT JOIN usuarios u ON p.usuario_id = u.id
+    ORDER BY r.id DESC
+    LIMIT 10
+  `;
+
+  try {
+    const result = await pool.query(sql);
+    const formateado = result.rows.map(r => ({
+      tipo: r.tipo,
+      titulo: r.tipo === 'noticia' ? r.noticia_titulo : r.pub_titulo,
+      imagen: r.tipo === 'noticia' ? r.noticia_imagen : r.usuario_imagen
+    }));
+    res.json(formateado);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

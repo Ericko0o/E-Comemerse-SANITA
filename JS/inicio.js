@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const track = document.querySelector(".carousel-track");
+  track.innerHTML = `<div class="carousel-cargando">Cargando contenido...</div>`;
 
   // Obtener contenido del resumen desde el servidor
   try {
@@ -16,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         card.href = item.tipo === "noticia" ? "noticias.html" : "comunidad.html";
 
         card.innerHTML = `
-          <img src="${item.imagen}" alt="${item.titulo}" class="carousel-card-image">
+          <img loading="lazy" src="${item.imagen}" alt="${item.titulo}" class="carousel-card-image">
           <div class="carousel-card-text">${item.titulo}</div>
         `;
 
@@ -24,8 +25,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       // Duplicar para animación infinita
-      track.innerHTML += track.innerHTML;
-      track.dataset.duplicated = "true";
+      if (!track.dataset.duplicated) {
+        track.innerHTML += track.innerHTML;
+        track.dataset.duplicated = "true";
+      }
 
       const cards = document.querySelectorAll(".carousel-card");
 
@@ -59,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           window.location.href = `informacion.html?id=${planta.id}`;
         };
         div.innerHTML = `
-          <img src="${planta.imagen}" alt="${planta.nombre}">
+          <img loading="lazy" src="${planta.imagen}" alt="${planta.nombre}">
           <div class="planta-card-name">${planta.nombre}</div>
         `;
         contenedor.appendChild(div);
