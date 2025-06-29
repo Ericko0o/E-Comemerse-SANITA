@@ -430,16 +430,55 @@ app.get('/api/publicaciones', async (req, res) => {
 });
 
 // ------------------ NOTICIAS - NUEVA RUTA ------------------
-// Esta ruta es necesaria para cargar los datos en la página de noticias.
+// ---------------------- NOTICIAS ---------------------------
+
+// Obtener todas las noticias
 app.get('/api/noticias', async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT id, titulo, contenido, imagen, fecha FROM noticias ORDER BY fecha DESC'
     );
+    console.log('Noticias encontradas:', result.rows);
     res.json(result.rows);
   } catch (err) {
     console.error('Error al obtener noticias:', err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Obtener una sola noticia por ID
+app.get('/api/noticia/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const result = await pool.query(
+      'SELECT id, titulo, contenido, imagen, fecha FROM noticias WHERE id = $1',
+      [id]
+    );
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'Noticia no encontrada' });
+    } else {
+      res.json(result.rows[0]);
+    }
+  } catch (err) {
+    console.error('Error al obtener la noticia:', err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// Obtener una noticia aleatoria
+app.get('/api/noticias/aleatoria', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, titulo, contenido, imagen, fecha FROM noticias ORDER BY RANDOM() LIMIT 1'
+    );
+    if (result.rows.length === 0) {
+      res.status(404).json({ error: 'No hay noticias disponibles' });
+    } else {
+      res.json(result.rows[0]);
+    }
+  } catch (err) {
+    console.error('Error al obtener noticia aleatoria:', err);
+    res.status(500).json({ error: 'Error del servidor' });
   }
 });
 
