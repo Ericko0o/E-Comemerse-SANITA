@@ -16,7 +16,7 @@ document.getElementById('form-nueva-planta').addEventListener('submit', async (e
   const formData = new FormData(form);
 
   try {
-    const res = await fetch('/api/plantas', {
+    const res = await fetch('/api/subir-planta', {
       method: 'POST',
       body: formData
     });

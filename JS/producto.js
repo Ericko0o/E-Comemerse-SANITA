@@ -81,8 +81,9 @@ function renderProducto(producto, descripcion = "Sin descripción.", linkInfo = 
 
   cont.innerHTML = `
     <div class="detalle-imagen">
-      <img src="/img/${producto.imagen.split("/").pop()}" alt="${producto.nombre}">
+      <img src="${producto.imagen.startsWith('http') ? producto.imagen : '/' + producto.imagen}" alt="${producto.nombre}">
     </div>
+
     <div class="detalle-info">
       <a href="/carrito.html" class="carrito-integrado" title="Ir al carrito">
         <img src="/img/Carrito.png" alt="Carrito" class="carrito-img">

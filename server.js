@@ -9,11 +9,16 @@ const multer = require('multer');
 const builder = require('xmlbuilder');
 const compression = require('compression');
 const NodeCache = require('node-cache'); 
+const cloudinary = require('cloudinary').v2;
+
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ---------------------- CONEXIÓN POSTGRES (RAILWAY - con variables de entorno) ---------------------- //
+// ------------------------------------------Configuracion de variables de entorno----------------------------------------
+// CONEXIÓN POSTGRES (RAILWAY - con variables de entorno)
 console.log("Intentando conectar a la base de datos con las siguientes variables de entorno:");
 console.log("PGHOST:", process.env.PGHOST);
 console.log("PGPORT:", process.env.PGPORT);
@@ -45,6 +50,14 @@ pool.connect((err, client, done) => {
   }
 });
 
+// ---------------------- CLOUDINARY ---------------------- //
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+
 // ---------------------- CONFIGURACIÓN GENERAL ---------------------- //
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public'), {
@@ -67,21 +80,48 @@ app.get('/', (req, res) => {
   res.sendFile(filePath);
 });
 
-// ---------------------- SUBIDA DE IMÁGENES ---------------------- //
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'img/');
-  },
-  filename: (req, file, cb) => {
-    const nombrePlanta = req.body.nombre || 'planta';
-    const ext = path.extname(file.originalname);
-    const nombreFinal = nombrePlanta.trim().toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g, '') + ext;
-    cb(null, nombreFinal);
+// ---------------------- SUBIDA DE IMÁGENES A CLOUDINARY ---------------------- //
+const storage = new CloudinaryStorage({
+
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    const nombre = req.body.nombre || 'planta';
+    const limpio = nombre.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '');
+    return {
+      folder: 'sanita', // Puedes cambiar el nombre de la carpeta si deseas
+      public_id: limpio,
+      format: 'jpg',
+      transformation: [{ width: 800, crop: 'limit' }]
+    };
   }
 });
 const upload = multer({ storage });
+
+// Agregar imagen
+app.post('/api/subir-planta', upload.single('imagen'), async (req, res) => {
+  try {
+    const { nombre, precio, descripcion, categoria_id } = req.body;
+    const imageUrl = req.file.path; // URL de Cloudinary
+
+    const query = `
+      INSERT INTO plantas (nombre, precio, imagen, descripcion, categoria_id)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `;
+    const values = [nombre, precio, imageUrl, descripcion, categoria_id];
+
+    const result = await pool.query(query, values);
+
+    res.status(200).json({
+      mensaje: 'Planta registrada correctamente',
+      planta: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error al subir planta:', error);
+    res.status(500).json({ error: 'Error al registrar planta' });
+  }
+});
+
 
 // ---------------------- USUARIOS ---------------------- //
 app.post('/registrar', async (req, res) => {
