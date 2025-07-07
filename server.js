@@ -100,6 +100,9 @@ const upload = multer({ storage });
 // Agregar imagen
 app.post('/api/subir-planta', upload.single('imagen'), async (req, res) => {
   try {
+    console.log("📸 File recibido:", req.file);
+    console.log("📦 Body recibido:", req.body);
+
     if (!req.file) {
       return res.status(400).json({ error: 'No se recibió imagen válida.' });
     }
@@ -912,8 +915,6 @@ app.get('/api/resumen-inicio', async (req, res) => {
 });
 
 // ---------------------- INICIAR SERVIDOR ---------------------- //
-console.log("📸 File recibido:", req.file);
-console.log("📦 Body recibido:", req.body);
 
 console.log("Valor de process.env.PORT:", process.env.PORT);
 app.listen(port, () => {
