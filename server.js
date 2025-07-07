@@ -100,8 +100,12 @@ const upload = multer({ storage });
 // Agregar imagen
 app.post('/api/subir-planta', upload.single('imagen'), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se recibió imagen válida.' });
+    }
+
     const { nombre, precio, descripcion, categoria_id } = req.body;
-    const imageUrl = req.file.path; // URL de Cloudinary
+    const imageUrl = req.file.path;
 
     const query = `
       INSERT INTO plantas (nombre, precio, imagen, descripcion, categoria_id)
@@ -117,10 +121,11 @@ app.post('/api/subir-planta', upload.single('imagen'), async (req, res) => {
       planta: result.rows[0]
     });
   } catch (error) {
-    console.error('Error al subir planta:', error);
-    res.status(500).json({ error: 'Error al registrar planta' });
+    console.error('❌ Error al subir planta:', error);
+    res.status(500).json({ error: 'Error interno al registrar planta' });
   }
 });
+
 
 
 // ---------------------- USUARIOS ---------------------- //
@@ -907,6 +912,9 @@ app.get('/api/resumen-inicio', async (req, res) => {
 });
 
 // ---------------------- INICIAR SERVIDOR ---------------------- //
+console.log("📸 File recibido:", req.file);
+console.log("📦 Body recibido:", req.body);
+
 console.log("Valor de process.env.PORT:", process.env.PORT);
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
