@@ -16,13 +16,23 @@
   <div class="contenido-registro">
     <div class="registro-form">
       <h2>Crear Cuenta</h2>
-      <input type="text" id="nombre" placeholder="Nombre completo" required />
-      <input type="email" id="correo" placeholder="Correo electrónico" required />
-      <input type="password" id="contrasena" placeholder="Contraseña" required />
-      <input type="text" id="imagen" placeholder="URL de imagen (opcional)" />
-      <input type="text" id="codigo-rol" placeholder="Código de rol (opcional)" />
-      <button onclick="registrarUsuario()">Registrarse</button>
-      <p class="status" id="status-msg"></p>
+      <form id="registro-formulario" enctype="multipart/form-data">
+        <input type="text" id="nombre" placeholder="Nombre completo" required />
+        <input type="email" id="correo" placeholder="Correo electrónico" required />
+        
+        <div style="position: relative;">
+          <input type="password" id="contrasena" placeholder="Contraseña" required />
+          <input type="password" id="confirmar-contrasena" placeholder="Confirmar contraseña" required />
+          <span id="toggle-visibility" style="position:absolute; right:10px; top:10px; cursor:pointer;">👁️</span>
+        </div>
+
+        <label for="imagen">Imagen de perfil (opcional):</label>
+        <input type="file" id="imagen" accept="image/*" />
+
+        <input type="text" id="codigo-rol" placeholder="Código de rol (opcional)" />
+        <button type="submit">Registrarse</button>
+        <p class="status" id="status-msg"></p>
+      </form>
     </div>
   </div>
 </body>

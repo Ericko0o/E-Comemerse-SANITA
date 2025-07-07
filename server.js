@@ -211,6 +211,46 @@ app.get('/logout', (req, res) => {
   res.json({ mensaje: 'Sesión cerrada' });
 });
 
+app.post('/registrar-con-imagen', upload.single('imagen'), async (req, res) => {
+  try {
+    const { nombre, correo, contrasena, codigoRol } = req.body;
+
+    if (!nombre || !correo || !contrasena) {
+      return res.status(400).json({ error: "Faltan campos obligatorios." });
+    }
+
+    // Verificar si el correo ya existe
+    const check = await pool.query("SELECT id FROM usuarios WHERE correo = $1", [correo]);
+    if (check.rows.length > 0) {
+      return res.status(400).json({ error: "El correo ya está registrado." });
+    }
+
+    let imagenFinal = "img/usuario.png";
+    if (req.file && req.file.path) {
+      imagenFinal = req.file.path;
+    }
+
+    let rol = 'normal';
+    if (codigoRol === 'proveedor2024') rol = 'proveedor';
+    else if (codigoRol === 'moderador2024') rol = 'moderador';
+
+    const result = await pool.query(
+      `INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol)
+       VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+      [nombre, correo, contrasena, imagenFinal, rol]
+    );
+
+    req.session.usuarioId = result.rows[0].id;
+    res.json({ mensaje: "Registro exitoso" });
+
+  } catch (err) {
+    console.error("❌ Error en /registrar-con-imagen:", err);
+    res.status(500).json({ error: "Error interno al registrar." });
+  }
+});
+
+
+
 // ---------------------- AQUI CONTINUAMOS ---------------------- //
 // ---------------------- CARRITO ---------------------- //
 // Crear tabla carrito (solo ejecutar una vez o usar migraciones)

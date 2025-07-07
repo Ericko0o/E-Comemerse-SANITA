@@ -10,10 +10,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const { nombre, correo, imagen } = data.usuario;
 
+    let imagenUrl = imagen || "img/usuario.png";
+    if (!imagenUrl.startsWith("http") && !imagenUrl.startsWith("/")) {
+      imagenUrl = "img/" + imagenUrl.replace(/^img[\/\\]/, '');
+    }
+
     document.getElementById("nombre").value = nombre;
     document.getElementById("correo").value = correo;
     document.getElementById("imagen").value = imagen;
-    document.getElementById("imagen-perfil").src = imagen;
+    document.getElementById("imagen-perfil").src = imagenUrl;
   } catch (err) {
     console.error("Error al cargar perfil:", err);
   }
@@ -38,7 +43,13 @@ async function actualizarPerfil() {
     if (res.ok) {
       status.style.color = "lightgreen";
       status.textContent = "Datos actualizados correctamente.";
-      document.getElementById("imagen-perfil").src = imagen;
+
+      let imagenUrl = imagen || "img/usuario.png";
+      if (!imagenUrl.startsWith("http") && !imagenUrl.startsWith("/")) {
+        imagenUrl = "img/" + imagenUrl.replace(/^img[\/\\]/, '');
+      }
+
+      document.getElementById("imagen-perfil").src = imagenUrl;
     } else {
       status.style.color = "salmon";
       status.textContent = data.error || "Error al actualizar.";

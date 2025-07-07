@@ -12,12 +12,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     const publicacionesRecientes = publicaciones.slice(0, 2);
     const restoPublicaciones = publicaciones.slice(2);
 
+    const normalizarImagen = (img) => {
+      if (!img) return "img/usuario.jpg";
+      if (!img.startsWith("http") && !img.startsWith("/")) {
+        return "img/" + img.replace(/^img[\/\\]/, '');
+      }
+      return img;
+    };
+
     const renderizarPublicacion = (pub, contenedor) => {
       const pubDiv = document.createElement("div");
       pubDiv.className = "post";
+      const imgUrl = normalizarImagen(pub.imagen);
+
       pubDiv.innerHTML = `
         <div class="post-header">
-          <img src="${pub.imagen || 'img/usuario.jpg'}" class="avatar" alt="Avatar de ${pub.nombre}" />
+          <img src="${imgUrl}" class="avatar" alt="Avatar de ${pub.nombre}" />
           <div>
             <h2>${pub.nombre}</h2>
             <small>${formatearAntiguedad(pub.fecha)}</small>
@@ -44,7 +54,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           hilos.forEach(hilo => {
             const div = document.createElement("div");
             div.className = "comentario";
-            div.innerHTML = `<img src="${hilo.imagen || 'img/usuario.jpg'}" class="avatar" alt="Avatar"> <div><strong>${hilo.nombre}:</strong> <span>${hilo.contenido}</span></div>`;
+            const hiloImg = normalizarImagen(hilo.imagen);
+            div.innerHTML = `
+              <img src="${hiloImg}" class="avatar" alt="Avatar">
+              <div><strong>${hilo.nombre}:</strong> <span>${hilo.contenido}</span></div>`;
             area.appendChild(div);
           });
 
@@ -102,7 +115,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     contenedorPosts.innerHTML = '<p>No se pudieron cargar las publicaciones.</p>';
   }
 
-  // Botones flotantes
   document.getElementById("btnNuevaPublicacion")?.addEventListener("click", async () => {
     const logueado = await estaLogueado();
     if (!logueado) {

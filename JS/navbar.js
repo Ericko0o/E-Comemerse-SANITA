@@ -47,11 +47,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const res = await fetch('/usuario');
     const data = await res.json();
     if (data.logueado) {
-      logueado = true;
-      nombre = data.usuario.nombre;
-      imagen = data.usuario.imagen || 'img/usuario.png';
-      rol = data.usuario.rol || 'normal';
+    logueado = true;
+    nombre = data.usuario.nombre;
+    imagen = data.usuario.imagen || 'img/usuario.png';
+    if (!imagen.startsWith("http") && !imagen.startsWith("/")) {
+      imagen = "img/" + imagen.replace(/^img[\/\\]/, '');
     }
+    rol = data.usuario.rol || 'normal';
+  }
+
   } catch (err) {
     console.error('Error al verificar sesión:', err);
   }
